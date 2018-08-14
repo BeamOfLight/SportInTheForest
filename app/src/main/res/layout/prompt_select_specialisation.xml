@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:padding="10dp" >
+
+    <TextView
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5sp"
+        android:text="@string/prompt_select_specialisation_title"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/btSelectSpecialisationResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="160sp"
+        android:layout_marginTop="5sp"
+        android:text="@string/prompt_select_specialisation_button_result" />
+
+    <Button
+        android:id="@+id/btSelectSpecialisationResistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="160sp"
+        android:layout_marginTop="5sp"
+        android:text="@string/prompt_select_specialisation_button_resistance" />
+
+    <Button
+        android:id="@+id/btSelectSpecialisationRegeneration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="160sp"
+        android:layout_marginTop="5sp"
+        android:text="@string/prompt_select_specialisation_button_regeneration" />
+</LinearLayout>

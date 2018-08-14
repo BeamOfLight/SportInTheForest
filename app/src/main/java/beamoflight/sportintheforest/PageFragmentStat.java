@@ -1,0 +1,111 @@
+package beamoflight.sportintheforest;
+
+import android.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+/* Fragment used as page 2 */
+public class PageFragmentStat extends Fragment {
+    private class UserExerciseTrainingStatTimeOption {
+        String title;
+        int fromField;
+        int fromAmount;
+        int toField;
+        int toAmount;
+
+        UserExerciseTrainingStatTimeOption(String title, int from_field, int from_amount, int to_field, int to_amount) {
+            this.title = title;
+            this.fromField = from_field;
+            this.fromAmount = from_amount;
+            this.toField = to_field;
+            this.toAmount = to_amount;
+        }
+
+        public String toString() {
+            return title;
+        }
+    }
+
+    DBHelper dbHelper;
+    GameHelper gameHelper;
+
+    Spinner spinnerFragmentPageStatTime;
+    TextView tvFragmentPageStatTrainingDays, tvFragmentPageStatAverageResult, tvFragmentPageStatTotalNumberOfMoves;
+    TextView tvFragmentPageStatMaxCompetitionResult, tvFragmentPageStatMaxResult, tvFragmentPageStatTotalCount;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_page_stat, container, false);
+
+        dbHelper = new DBHelper(container.getContext());
+        gameHelper = new GameHelper(container.getContext());
+
+        spinnerFragmentPageStatTime = (Spinner) rootView.findViewById(R.id.spinnerFragmentPageStatTime);
+        tvFragmentPageStatTrainingDays = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTrainingDays);
+        tvFragmentPageStatTotalCount = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTotalCount);
+        tvFragmentPageStatMaxCompetitionResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatMaxCompetitionResult);
+        tvFragmentPageStatMaxResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatMaxResult);
+        tvFragmentPageStatTotalNumberOfMoves = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTotalNumberOfMoves);
+        tvFragmentPageStatAverageResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatAverageResult);
+        return rootView;
+    }
+
+    public void onStart() {
+        super.onStart();
+
+        List<UserExerciseTrainingStatTimeOption> timeList = new ArrayList<>();
+        timeList.add(new UserExerciseTrainingStatTimeOption("Сегодня", Calendar.DAY_OF_YEAR, -1, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Вчера", Calendar.DAY_OF_YEAR, -2, Calendar.DAY_OF_YEAR , -1));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Позавчера", Calendar.DAY_OF_YEAR, -3, Calendar.DAY_OF_YEAR , -2));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последняя неделя", Calendar.WEEK_OF_YEAR, -1, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последние 2 недели", Calendar.WEEK_OF_YEAR, -2, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последний месяц", Calendar.MONTH, -1, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последние 3 месяца", Calendar.MONTH, -3, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последние 6 месяцев", Calendar.MONTH, -6, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("Последний год", Calendar.YEAR, -1, Calendar.DAY_OF_YEAR , 0));
+        timeList.add(new UserExerciseTrainingStatTimeOption("За всё время", Calendar.YEAR, -999, Calendar.DAY_OF_YEAR , 0));
+
+        ArrayAdapter<UserExerciseTrainingStatTimeOption> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item, timeList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFragmentPageStatTime.setAdapter(adapter);
+        spinnerFragmentPageStatTime.setSelection(gameHelper.getShardePreferencesInt("stat_spinner_position", 0));
+
+        spinnerFragmentPageStatTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                UserExerciseTrainingStatTimeOption time_option = (UserExerciseTrainingStatTimeOption) spinnerFragmentPageStatTime.getSelectedItem();
+                UserExerciseTrainingStat stat = dbHelper.getUserExerciseTrainingStat(
+                        time_option.fromField,
+                        time_option.fromAmount,
+                        time_option.toField,
+                        time_option.toAmount
+                );
+
+                tvFragmentPageStatTrainingDays.setText(String.format(Locale.ROOT, "%d", stat.training_days));
+                tvFragmentPageStatTotalCount.setText(String.format(Locale.ROOT, "%d", stat.total_cnt));
+                tvFragmentPageStatMaxCompetitionResult.setText(String.format(Locale.ROOT, "%d", stat.max_competition_result));
+                tvFragmentPageStatMaxResult.setText(String.format(Locale.ROOT, "%d", stat.max_result));
+                tvFragmentPageStatTotalNumberOfMoves.setText(String.format(Locale.ROOT, "%d", stat.total_number_of_moves));
+                tvFragmentPageStatAverageResult.setText(stat.getAverageResultString());
+                gameHelper.setShardePreferencesInt("stat_spinner_position", position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+    }
+}

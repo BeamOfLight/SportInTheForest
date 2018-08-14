@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="60dp" >
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginStart="3dp"
+        android:orientation="vertical"
+        android:id="@+id/rl1">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
+            android:orientation="horizontal"
+            android:id="@+id/rl2">
+
+            <TextView
+                android:id="@+id/tvNPCName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:minWidth="280dp"
+                android:maxWidth="280dp"
+                android:width="280dp"
+                android:text="Тростник"
+                android:singleLine="false"
+                android:maxLines="1"
+                android:minLines="1"
+                android:lines="1"
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:textSize="24sp" />
+
+            <TextView android:id="@+id/tvQuestInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="13sp"
+                android:textAlignment="center"
+                android:minWidth="60dp"
+                android:maxWidth="60dp"
+                android:width="60dp"
+                android:text="1 / 5"
+                android:layout_alignTop="@+id/tvNPCName"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/rl2"
+            android:id="@+id/rl3">
+
+            <TextView android:id="@+id/tvNPCInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:minWidth="300dp"
+                android:maxWidth="300dp"
+                android:width="300dp"
+                android:text="Повторений: 111 | Очков: 3 х 1" />
+
+
+            <ProgressBar
+                android:id="@+id/pbQuestProgress"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/tvNPCInfo"
+                android:clickable="false"
+                android:minWidth="60sp"
+                android:maxWidth="60sp"
+                android:max="5"
+                android:progress="1" />
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

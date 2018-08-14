@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <skill_group skill_group_id="1" name="Увеличение сопротивления" type="0" target_type="0"/>
+    <skill_group skill_group_id="2" name="Увеличение фитнес очков" type="0" target_type="0"/>
+    <skill_group skill_group_id="3" name="Увеличение множителя ФО" type="0" target_type="0"/>
+    <skill_group skill_group_id="4" name="Увеличение бонуса" type="0" target_type="0"/>
+    <skill_group skill_group_id="5" name="Увеличение множителя на 1 ход" type="1" target_type="0"/>
+    <skill_group skill_group_id="6" name="Увеличение сопротивления на 1 ход" type="1" target_type="0"/>
+    <skill_group skill_group_id="7" name="Восстановление своих ФО" type="2" target_type="0"/>
+    <skill_group skill_group_id="8" name="Увеличение максимума  ФО команды" type="1" target_type="4"/>
+    <skill_group skill_group_id="9" name="Увеличение сопротивления команды" type="1" target_type="4"/>
+    <skill_group skill_group_id="10" name="Увеличение множителя команды" type="1" target_type="4"/>
+    <skill_group skill_group_id="11" name="Увеличение бонуса команды" type="1" target_type="4"/>
+    <skill_group skill_group_id="12" name="Базовое увеличение регенерации" type="0" target_type="0"/>
+    <skill_group skill_group_id="13" name="Базовое увеличение множителя" type="0" target_type="0"/>
+    <skill_group skill_group_id="14" name="Базовое увеличение сопротивления" type="0" target_type="0"/>
+    <skill_group skill_group_id="15" name="Воздействие на всю команду соперников" type="2" target_type="7"/>
+    <skill_group skill_group_id="16" name="Восстановление ФО своей команды" type="2" target_type="4"/>
+    <skill_group skill_group_id="17" name="Восстановление ФО союзника" type="2" target_type="1"/>
+</data>

@@ -1,0 +1,912 @@
+package beamoflight.sportintheforest;
+
+import android.content.Context;
+import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import com.google.gson.Gson;
+
+/**
+ * CompetitionEngine
+ * Created by beamoflight on 02.05.18.
+ */
+class CompetitionEngine {
+    final static int LEFT_TEAM_IDX = 0;
+    final static int RIGHT_TEAM_IDX = 1;
+
+    private final static int MAX_CHARACTERS_COUNT_PER_TEAM = 5;
+    private ArrayList<Map<String, String>> logData;
+    private List<List<CharacterEntity>> teamsData;
+    private GameHelper gameHelper;
+    private DBHelper dbHelper;
+    private String log_message;
+    private int numberOfMoves;
+    private Long competitionStartTime;
+    boolean finishedCompetition;
+    private int mainPlayerTeamIdx;
+    private int mainPlayerIdx;
+    private String exerciseName;
+
+    class MoveRequest {
+        String name;
+        int teamIdx;
+        int idxInTeam;
+        int userId;
+        int exerciseId;
+    }
+
+    CompetitionView getCompetitionView()
+    {
+        CompetitionView view = new CompetitionView();
+        view.finishedCompetition = finishedCompetition;
+        view.mainPlayerTeamIdx = mainPlayerTeamIdx;
+        view.mainPlayerIdx = mainPlayerIdx;
+        view.logData = logData;
+        view.teamsData = new ArrayList<>();
+        view.teamsData.add(getCharacters(LEFT_TEAM_IDX));
+        view.teamsData.add(getCharacters(RIGHT_TEAM_IDX));
+        view.exerciseName = getExerciseName();
+
+        return view;
+    }
+
+    CompetitionEngine(Context current, String exerciseName) {
+        logData = new ArrayList<>();
+        teamsData = new ArrayList<>();
+        teamsData.add(new ArrayList<CharacterEntity>());
+        teamsData.add(new ArrayList<CharacterEntity>());
+        gameHelper = new GameHelper(current);
+        dbHelper = new DBHelper(current);
+        finishedCompetition = true;
+        this.exerciseName = exerciseName;
+    }
+
+    void start() {
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        numberOfMoves = 0;
+        competitionStartTime = System.currentTimeMillis()/1000;
+
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player_entity = (PlayerEntity) character;
+                    dbHelper.addCompetition2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
+                    player_entity.setCurrentTrainingId(
+                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), 0, getQuestOwner(player_entity))
+                    );
+                }
+            }
+        }
+
+        addCompetitionLogMessage("Соревнование началось!");
+        finishedCompetition = false;
+    }
+
+    void leave(int npc_id, int npc_location_id, int npc_position)
+    {
+        int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player_entity = (PlayerEntity) character;
+                    int state = GameHelper.RESULT_STATE_UNFINISHED;
+                    if (player_entity.getTeamIdx() == mainPlayerTeamIdx && player_entity.getIdxInTeam() == mainPlayerIdx) {
+                        state = GameHelper.RESULT_STATE_LEFT;
+                    }
+                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, state, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+                }
+            }
+        }
+
+    }
+
+    ArrayList<Map<String, String>> getLogData() {
+        return logData;
+    }
+
+    CompetitionEngine setMainPlayerTeamIdx(int team_idx)
+    {
+        mainPlayerTeamIdx = team_idx;
+        return this;
+    }
+
+    CompetitionEngine setMainPlayerIdx(int player_idx)
+    {
+        mainPlayerIdx = player_idx;
+        return this;
+    }
+
+    private int getOppositeTeamIdx(int team_idx) {
+        if (team_idx == LEFT_TEAM_IDX) {
+            return RIGHT_TEAM_IDX;
+        } else {
+            return LEFT_TEAM_IDX;
+        }
+    }
+
+    List<UserEntity> filterUserList(List<UserEntity> src_users, int exercise_id)
+    {
+        List<UserEntity> dst_users = new ArrayList<>();
+        for (UserEntity src_user : src_users) {
+            if (checkExerciseUserIsNew(src_user.id, exercise_id)) {
+                dst_users.add(src_user);
+            }
+        }
+
+        return dst_users;
+    }
+
+    private boolean checkExerciseUserIsNew(int user_id, int exercise_id)
+    {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player = (PlayerEntity) character;
+                    if (player.getUserId() == user_id && player.getExerciseId() == exercise_id) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean checkPlayerIsNew(PlayerEntity player_entity)
+    {
+        return checkExerciseUserIsNew(player_entity.getUserId(), player_entity.getExerciseId());
+    }
+
+    boolean addCharacter(int team_idx, CharacterEntity character_entity) {
+        boolean status = false;
+        if (character_entity.isPlayer()) {
+            PlayerEntity player_entity = (PlayerEntity) character_entity;
+            if (!checkPlayerIsNew(player_entity)) {
+                return false;
+            }
+        }
+
+        if (teamsData.get(team_idx).size() < MAX_CHARACTERS_COUNT_PER_TEAM) {
+            character_entity.setTeamIdx(team_idx).setIdxInTeam(teamsData.get(team_idx).size());
+            teamsData.get(team_idx).add(character_entity);
+            status = true;
+        }
+
+        return status;
+    }
+
+    private int getTeamFP(int team_idx) {
+        int total_fp = 0;
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            total_fp += character.getCurrentFitnessPoints();
+        }
+
+        return total_fp;
+    }
+
+    private int getTeamInitialFP(int team_idx) {
+        int total_fp = 0;
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            total_fp += character.getInitialFitnessPoints();
+        }
+
+        return total_fp;
+    }
+
+    private long getTeamExp(int team_idx) {
+        int total_exp = 0;
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            total_exp += character.getExp();
+        }
+
+        return total_exp;
+    }
+
+    private void makeMove(NonPlayerCharacterEntity current_character) {
+        current_character.move.result = (int) Math.round(current_character.maxRes * 0.6 + current_character.maxRes * 0.4 * Math.random());
+        current_character.move.action = null;
+        current_character.move.preAction = null;
+        current_character.move.targetId = 0;
+        for (CharacterEntity character : teamsData.get(getOppositeTeamIdx(current_character.teamIdx))) {
+            if (character.isActive()) {
+                current_character.move.targetId = character.idxInTeam;
+                break;
+            }
+        }
+        current_character.move.isReady = true;
+    }
+
+    private float getBonusRate(float bonusChance, float bonusDefaultRate) {
+        float bonusRate = 1;
+        float val = (float) Math.random();
+        if (val <= bonusChance) {
+            bonusRate = bonusDefaultRate;
+        }
+
+        return bonusRate;
+    }
+
+    private void calculateMove4Target(CharacterEntity current_character, CharacterEntity target_character, float splash_multiplier) {
+        float bonus_rate = getBonusRate(current_character.getBonusChance(), current_character.getBonusMultiplier());
+        float final_rate = splash_multiplier * current_character.getMultiplier() * bonus_rate;
+        float final_result = current_character.getResult() * final_rate;
+        int int_final_result = Math.round(final_result);
+
+        if (current_character.isPlayer()) {
+            PlayerEntity current_player = (PlayerEntity) current_character;
+            if (current_player.getResult() > current_player.getMaxResult()) {
+                current_player.setMaxResult(current_character.getResult());
+            }
+            current_player.setSumResult(current_player.getSumResult() + current_character.getResult());
+            gameHelper.saveLastSelection2Preferences(current_player.getUserId(), current_player.getExerciseId(), current_player.getResult());
+        }
+
+        int targetFPDiff = gameHelper.getTargetFitnessPointsDifference(target_character.getCurrentFitnessPoints(), target_character.getResistance(), final_result);
+        target_character.setCurrentFitnessPoints(target_character.getCurrentFitnessPoints() - targetFPDiff);
+
+        log_message += String.format(
+                Locale.ROOT,
+                " %s => %s Результат %d x %.2f %s= %d %s (сопр. %d%%) ФО изменены на %d до %d.",
+                current_character.getName(),
+                target_character.getName(),
+                current_character.getResult(),
+                final_rate,
+                bonus_rate > 1 ? "(бонус!) " : "",
+                int_final_result,
+                gameHelper.getCorrectPointWordRU(int_final_result),
+                (int) (gameHelper.getResistanceInPercents(target_character.getResistance())),
+                targetFPDiff,
+                target_character.getCurrentFitnessPoints()
+        );
+    }
+
+    private void calculateMove(CharacterEntity current_character) {
+        if (current_character.move.action == null) {
+            CharacterEntity target_character = teamsData.get(getOppositeTeamIdx(current_character.teamIdx)).get(current_character.move.targetId);
+            calculateMove4Target(current_character, target_character, 1);
+        } else {
+            switch (current_character.move.action.targetType) {
+                case SkillView.TARGET_TYPE_SELF:
+                case SkillView.TARGET_TYPE_ACTIVE_MY_TEAM:
+                case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_MY_TEAM:
+                case SkillView.TARGET_TYPE_SINGLE_INACTIVE_FROM_MY_TEAM:
+                case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_TEAMMATES:
+                case SkillView.TARGET_TYPE_ACTIVE_ALL:
+                    return;
+                case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM:
+                    CharacterEntity target_character = teamsData.get(getOppositeTeamIdx(current_character.teamIdx)).get(current_character.move.targetId);
+                    calculateMove4Target(current_character, target_character, 1);
+                    break;
+                case SkillView.TARGET_TYPE_ACTIVE_OPPOSITE_TEAM:
+                    for (CharacterEntity opposite_team_character : teamsData.get(getOppositeTeamIdx(current_character.getTeamIdx()))) {
+                        calculateMove4Target(current_character, opposite_team_character, current_character.move.action.splashMultiplier);
+                    }
+                    break;
+            }
+        }
+    }
+
+    void startNewRound() {
+        numberOfMoves++;
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                character.move.isReady = false;
+                character.calculateStatus();
+            }
+        }
+    }
+
+    boolean needMove() {
+        boolean needMove = false;
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isActive()) {
+                    needMove |= !character.move.isReady;
+                }
+            }
+        }
+
+        return needMove;
+    }
+
+    MoveRequest getMoveRequest() {
+        MoveRequest request = new MoveRequest();
+        if (needMove()) {
+            for (List<CharacterEntity> teamData : teamsData) {
+                for (CharacterEntity character : teamData) {
+                    if (character.isActive()) {
+                        if (!character.move.isReady && character.isPlayer()) {
+                            request.name = character.getName();
+                            request.teamIdx = character.teamIdx;
+                            request.idxInTeam = character.idxInTeam;
+                            request.userId = ((PlayerEntity) character).getUserId();
+                            request.exerciseId = ((PlayerEntity) character).getExerciseId();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return request;
+    }
+
+    void decreaseNumberOfMoves()
+    {
+        numberOfMoves--;
+    }
+
+    boolean setMove(int team_idx, int idx_in_team, SkillView pre_action, SkillView action, int target_team_idx, int target_idx, int result) {
+        if (action != null) {
+            action.result = result;
+        }
+        teamsData.get(team_idx).get(idx_in_team).move.preAction = pre_action;
+        teamsData.get(team_idx).get(idx_in_team).move.action = action;
+        teamsData.get(team_idx).get(idx_in_team).move.targetTeamId = target_team_idx;
+        teamsData.get(team_idx).get(idx_in_team).move.targetId = target_idx;
+        teamsData.get(team_idx).get(idx_in_team).move.result = result;
+        teamsData.get(team_idx).get(idx_in_team).move.isReady = true;
+        return true;
+    }
+
+    void proceedNPCsStep1() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isActive() && !character.isPlayer()) {
+                    makeMove((NonPlayerCharacterEntity) character);
+                }
+            }
+        }
+    }
+
+    private void cleanLogMessage()
+    {
+        log_message = "";
+    }
+
+    private void saveLogMessage()
+    {
+        addCompetitionLogMessage(log_message);
+    }
+
+    void proceed() {
+        cleanLogMessage();
+
+        // Main loop start
+        proceedActiveSkillsAndTargets();
+        proceedMoveCalculation();
+        calculateFitnessPoints();
+        // Main loop finish
+
+        proceedActiveSkillsDurationRecalculation();
+        saveLogMessage();
+        checkWinConditions();
+    }
+
+    private void addActiveSkillFromPreActionOrAction(CharacterEntity character, SkillView skill_view)
+    {
+        int current_target_id;
+        switch (skill_view.targetType) {
+            case SkillView.TARGET_TYPE_SELF:
+                character.addActiveSkill(new SkillView(skill_view));
+                break;
+            case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_MY_TEAM:
+                current_target_id = 0;
+                for (CharacterEntity my_team_character : teamsData.get(character.getTeamIdx())) {
+                    if (my_team_character.isActive() && character.move.targetId == current_target_id) {
+                        my_team_character.addActiveSkill(new SkillView(skill_view));
+                        current_target_id++;
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_SINGLE_INACTIVE_FROM_MY_TEAM:
+                current_target_id = 0;
+                for (CharacterEntity my_team_character : teamsData.get(character.getTeamIdx())) {
+                    if (!my_team_character.isActive() && character.move.targetId == current_target_id) {
+                        my_team_character.addActiveSkill(new SkillView(skill_view));
+                        current_target_id++;
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_TEAMMATES:
+                current_target_id = 0;
+                for (CharacterEntity my_team_character : teamsData.get(character.getTeamIdx())) {
+                    if (my_team_character.isActive() && character.move.targetId == current_target_id && character != my_team_character) {
+                        my_team_character.addActiveSkill(new SkillView(skill_view));
+                        current_target_id++;
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_ACTIVE_MY_TEAM:
+                for (CharacterEntity my_team_character : teamsData.get(character.getTeamIdx())) {
+                    if (my_team_character.isActive()) {
+                        my_team_character.addActiveSkill(new SkillView(skill_view));
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM:
+                current_target_id = 0;
+                for (CharacterEntity opposite_team_character : teamsData.get(getOppositeTeamIdx(character.getTeamIdx()))) {
+                    if (opposite_team_character.isActive() && character.move.targetId == current_target_id) {
+                        opposite_team_character.addActiveSkill(new SkillView(skill_view));
+                        current_target_id++;
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_ACTIVE_OPPOSITE_TEAM:
+                for (CharacterEntity opposite_team_character : teamsData.get(getOppositeTeamIdx(character.getTeamIdx()))) {
+                    if (opposite_team_character.isActive()) {
+                        opposite_team_character.addActiveSkill(new SkillView(skill_view));
+                    }
+                }
+                break;
+            case SkillView.TARGET_TYPE_ACTIVE_ALL:
+                for (List<CharacterEntity> teamData : teamsData) {
+                    for (CharacterEntity current_character : teamData) {
+                        if (current_character.isActive()) {
+                            current_character.addActiveSkill(new SkillView(skill_view));
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    private void proceedActiveSkillsAndTargets() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isActive()) {
+                    if (character.move.preAction != null) {
+                        character.alreadyUsedActiveSkills.add(character.move.preAction.groupId);
+                        addActiveSkillFromPreActionOrAction(character, character.move.preAction);
+
+                        log_message += String.format(
+                                Locale.ROOT,
+                                "%s использовал(а) \"%s\". ",
+                                character.getName(),
+                                character.move.preAction.name
+                        );
+                    }
+
+                    if (character.move.action != null) {
+                        character.alreadyUsedActiveSkills.add(character.move.action.groupId);
+                        addActiveSkillFromPreActionOrAction(character, character.move.action);
+
+                        log_message += String.format(
+                                Locale.ROOT,
+                                "%s использовал(а) \"%s\". ",
+                                character.getName(),
+                                character.move.action.name
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    private void proceedMoveCalculation() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isActive()) {
+                    calculateMove(character);
+                }
+            }
+        }
+    }
+
+    private void proceedActiveSkillsDurationRecalculation() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                character.recalculateActiveSkillsDuration();
+            }
+        }
+    }
+
+    private void calculateFitnessPoints() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.getCurrentFitnessPoints() > 0) {
+                    int old_fitness_points = character.getCurrentFitnessPoints();
+                    int new_fitness_points = Math.min(
+                            character.getCurrentFitnessPoints() + character.getRegeneration(),
+                            character.getInitialFitnessPoints()
+                    );
+                    character.setCurrentFitnessPoints(new_fitness_points);
+                    int regeneration = new_fitness_points - old_fitness_points;
+                    if (regeneration != 0) {
+                        log_message += String.format(
+                                Locale.ROOT,
+                                " %s: %s %d ФО.",
+                                character.getName(),
+                                regeneration > 0 ? "восстановлено" : "уменьшено",
+                                Math.abs(regeneration)
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkWinConditions() {
+        if (getTeamFP(mainPlayerTeamIdx) == 0 && getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)) == 0) {
+            processDraw();
+        } else if (getTeamFP(mainPlayerTeamIdx) > 0 && getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)) == 0) {
+            processWin();
+        } else if (getTeamFP(mainPlayerTeamIdx) == 0 && getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)) > 0) {
+            processDefeat();
+        } else {
+            int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
+            NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+            for (List<CharacterEntity> teamData : teamsData) {
+                for (CharacterEntity character : teamData) {
+                    if (character.isPlayer()) {
+                        PlayerEntity player_entity = (PlayerEntity) character;
+                        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity));
+                    }
+                }
+            }
+        }
+    }
+
+    private void processDraw()
+    {
+        int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player_entity = (PlayerEntity) character;
+                    int result_exp = Math.round(getTeamExp(getOppositeTeamIdx(character.getTeamIdx())) * (float)(0.2) * getExpRatio(player_entity.getTeamIdx()));
+                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), result_exp, numberOfMoves, GameHelper.RESULT_STATE_DRAW, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity));
+                    dbHelper.addDraw2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
+                    if (character.getTeamIdx() == mainPlayerTeamIdx && character.getIdxInTeam() == mainPlayerIdx) {
+                        addCompetitionLogMessage(
+                                String.format(
+                                        Locale.ROOT,
+                                        "Ничья! Вы получили %d %s опыта.",
+                                        result_exp,
+                                        gameHelper.getCorrectPointWordRU(result_exp)
+                                )
+                        );
+                        dbHelper.updateUserInfoWithLevelCheck();
+                    }
+                }
+
+            }
+        }
+
+        finishedCompetition = true;
+    }
+
+    private float getExpRatio(int team_idx)
+    {
+        int teammates_count = teamsData.get(team_idx).size();
+        return (float)((0.8 + 0.2 * teammates_count) / (float) teammates_count);
+    }
+
+    private int processWin4Player(PlayerEntity player_entity, int npc_id, int npc_location_id, int npc_position, int duration)
+    {
+        int exp = Math.round(getTeamExp(getOppositeTeamIdx(player_entity.getTeamIdx())) * getExpRatio(player_entity.getTeamIdx()));
+        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_WIN, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+        dbHelper.addWin2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
+
+        return exp;
+    }
+
+    private boolean getQuestOwner(PlayerEntity player_entity)
+    {
+        return (player_entity.getUserId() == gameHelper.getUserId() && player_entity.getExerciseId() == gameHelper.getExerciseId());
+    }
+
+    private int processDefeat4Player(PlayerEntity player_entity, int npc_id, int npc_location_id, int npc_position, int duration)
+    {
+        int exp = Math.round(((1 - (float) getTeamFP(getOppositeTeamIdx(player_entity.getTeamIdx())) / getTeamInitialFP(getOppositeTeamIdx(player_entity.getTeamIdx()))) * ((float) getTeamExp(getOppositeTeamIdx(player_entity.getTeamIdx())) / 10)) * getExpRatio(player_entity.getTeamIdx()));
+
+        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_DEFEAT, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+
+        return exp;
+    }
+
+    private void processWin()
+    {
+        int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player_entity = (PlayerEntity) character;
+                    if (character.getTeamIdx() == mainPlayerTeamIdx) {
+                        int team_exp = processWin4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        if (character.getIdxInTeam() == mainPlayerIdx) {
+                            addCompetitionLogMessage(
+                                    String.format(
+                                            Locale.ROOT,
+                                            "Победа! Вы получили %d %s опыта.",
+                                            team_exp,
+                                            gameHelper.getCorrectPointWordRU(team_exp)
+                                    )
+                            );
+                            if (npc_entity.getLevel() < npc_entity.getExpectedWins()) {
+                                dbHelper.levelUpForNPC(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getLocationId(), npc_entity.getPosition());
+                            }
+
+                            processQuestLogic();
+                            dbHelper.updateUserInfoWithLevelCheck();
+                        }
+
+                    } else {
+                        processDefeat4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                    }
+                }
+            }
+        }
+
+        finishedCompetition = true;
+    }
+
+    private void processDefeat()
+    {
+        int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isPlayer()) {
+                    PlayerEntity player_entity = (PlayerEntity) character;
+                    if (character.getTeamIdx() == mainPlayerTeamIdx) {
+                        int result_exp = processDefeat4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        if (character.getIdxInTeam() == mainPlayerIdx) {
+                            addCompetitionLogMessage(
+                                    String.format(
+                                            Locale.ROOT,
+                                            "Поражение! Вы получили %d %s опыта.",
+                                            result_exp,
+                                            gameHelper.getCorrectPointWordRU(result_exp)
+                                    )
+                            );
+                            dbHelper.updateUserInfoWithLevelCheck();
+                        }
+
+                    } else {
+                        processWin4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                    }
+                }
+            }
+        }
+
+        finishedCompetition = true;
+    }
+
+    boolean isFinished()
+    {
+        return finishedCompetition;
+    }
+
+    private void addCompetitionLogMessage(String src_msg) {
+        Map<String, String> m = new HashMap<String, String>();
+        String dst_msg = String.format(
+                Locale.ROOT,
+                "[%s]  %s",
+                gameHelper.getShortCurrentTime(),
+                src_msg
+        );
+
+        m.put("log_msg", dst_msg);
+        logData.add(0, m);
+    }
+
+    private void processQuestLogic()
+    {
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        if (npc_entity.getCurrentWins() + 1 >= npc_entity.getExpectedWins()) {
+            if (!dbHelper.checkUserExerciseQuest(npc_entity.getLocationId(), npc_entity.getPosition())) {
+                completeQuest();
+                openNewLocation();
+            }
+        } else {
+            addCompetitionLogMessage(
+                    String.format(
+                            Locale.ROOT,
+                            "Прогресс выполнения задания: %d / %d",
+                            npc_entity.getCurrentWins() + 1,
+                            npc_entity.getExpectedWins()
+                    )
+            );
+        }
+    }
+
+    private void openNewLocation()
+    {
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        if (npc_entity.getType().equals("rb")) {
+            if (dbHelper.openLocationForCurrentUserExercise(npc_entity.getLocationId() + 1)) {
+                String location_name = dbHelper.getLocationName(npc_entity.getLocationId() + 1);
+                if (location_name != null) {
+                    addCompetitionLogMessage(
+                            String.format(
+                                    Locale.ROOT,
+                                    "Вы открыли новое место: %s",
+                                    location_name
+                            )
+                    );
+                }
+            }
+        }
+    }
+
+    private void completeQuest()
+    {
+        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
+        dbHelper.addUserExerciseQuest(npc_entity.getLocationId(), npc_entity.getPosition());
+        addCompetitionLogMessage(
+                String.format(
+                        Locale.ROOT,
+                        "Вы выполнили задание и получили %d %s опыта.",
+                        npc_entity.getQuestExp(),
+                        gameHelper.getCorrectPointWordRU(npc_entity.getQuestExp())
+                )
+        );
+    }
+
+    int getCharactersCount(int team_idx) {
+        return teamsData.get(team_idx).size();
+    }
+
+    List<CharacterView> getCharacters(int team_idx) {
+        List<CharacterView> character_views = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            character_views.add(character.getView());
+        }
+
+        return character_views;
+    }
+
+    public List<CharacterEntity> getActiveCharacters(int team_id, boolean useOppositeTeam) {
+        int team_idx = team_id;
+        if (useOppositeTeam) {
+            team_idx = getOppositeTeamIdx(team_id);
+        }
+        List<CharacterEntity> character_views = new ArrayList<CharacterEntity>();
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            if (character.isActive()) {
+                character_views.add(character);
+            }
+        }
+
+        return character_views;
+    }
+
+    SparseArray<List<CharacterView>> getActionTargets(int team_idx, int idx_in_team)
+    {
+        SparseArray<List<CharacterView>> targets = new SparseArray<>();
+
+        // TARGET_TYPE_SELF
+        List<CharacterView> listSelf= new ArrayList<>();
+        listSelf.add(teamsData.get(team_idx).get(idx_in_team).getView());
+        targets.put(SkillView.TARGET_TYPE_SELF, listSelf);
+
+        // TARGET_TYPE_SINGLE_ACTIVE_FROM_MY_TEAM
+        List<CharacterView> listSingleActiveFromMyTeam = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            if (character.isActive()) {
+                listSingleActiveFromMyTeam.add(character.getView());
+            }
+        }
+        targets.put(SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_MY_TEAM, listSingleActiveFromMyTeam);
+
+        // TARGET_TYPE_SINGLE_INACTIVE_FROM_MY_TEAM
+        List<CharacterView> listSingleInactiveFromMyTeam = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            if (!character.isActive()) {
+                listSingleInactiveFromMyTeam.add(character.getView());
+            }
+        }
+        targets.put(SkillView.TARGET_TYPE_SINGLE_INACTIVE_FROM_MY_TEAM, listSingleInactiveFromMyTeam);
+
+        // TARGET_TYPE_SINGLE_ACTIVE_FROM_TEAMMATES
+        List<CharacterView> listSingleActiveFromTeammates = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(team_idx)) {
+            if (character.isActive() && character.getIdxInTeam() != idx_in_team) {
+                listSingleActiveFromTeammates.add(character.getView());
+            }
+        }
+        targets.put(SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_TEAMMATES, listSingleActiveFromTeammates);
+
+
+        // TARGET_TYPE_ACTIVE_MY_TEAM
+        targets.put(SkillView.TARGET_TYPE_ACTIVE_MY_TEAM, new ArrayList<CharacterView>());
+
+        // TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM
+        List<CharacterView> listSingleActiveFromOppositeTeam = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(getOppositeTeamIdx(team_idx))) {
+            if (character.isActive()) {
+                listSingleActiveFromOppositeTeam.add(character.getView());
+            }
+        }
+        targets.put(SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM, listSingleActiveFromOppositeTeam);
+
+        // TARGET_TYPE_SINGLE_INACTIVE_FROM_OPPOSITE_TEAM
+        List<CharacterView> listSingleInactiveFromOppositeTeam = new ArrayList<>();
+        for (CharacterEntity character : teamsData.get(getOppositeTeamIdx(team_idx))) {
+            if (!character.isActive()) {
+                listSingleInactiveFromOppositeTeam.add(character.getView());
+            }
+        }
+        targets.put(SkillView.TARGET_TYPE_SINGLE_INACTIVE_FROM_OPPOSITE_TEAM, listSingleInactiveFromOppositeTeam);
+
+        // TARGET_TYPE_ACTIVE_OPPOSITE_TEAM
+        targets.put(SkillView.TARGET_TYPE_ACTIVE_MY_TEAM, new ArrayList<CharacterView>());
+
+        // TARGET_TYPE_ACTIVE_ALL
+        targets.put(SkillView.TARGET_TYPE_ACTIVE_MY_TEAM, new ArrayList<CharacterView>());
+
+        return targets;
+    }
+
+    List<SkillView> getPlayerPreActions(int team_idx, int idx_in_team)
+    {
+        List<SkillView> skill_views = new ArrayList<>();
+
+        if (teamsData.get(team_idx).get(idx_in_team).isPlayer()) {
+            PlayerEntity player_entity = (PlayerEntity) teamsData.get(team_idx).get(idx_in_team);
+            skill_views.add(new SkillView("Нет", -1, 0, 0, SkillView.TARGET_TYPE_SELF, player_entity.getName(), 0));
+            ArrayList<Map<String, String>> data_pre_actions_db = dbHelper.getActiveLearntSkills(player_entity.getUserId(), player_entity.getExerciseId(), 1);
+            for(Map<String, String> data : data_pre_actions_db) {
+                if (!player_entity.alreadyUsedActiveSkills.contains(Integer.parseInt(data.get("skill_group_id"))))
+                {
+                    skill_views.add(
+                            new SkillView(
+                                    data.get("skill_label"),
+                                    Integer.parseInt(data.get("skill_group_id")),
+                                    Integer.parseInt(data.get("skill_level")),
+                                    Integer.parseInt(data.get("duration")),
+                                    Integer.parseInt(data.get("target_type")),
+                                    player_entity.getName(),
+                                    Float.parseFloat(data.get("splash_multiplier"))
+                            )
+                    );
+                }
+            }
+        }
+
+        return skill_views;
+    }
+
+    List<SkillView> getPlayerActions(int team_idx, int idx_in_team)
+    {
+        List<SkillView> skill_views = new ArrayList<>();
+
+        if (teamsData.get(team_idx).get(idx_in_team).isPlayer()) {
+            PlayerEntity player_entity = (PlayerEntity) teamsData.get(team_idx).get(idx_in_team);
+            skill_views.add(new SkillView("Обычный ход", -1, 0, 0, SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM, player_entity.getName(), 0));
+            ArrayList<Map<String, String>> data_actions_db = dbHelper.getActiveLearntSkills(player_entity.getUserId(), player_entity.getExerciseId(), 2);
+            for(Map<String, String> data : data_actions_db) {
+                if (!player_entity.alreadyUsedActiveSkills.contains(Integer.parseInt(data.get("skill_group_id"))))
+                {
+                    skill_views.add(
+                            new SkillView(
+                                    data.get("skill_label"),
+                                    Integer.parseInt(data.get("skill_group_id")),
+                                    Integer.parseInt(data.get("skill_level")),
+                                    Integer.parseInt(data.get("duration")),
+                                    Integer.parseInt(data.get("target_type")),
+                                    player_entity.getName(),
+                                    Float.parseFloat(data.get("splash_multiplier"))
+                            )
+                    );
+                }
+            }
+        }
+
+        return skill_views;
+    }
+
+    private String getExerciseName()
+    {
+        return exerciseName;
+    }
+}

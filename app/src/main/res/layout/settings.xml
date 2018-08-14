@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <Button
+        android:id="@+id/btnImportDB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Загрузка данных" />
+
+    <Button
+        android:id="@+id/btnExportDB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранение данных" />
+
+    <Button
+        android:id="@+id/btnWipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50sp"
+        android:text="Сброс данных в исходное состояние" />
+
+    <Button
+        android:id="@+id/btnWipeSaveUserProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сброс с сохранением прогресса" />
+
+
+    <!--<Button-->
+        <!--android:id="@+id/btnAction1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="test inet-connection" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/txtString"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="response"-->
+        <!--android:textAlignment="center" />-->
+
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Трансляция соревнования" />
+
+    <Button
+        android:id="@+id/btnAddExercise"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добавить новый вид упражнения" />
+
+</LinearLayout>

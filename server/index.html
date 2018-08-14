@@ -1,0 +1,75 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Debugger</title>
+</head>
+<body>
+	<form method="post" action="api.php">
+	<p>
+	    <input type="hidden" name="request" value="CreateCompetition"/>
+	    token: 
+	    <input type="text" name="token" value="AB43EW1"/>
+	    exercise_name: 
+	    <input type="text" name="exercise_name" value="Подтягивание"/>
+	    player_name: 
+	    <input type="text" name="player_name" value="test1"/>
+	    competition_state: 
+	    <input type="text" name="competition_state" value="{state:1}"/>
+	    competition_state_hash: 
+	    <input type="text" name="competition_state_hash" value="asdqfsf"/>
+    </p>
+  	<p>
+  	<input type="submit" value="CreateCompetition">
+	</form>
+
+	<br />
+	<form method="post" action="api.php">
+	<p>
+	    <input type="hidden" name="request" value="UpdateCompetitionInfo"/>
+	    token: 
+	    <input type="text" name="token" value="AB43EW1"/>
+	    exercise_name: 
+	    <input type="text" name="exercise_name" value="Подтягивание"/>
+	    player_name: 
+	    <input type="text" name="player_name" value="test1"/>
+	    competition_state: 
+	    <input type="text" name="competition_state" value="{state:2}"/>
+	    invite_code: 
+	    <input type="text" name="invite_code" value="1598405653"/>
+    </p>
+  	<p>
+  	<input type="submit" value="UpdateCompetitionInfo">
+	</form>
+<!--
+	<br />
+	<form method="post" action="api.php">
+	<p>
+	    <input type="hidden" name="request" value="InviteCompetition"/>
+	    token: 
+	    <input type="text" name="token" value="AB43EW2"/>
+	    player_name: 
+	    <input type="text" name="player_name" value="test2"/>
+	    invite_code: 
+	    <input type="text" name="invite_code" value="AABBCC"/>
+    </p>
+  	<p>
+  	<input type="submit" value="InviteCompetition">
+	</form>
+	-->
+
+	<br />
+	<form method="post" action="api.php">
+	<p>
+	    <input type="hidden" name="request" value="GetCompetitionInfo"/>
+	    token: 
+	    <input type="text" name="token" value="AB43EW2"/>
+	    competition_state_hash: 
+	    <input type="text" name="competition_state_hash" value="1223421aeebdcd"/>
+		invite_code: 
+	    <input type="text" name="invite_code" value="1598405653"/>
+    </p>
+  	<p>
+  	<input type="submit" value="GetCompetitionInfo">
+	</form>
+</body>
+

@@ -1,0 +1,2040 @@
+package beamoflight.sportintheforest;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Created by beamoflight on 30.05.17.
+ */
+class DBHelper extends DBHelperBaseLayer {
+    private SQLiteDatabase db;
+    private GameHelper gameHelper;
+    private Context context;
+
+    public DBHelper(Context current) {
+        super (current);
+
+        db = getWritableDatabase();
+        gameHelper = new GameHelper(current);
+        context = current;
+    }
+
+    // ============== User
+    public long addUser(String user_name)
+    {
+        ContentValues values = new ContentValues();
+        values.put("name", user_name);
+        values.put("creation_date", gameHelper.getTodayString());
+        values.put("modification_date", gameHelper.getTodayString());
+
+        return db.insert("users", null, values);
+    }
+
+    public long updateUser(int user_id, String user_name)
+    {
+        ContentValues values = new ContentValues();
+        values.put("name", user_name);
+        values.put("modification_date", gameHelper.getTodayString());
+        return db.update("users", values, "user_id = ?", new String[]{Integer.toString(user_id)});
+    }
+
+    public boolean isUserNameExist(String user_name, int excluded_user_id)
+    {
+        String[] columns = new String[] { "user_id" };
+        Cursor c = db.query("users", columns, "name = ?", new String[]{user_name}, null, null, null);
+        boolean is_exist = false;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                is_exist = (c.getInt(c.getColumnIndex("user_id")) != excluded_user_id);
+            }
+            c.close();
+        }
+
+        return is_exist;
+    }
+
+    public ArrayList<Map<String, String>> getUsersData()
+    {
+        ArrayList<Map<String, String>> users_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        Cursor cursor = db.query(
+                "users",
+                new String[]{"user_id", "name", "creation_date", "modification_date"},
+                null,
+                null,
+                null,
+                null,
+                "name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<String, String>();
+                    m.put("user_id", cursor.getString(cursor.getColumnIndex("user_id")));
+                    m.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                    m.put("creation_date", cursor.getString(cursor.getColumnIndex("creation_date")));
+                    m.put("modification_date", cursor.getString(cursor.getColumnIndex("modification_date")));
+
+                    m.put("info",
+                            String.format(
+                                    Locale.ROOT,
+                                    "Создан: %s | Изменён: %s",
+                                    m.get("creation_date"),
+                                    m.get("modification_date")
+                            )
+                    );
+
+                    users_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_data;
+    }
+
+    public ArrayList<UserEntity> getUsersWithExercise(int exercise_id)
+    {
+        ArrayList<UserEntity> users_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "users AS u INNER JOIN user_exercises AS ue ON u.user_id = ue.user_id AND ue.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"u.user_id", "u.name", "u.creation_date", "u.modification_date"},
+                null,
+                null,
+                null,
+                null,
+                "u.name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    UserEntity user_entity = new UserEntity();
+                    user_entity.id = cursor.getInt(cursor.getColumnIndex("user_id"));
+                    user_entity.name = cursor.getString(cursor.getColumnIndex("name"));
+                    user_entity.creationDate = cursor.getString(cursor.getColumnIndex("creation_date"));
+                    user_entity.modificationDate = cursor.getString(cursor.getColumnIndex("modification_date"));
+                    user_entity.info = String.format(
+                            Locale.ROOT,
+                            "Создан: %s | Изменён: %s",
+                            user_entity.creationDate,
+                            user_entity.modificationDate
+                    );
+                    users_entities.add(user_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_entities;
+    }
+
+    public ArrayList<UserEntity> getUsers()
+    {
+        ArrayList<UserEntity> users_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "users",
+                new String[]{"user_id", "name", "creation_date", "modification_date"},
+                null,
+                null,
+                null,
+                null,
+                "name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    UserEntity user_entity = new UserEntity();
+                    user_entity.id = cursor.getInt(cursor.getColumnIndex("user_id"));
+                    user_entity.name = cursor.getString(cursor.getColumnIndex("name"));
+                    user_entity.creationDate = cursor.getString(cursor.getColumnIndex("creation_date"));
+                    user_entity.modificationDate = cursor.getString(cursor.getColumnIndex("modification_date"));
+                    user_entity.info = String.format(
+                            Locale.ROOT,
+                            "Создан: %s | Изменён: %s",
+                            user_entity.creationDate,
+                            user_entity.modificationDate
+                    );
+                     users_entities.add(user_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_entities;
+    }
+
+    public boolean checkExerciseExist(String exercise_name) {
+        boolean status = false;
+        Cursor cursor = db.query(
+                "exercises",
+                new String[]{"exercise_id", "name"},
+                "name = ?",
+                new String[]{exercise_name},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    status = true;
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return status;
+    }
+
+    public List<ExerciseEntity> getExercises(int user_id) {
+        List<ExerciseEntity> exercises = new ArrayList<>();
+        Map<String, String> m;
+
+        Cursor cursor = db.query(
+                "exercises",
+                new String[]{"exercise_id", "name"},
+                "exercise_id NOT IN (SELECT exercise_id FROM user_exercises WHERE user_id = ?)",
+                new String[]{Integer.toString(user_id)},
+                "exercise_id",
+                null,
+                "name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    ExerciseEntity exercise= new ExerciseEntity(
+                            cursor.getInt(cursor.getColumnIndex("exercise_id")),
+                            cursor.getString(cursor.getColumnIndex("name"))
+                    );
+                    exercises.add(exercise);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return exercises;
+    }
+
+    public ArrayList<Map<String, String>> getExercisesData()
+    {
+        ArrayList<Map<String, String>> users_data = new ArrayList<>();
+        Map<String, String> m;
+        int user_id = gameHelper.getUserId();
+        Cursor cursor = db.query(
+                "exercises AS e INNER JOIN user_exercises AS ue ON e.exercise_id = ue.exercise_id AND ue.user_id = " + Integer.toString(user_id),
+                new String[]{"e.exercise_id", "e.name"},
+                null,
+                null,
+                "e.exercise_id",
+                null,
+                "e.name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("exercise_id", cursor.getString(cursor.getColumnIndex("exercise_id")));
+                    m.put("name",
+                            String.format(
+                                Locale.ROOT,
+                                "[ %s ]",
+                                cursor.getString(cursor.getColumnIndex("name"))
+                            )
+                    );
+
+                    int exercise_id = Integer.parseInt(m.get("exercise_id"));
+                    int user_level = (int) getFloatPlayerLevel(getUserExerciseExp(user_id, exercise_id));
+                    int user_fp = getUserFitnessPoints(user_id, exercise_id);
+                    int user_resistance = getUserResistance(user_id, exercise_id);
+                    float user_multiplier = getUserMultiplier(user_id, exercise_id);
+                    float user_bonus_multiplier = getUserBonusMultiplier(user_id, exercise_id);
+                    float user_bonus_chance = getUserBonusChance(user_id, exercise_id);
+                    int finished_quest_count = getUserExerciseFinishedQuestsCount(user_id, exercise_id);
+                    m.put("info",
+                            String.format(
+                                    Locale.ROOT,
+                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.2f | Выполнено заданий: %d",
+                                    //"Уровень %d  ФО: %d | Сопротивление: %d  Множитель: %.2f  Множитель бонуса: %.2f  Шанс бонуса: %.2f  Выполнено заданий: %d",
+                                    user_level,
+                                    user_fp,
+                                    user_resistance,
+                                    user_multiplier,
+                                    user_bonus_multiplier,
+                                    user_bonus_chance,
+                                    finished_quest_count
+                            )
+                    );
+
+                    users_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_data;
+    }
+
+    public void createExercise(String exercise_name)
+    {
+        ContentValues values = new ContentValues();
+        values.put("name", exercise_name);
+
+        db.insert("exercises", null, values);
+    }
+
+    public String getExerciseName(int exercise_id)
+    {
+        String exercise_name = null;
+        Cursor cursor = db.query(
+                "exercises",
+                new String[]{"name"},
+                "exercise_id = ?",
+                new String[]{Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    exercise_name = cursor.getString(cursor.getColumnIndex("name"));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return exercise_name;
+    }
+
+    // ===============UserExercise
+    public void createUserExercise(int user_id, int exercise_id)
+    {
+        ContentValues values = new ContentValues();
+        values.put("user_id", user_id);
+        values.put("exercise_id", exercise_id);
+        values.put("specialisation", 0);
+        values.put("competitions", 0);
+        values.put("wins", 0);
+        values.put("draws", 0);
+
+        db.insert("user_exercises", null, values);
+    }
+
+    public Map<String, String> getCurrentUserExerciseData()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        return getUserExerciseData(user_id, exercise_id);
+    }
+
+    public Map<String, String> getUserExerciseData(int user_id, int exercise_id)
+    {
+        Map<String, String> user_exercise_data = null;
+        Cursor cursor = db.query(
+                "user_exercises",
+                new String[]{"wins", "competitions", "draws", "specialisation"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    user_exercise_data = new HashMap<String, String>();
+                    user_exercise_data.put("wins", cursor.getString(cursor.getColumnIndex("wins")));
+                    user_exercise_data.put("competitions", cursor.getString(cursor.getColumnIndex("competitions")));
+                    user_exercise_data.put("draws", cursor.getString(cursor.getColumnIndex("draws")));
+                    user_exercise_data.put("specialisation", cursor.getString(cursor.getColumnIndex("specialisation")));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return user_exercise_data;
+    }
+
+    public Map<String, String> getAchievementsResultData()
+    {
+        Map<String, String> user_exercise_data = getCurrentUserExerciseData();
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("quests_count", Integer.toString(getCurrentUserExerciseFinishedQuestsCount()));
+        m.put("total_result", Integer.toString(getCurrentUserTrainingSumResult()));
+        m.put("total_number_of_moves", Integer.toString(getCurrentUserExerciseTrainingTotalNumberOfMoves()));
+        m.put("max_competition_result", Integer.toString(getUserExerciseTrainingMaxCompetitionResult()));
+        m.put("competitions", user_exercise_data.get("competitions"));
+        m.put("wins", user_exercise_data.get("wins"));
+        m.put("training_days", Integer.toString(getCurrentUserTrainingDaysCount()));
+
+        return m;
+    }
+
+    public ArrayList<Map<String, String>> getAchievementsData()
+    {
+        Map<String, String> achievements_data = getAchievementsResultData();
+        ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        int success_achievements_cnt = 0;
+        Cursor cursor = db.query(
+                "achievements",
+                new String[]{"achievement_id", "required_parameter_name", "required_parameter_values", "skill_points_values", "name"},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("achievement_id", cursor.getString(cursor.getColumnIndex("achievement_id")));
+                    m.put("required_parameter_name", cursor.getString(cursor.getColumnIndex("required_parameter_name")));
+                    m.put("required_parameter_values", cursor.getString(cursor.getColumnIndex("required_parameter_values")));
+                    m.put("skill_points_values", cursor.getString(cursor.getColumnIndex("skill_points_values")));
+                    m.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                    int received_skill_points = 0;
+                    int current_count = Integer.parseInt(achievements_data.get(m.get("required_parameter_name")));
+
+                    String[] expected_string_counts = m.get("required_parameter_values").split(";");
+                    String[] skill_points_values = m.get("skill_points_values").split(";");
+
+                    if (skill_points_values.length != expected_string_counts.length) {
+                        Toast.makeText(
+                                context,
+                                String.format(
+                                        Locale.ROOT,
+                                        "Achievement data error for record \"%s\": %d != %d",
+                                        m.get("name"),
+                                        skill_points_values.length,
+                                        expected_string_counts.length
+                                ),
+                                Toast.LENGTH_LONG
+                        ).show();
+                        return data;
+                    }
+
+                    int achievement_level = 1;
+                    int idx = 0;
+
+                    boolean hasInfo = false;
+                    for (String expected_string_count : expected_string_counts) {
+                        int expected_count = Integer.parseInt(expected_string_count);
+                        if (idx < expected_string_counts.length - 1) {
+                            int skill_points = Integer.parseInt(skill_points_values[idx]);
+                            if (current_count >= expected_count) {
+                                received_skill_points += skill_points;
+                                achievement_level++;
+                                success_achievements_cnt++;
+                            } else if (!hasInfo) {
+                                m.put("info", String.format(
+                                        Locale.ROOT,
+                                        "[ %s / %s ] Награда в очках навыков: %d",
+                                        current_count,
+                                        expected_count,
+                                        skill_points
+                                ));
+                                hasInfo = true;
+                            }
+                        } else {
+                            if (current_count >= expected_count) {
+                                achievement_level = expected_string_counts.length;
+                                success_achievements_cnt++;
+                                m.put("info", "[ Достигнуто ]");
+                            } else if (!hasInfo) {
+                                m.put("info", String.format(
+                                        Locale.ROOT,
+                                        "%s / %s",
+                                        current_count,
+                                        expected_count
+                                ));
+                            }
+                        }
+
+                        idx++;
+                    }
+
+                    m.put("success_achievements_cnt", Integer.toString(success_achievements_cnt));
+                    m.put("success_progress", Integer.toString(achievement_level));
+                    m.put("skill_points", Integer.toString(received_skill_points));
+                    m.put("header", String.format(
+                            Locale.ROOT,
+                            "%s Ур. %d",
+                            m.get("name"),
+                            achievement_level
+                    ));
+
+                    data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    public void addCompetition2UserExerciseStat(int user_id, int exercise_id)
+    {
+        db.execSQL("UPDATE user_exercises SET competitions = competitions + 1 WHERE user_id = " + Integer.toString(user_id) + " AND exercise_id = " + Integer.toString(exercise_id));
+    }
+
+    public void addWin2UserExerciseStat(int user_id, int exercise_id)
+    {
+        db.execSQL("UPDATE user_exercises SET wins = wins + 1 WHERE user_id = " + Integer.toString(user_id) + " AND exercise_id = " + Integer.toString(exercise_id));
+    }
+
+    public void addDraw2UserExerciseStat(int user_id, int exercise_id)
+    {
+        db.execSQL("UPDATE user_exercises SET draws = draws + 1 WHERE user_id = " + Integer.toString(user_id) + " AND exercise_id = " + Integer.toString(exercise_id));
+    }
+
+    public void setSpecialisation2UserExercise(int user_id, int exercise_id, int specialisation)
+    {
+        db.execSQL("UPDATE user_exercises SET specialisation = " +  Integer.toString(specialisation) + " WHERE user_id = " + Integer.toString(user_id) + " AND exercise_id = " + Integer.toString(exercise_id));
+    }
+
+    // ============== Location
+
+    public String getLocationName(int location_id)
+    {
+        String location_name = null;
+        Cursor cursor = db.query("locations", new String[]{"name"}, "location_id = ?", new String[]{Integer.toString(location_id)}, null, null, null );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                location_name = cursor.getString(cursor.getColumnIndex("name"));
+            }
+            cursor.close();
+        }
+
+        return location_name;
+    }
+
+    public ArrayList<Map<String, String>> getLocationsData()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        ArrayList<Map<String, String>> locations_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        /*
+        Cursor cursor = db.query(
+                "locations AS l INNER JOIN user_exercise_locations AS uel ON l.location_id = uel.location_id LEFT JOIN NPCs AS n ON l.location_id = n.location_id",
+                new String[]{"l.location_id", "l.name AS location_name", "count(n.npc_id) AS npcs_count"},
+                "uel.user_id = ? AND uel.exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "l.location_id",
+                null,
+                "l.location_id ASC"
+        );*/
+
+        Cursor cursor = db.query(
+                "locations AS l INNER JOIN user_exercise_locations AS uel ON l.location_id = uel.location_id LEFT JOIN user_exercise_quests AS ueq ON l.location_id = ueq.npc_location_id AND uel.user_id = ueq.user_id AND uel.exercise_id = ueq.exercise_id",
+                new String[]{"l.location_id", "l.name AS location_name", "count(ueq.npc_location_id) AS finished_quests_count"},
+                "uel.user_id = ? AND uel.exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "l.location_id",
+                null,
+                "l.location_id ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<String, String>();
+                    m.put("location_id", cursor.getString(cursor.getColumnIndex("location_id")));
+                    m.put("location_name", cursor.getString(cursor.getColumnIndex("location_name")));
+                    String finished_quest_count = cursor.getString(cursor.getColumnIndex("finished_quests_count"));
+                    if (finished_quest_count.equals("5")) {
+                        m.put("quests_info", "Выполнены все задания");
+                    } else {
+                        m.put("quests_info", String.format(Locale.ROOT, "Выполнено заданий: %s / 5", finished_quest_count));
+                    }
+
+
+                    locations_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return locations_data;
+    }
+
+    public Map<String, String> getLocationDataById(int location_id)
+    {
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("location_id", Integer.toString(location_id));
+        data.put("location_name", null);
+        Cursor cursor = db.query("locations", new String[]{"name"}, "location_id = ?", new String[]{Integer.toString(location_id)}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                data.put("location_name", cursor.getString(cursor.getColumnIndex("name")));
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    public int removeAllLocations()
+    {
+        return db.delete("locations", null, null);
+    }
+
+    // ===================  non_player_characters
+    public NonPlayerCharacterEntity getNonPlayerCharacterById4CurrentUser(int npc_id)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getNonPlayerCharacterById(npc_id, user_id, exercise_id);
+    }
+
+    public NonPlayerCharacterEntity getNonPlayerCharacterById(int npc_id, int user_id, int exercise_id)
+    {
+        NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
+        npc_entity.npcId = npc_id;
+
+        Cursor cursor = db.query(
+                "non_player_characters AS n LEFT JOIN user_exercise_trainings AS t ON n.location_id = t.npc_location_id AND n.position = t.npc_position AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"n.location_id", "n.level", "n.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "n.quest_cnt", "n.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.team", "n.resistance", "count(t.training_id) AS wins"},
+                "n.npc_id = ?",
+                new String[]{Integer.toString(npc_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int fitness_points = cursor.getInt(cursor.getColumnIndex("fp"));
+                npc_entity.setName(cursor.getString(cursor.getColumnIndex("name")))
+                        .setInitialFitnessPoints(fitness_points)
+                        .setCurrentFitnessPoints(fitness_points)
+                        .setMultiplier(cursor.getFloat(cursor.getColumnIndex("multiplier")))
+                        .setResistance(cursor.getInt(cursor.getColumnIndex("resistance")))
+                        .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
+                        .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")));
+                npc_entity.setExp(cursor.getInt(cursor.getColumnIndex("exp")))
+                        .setMaxResult(cursor.getInt(cursor.getColumnIndex("max_res")))
+                        .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
+                        .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
+                        .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
+                        .setType(cursor.getString(cursor.getColumnIndex("type")))
+                        .setTeam(cursor.getString(cursor.getColumnIndex("team")))
+                        .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
+                        .setCurrentWins(cursor.getInt(cursor.getColumnIndex("wins")))
+                        .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")));
+            }
+            cursor.close();
+        }
+
+        return npc_entity;
+    }
+
+    public String getUserNameById(int user_id)
+    {
+        String userName = "";
+        String[] columns = new String[] { "name"};
+        Cursor cursor = db.query("users", columns, "user_id = ?", new String[]{Integer.toString(user_id)}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                userName = cursor.getString(cursor.getColumnIndex("name"));
+            }
+            cursor.close();
+        }
+
+        return userName;
+    }
+    //========= Skills
+    public ArrayList<Map<String, String>> getSkillGroupsData(int user_id, int exercise_id)
+    {
+        ArrayList<Map<String, String>> skills_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id",
+                new String[]{"s.skill_group_id", "MAX(s.skill_level) max_skill_level", "sg.name AS skill_group_name"},
+                "ues.user_id IS NULL AND ues.exercise_id IS NULL OR ues.user_id = ? AND ues.exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "s.skill_group_id",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<String, String>();
+                    m.put("skill_group_id", cursor.getString(cursor.getColumnIndex("skill_group_id")));
+                    m.put("skill_group_name", cursor.getString(cursor.getColumnIndex("skill_group_name")));
+                    m.put("max_skill_level", cursor.getString(cursor.getColumnIndex("max_skill_level")));
+//                    m.put("info", String.format(
+//                            Locale.ROOT,
+//                            "Требуемый уровень: %s | Очки навыков: %s",
+//                            m.get("required_level"),
+//                            m.get("skill_points")
+//                    ));
+                    m.put("info", String.format(
+                            Locale.ROOT,
+                            "Текущий уровень: %s",
+                            m.get("max_skill_level") != null ? m.get("max_skill_level") : "0"
+                    ));
+
+                    skills_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return skills_data;
+    }
+
+    //========= Skills
+    public String getSkillGroupName(int skill_group_id)
+    {
+        String skill_group_name = "";
+        Cursor cursor = db.query(
+                "skill_groups",
+                new String[]{"name"},
+                "skill_group_id = ?",
+                new String[]{Integer.toString(skill_group_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                skill_group_name = cursor.getString(cursor.getColumnIndex("name"));
+            }
+            cursor.close();
+        }
+
+        return skill_group_name;
+    }
+
+    public ArrayList<Map<String, String>> getUnexploredSkillsData()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        int user_level = gameHelper.getCachedUserLevel();
+
+        ArrayList<Map<String, String>> skills_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id AND ues.user_id = " + Integer.toString(user_id) + " AND ues.exercise_id = " + Integer.toString(exercise_id) + " LEFT JOIN user_exercises AS ue ON ue.user_id = " + Integer.toString(user_id) + " AND ue.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"s.skill_id", "s.specialisation", "s.skill_group_id", "MIN(s.skill_level) min_skill_level", "sg.name AS skill_group_name", "s.required_level", "s.skill_points", "s.info AS skill_info"},
+                "ues.skill_id IS NULL AND s.required_level <= ? AND (s.specialisation = 0 OR s.specialisation = ue.specialisation)",
+                new String[]{Integer.toString(user_level)},
+                "s.skill_group_id",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("skill_group_id", cursor.getString(cursor.getColumnIndex("skill_group_id")));
+                    m.put("skill_group_name", cursor.getString(cursor.getColumnIndex("skill_group_name")));
+                    m.put("skill_level", cursor.getString(cursor.getColumnIndex("min_skill_level")));
+                    m.put("skill_id", cursor.getString(cursor.getColumnIndex("skill_id")));
+                    m.put("specialisation", cursor.getString(cursor.getColumnIndex("specialisation")));
+                    m.put("required_level", cursor.getString(cursor.getColumnIndex("required_level")));
+                    m.put("skill_points", cursor.getString(cursor.getColumnIndex("skill_points")));
+                    m.put("skill_info", cursor.getString(cursor.getColumnIndex("skill_info")));
+                    m.put("full_info", String.format(
+                            Locale.ROOT,
+                            "[%s] Ур. %s: %s. Треб. ур.: %s",
+                            m.get("skill_points"),
+                            m.get("skill_level"),
+                            m.get("skill_info"),
+                            m.get("required_level")
+                    ));
+                    //Log.d("myLogs", m.toString());
+                    skills_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return skills_data;
+    }
+
+    public int[] getNPClevelsForLocation(int location_id)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        int[] data = {1, 1, 1, 1, 1};
+        Cursor cursor = db.query(
+                "user_exercise_locations AS uel",
+                new String[]{"uel.npc_1_level", "uel.npc_2_level", "uel.npc_3_level", "uel.npc_4_level", "uel.npc_5_level"},
+                "uel.location_id = ? AND uel.user_id = ? AND uel.exercise_id = ?",
+                new String[]{Integer.toString(location_id), Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    data[0] = cursor.getInt(cursor.getColumnIndex("npc_1_level"));
+                    data[1] = cursor.getInt(cursor.getColumnIndex("npc_2_level"));
+                    data[2] = cursor.getInt(cursor.getColumnIndex("npc_3_level"));
+                    data[3] = cursor.getInt(cursor.getColumnIndex("npc_4_level"));
+                    data[4] = cursor.getInt(cursor.getColumnIndex("npc_5_level"));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    public boolean openLocationForCurrentUserExercise(int location_id)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return openLocationForUserExercise(user_id, exercise_id, location_id);
+    }
+
+    public boolean openLocationForUserExercise(int user_id, int exercise_id, int location_id)
+    {
+        Map<String, String> data = getLocationDataById(location_id);
+        if (data.isEmpty()) {
+            return false;
+        }
+
+        boolean has_record = false;
+        Cursor cursor = db.query(
+                "user_exercise_locations AS uel",
+                new String[]{"uel.location_id"},
+                "uel.location_id = ? AND uel.user_id = ? AND uel.exercise_id = ?",
+                new String[]{Integer.toString(location_id), Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.d("myLogs", cursor.getString(cursor.getColumnIndex("location_id")));
+                    has_record = true;
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        if (!has_record) {
+            db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id, npc_1_level, npc_2_level, npc_3_level, npc_4_level, npc_5_level) VALUES ("
+                    + Integer.toString(location_id) + ", " + Integer.toString(user_id) + ", " + Integer.toString(exercise_id) + ", 1, 1, 1, 1, 1);");
+            return true;
+        }
+
+        return false;
+    }
+
+    public void levelUpForNPC(int user_id, int exercise_id, int location_id, int position)
+    {
+        String field = "npc_" + Integer.toString(position) + "_level";
+        db.execSQL("UPDATE user_exercise_locations SET " + field + " = " + field + " + 1 WHERE user_id = " +  Integer.toString(user_id) + " AND exercise_id = " +  Integer.toString(exercise_id) + " AND location_id = " +  Integer.toString(location_id));
+    }
+
+    public void learnSkillFromSkillGroup(int skill_id)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        boolean has_record = false;
+        Cursor cursor = db.query(
+                "user_exercise_skills AS ues",
+                new String[]{"ues.user_id"},
+                "ues.skill_id = ? AND ues.user_id = ? AND ues.exercise_id = ?",
+                new String[]{Integer.toString(skill_id), Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.d("myLogs", cursor.getString(cursor.getColumnIndex("user_id")));
+                    has_record = true;
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        if (!has_record) {
+            db.execSQL("INSERT INTO user_exercise_skills (skill_id, user_id, exercise_id) VALUES ("
+                    + Integer.toString(skill_id) + ", " + Integer.toString(user_id) + ", " + Integer.toString(exercise_id) + ");");
+        }
+/*
+        Cursor cursor1 = db.query(
+                "user_exercise_skills AS ues",
+                new String[]{"ues.user_id"},
+                "ues.skill_id = ? AND ues.user_id = ? AND ues.exercise_id = ?",
+                new String[]{Integer.toString(skill_id), Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor1 != null) {
+            if (cursor1.moveToFirst()) {
+                do {
+                    Log.d("myLogs", cursor1.getString(cursor1.getColumnIndex("user_id")));
+                } while (cursor1.moveToNext());
+            }
+            cursor1.close();
+        }
+*/
+    }
+
+    public int getSpentSkillPoints()
+    {
+        int spent_skill_points = 0;
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id LEFT JOIN user_exercises AS ue ON ues.user_id = ue.user_id AND ues.exercise_id = ue.exercise_id",
+                new String[]{"SUM(s.skill_points) AS spent_skill_points"},
+                "ues.user_id = ? AND ues.exercise_id = ? AND (s.specialisation = 0 OR s.specialisation = ue.specialisation)",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    spent_skill_points = cursor.getInt(cursor.getColumnIndex("spent_skill_points"));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return spent_skill_points;
+    }
+
+    public Map<String, String> getExtraParametersFromLearntSkills(int user_id, int exercise_id, int type)
+    {
+        Map<String, String> result_data = new HashMap<String, String>();
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id LEFT JOIN user_exercises AS ue ON ues.user_id = ue.user_id AND ues.exercise_id = ue.exercise_id LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id",
+                new String[]{
+                        "SUM(s.extra_fitness_points) AS sum_extra_fitness_points",
+                        "SUM(s.extra_resistance) AS sum_extra_resistance",
+                        "SUM(s.extra_multiplier) AS sum_extra_multiplier",
+                        "SUM(s.extra_bonus_chance) AS sum_extra_bonus_chance",
+                        "SUM(s.extra_bonus_multiplier) AS sum_extra_bonus_multiplier",
+
+                        "SUM(s.extra_fitness_points_ratio1) AS sum_extra_fitness_points_ratio1",
+                        "SUM(s.extra_resistance_ratio1) AS sum_extra_resistance_ratio1",
+                        "SUM(s.extra_multiplier_ratio1) AS sum_extra_multiplier_ratio1",
+                        "SUM(s.extra_bonus_chance_ratio1) AS sum_extra_bonus_chance_ratio1",
+                        "SUM(s.extra_bonus_multiplier_ratio1) AS sum_extra_bonus_multiplier_ratio1",
+
+                        "SUM(s.extra_regeneration_base) AS sum_extra_regeneration_base"
+                },
+                "ues.user_id = ? AND ues.exercise_id = ? AND sg.type = ? AND (s.specialisation = 0 OR s.specialisation = ue.specialisation)",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(type)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    result_data.put("extra_fitness_points", cursor.getString(cursor.getColumnIndex("sum_extra_fitness_points")));
+                    result_data.put("extra_resistance", cursor.getString(cursor.getColumnIndex("sum_extra_resistance")));
+                    result_data.put("extra_multiplier", cursor.getString(cursor.getColumnIndex("sum_extra_multiplier")));
+                    result_data.put("extra_bonus_chance", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_chance")));
+                    result_data.put("extra_bonus_multiplier", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_multiplier")));
+
+                    result_data.put("extra_fitness_points_ratio1", cursor.getString(cursor.getColumnIndex("sum_extra_fitness_points_ratio1")));
+                    result_data.put("extra_resistance_ratio1", cursor.getString(cursor.getColumnIndex("sum_extra_resistance_ratio1")));
+                    result_data.put("extra_multiplier_ratio1", cursor.getString(cursor.getColumnIndex("sum_extra_multiplier_ratio1")));
+                    result_data.put("extra_bonus_chance_ratio1", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_chance_ratio1")));
+                    result_data.put("extra_bonus_multiplier_ratio1", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_multiplier_ratio1")));
+
+                    result_data.put("extra_regeneration_base", cursor.getString(cursor.getColumnIndex("sum_extra_regeneration_base")));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        result_data.put("extra_fitness_points", setDefaultValueIfNull(result_data.get("extra_fitness_points"), "0"));
+        result_data.put("extra_resistance", setDefaultValueIfNull(result_data.get("extra_resistance"), "0"));
+        result_data.put("extra_multiplier", setDefaultValueIfNull(result_data.get("extra_multiplier"), "0.00"));
+        result_data.put("extra_bonus_chance", setDefaultValueIfNull(result_data.get("extra_bonus_chance"), "0.00"));
+        result_data.put("extra_bonus_multiplier", setDefaultValueIfNull(result_data.get("extra_bonus_multiplier"), "0.00"));
+
+        result_data.put("extra_fitness_points_ratio1", setDefaultValueIfNull(result_data.get("extra_fitness_points_ratio1"), "0.00"));
+        result_data.put("extra_resistance_ratio1", setDefaultValueIfNull(result_data.get("extra_resistance_ratio1"), "0.00"));
+        result_data.put("extra_multiplier_ratio1", setDefaultValueIfNull(result_data.get("extra_multiplier_ratio1"), "0.00"));
+        result_data.put("extra_bonus_chance_ratio1", setDefaultValueIfNull(result_data.get("extra_bonus_chance_ratio1"), "0.00"));
+        result_data.put("extra_bonus_multiplier_ratio1", setDefaultValueIfNull(result_data.get("extra_bonus_multiplier_ratio1"), "0.00"));
+
+        result_data.put("extra_regeneration_base", setDefaultValueIfNull(result_data.get("extra_regeneration_base"), "0"));
+
+        return result_data;
+    }
+
+    private String setDefaultValueIfNull(String value, String default_value)
+    {
+        String result_value = value;
+        if (value == null) {
+            result_value = default_value;
+        }
+        return result_value;
+    }
+
+    public Map<String, String> getExtraParametersFromActiveSkill(int skill_group_id, int skill_level)
+    {
+        Map<String, String> result_data = new HashMap<String, String>();
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id",
+                new String[]{
+                        "SUM(s.extra_fitness_points) AS sum_extra_fitness_points",
+                        "SUM(s.extra_resistance) AS sum_extra_resistance",
+                        "SUM(s.extra_multiplier) AS sum_extra_multiplier",
+                        "SUM(s.extra_bonus_chance) AS sum_extra_bonus_chance",
+                        "SUM(s.extra_bonus_multiplier) AS sum_extra_bonus_multiplier",
+
+                        "SUM(s.extra_fitness_points_ratio2) AS sum_extra_fitness_points_ratio2",
+                        "SUM(s.extra_resistance_ratio2) AS sum_extra_resistance_ratio2",
+                        "SUM(s.extra_multiplier_ratio2) AS sum_extra_multiplier_ratio2",
+                        "SUM(s.extra_bonus_chance_ratio2) AS sum_extra_bonus_chance_ratio2",
+                        "SUM(s.extra_bonus_multiplier_ratio2) AS sum_extra_bonus_multiplier_ratio2",
+
+                        "SUM(s.extra_regeneration_base) AS sum_extra_regeneration_base",
+                        "SUM(s.extra_regeneration_ratio) AS sum_extra_regeneration_ratio"
+                },
+                "(sg.type = 1 OR sg.type = 2) AND s.skill_group_id = ? AND s.skill_level <= ?",
+                new String[]{Integer.toString(skill_group_id), Integer.toString(skill_level)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    result_data.put("extra_fitness_points", cursor.getString(cursor.getColumnIndex("sum_extra_fitness_points")));
+                    result_data.put("extra_resistance", cursor.getString(cursor.getColumnIndex("sum_extra_resistance")));
+                    result_data.put("extra_multiplier", cursor.getString(cursor.getColumnIndex("sum_extra_multiplier")));
+                    result_data.put("extra_bonus_chance", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_chance")));
+                    result_data.put("extra_bonus_multiplier", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_multiplier")));
+
+                    result_data.put("extra_fitness_points_ratio2", cursor.getString(cursor.getColumnIndex("sum_extra_fitness_points_ratio2")));
+                    result_data.put("extra_resistance_ratio2", cursor.getString(cursor.getColumnIndex("sum_extra_resistance_ratio2")));
+                    result_data.put("extra_multiplier_ratio2", cursor.getString(cursor.getColumnIndex("sum_extra_multiplier_ratio2")));
+                    result_data.put("extra_bonus_chance_ratio2", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_chance_ratio2")));
+                    result_data.put("extra_bonus_multiplier_ratio2", cursor.getString(cursor.getColumnIndex("sum_extra_bonus_multiplier_ratio2")));
+
+                    result_data.put("extra_regeneration_base", cursor.getString(cursor.getColumnIndex("sum_extra_regeneration_base")));
+                    result_data.put("extra_regeneration_ratio", cursor.getString(cursor.getColumnIndex("sum_extra_regeneration_ratio")));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        result_data.put("extra_fitness_points", setDefaultValueIfNull(result_data.get("extra_fitness_points"), "0"));
+        result_data.put("extra_resistance", setDefaultValueIfNull(result_data.get("extra_resistance"), "0"));
+        result_data.put("extra_multiplier", setDefaultValueIfNull(result_data.get("extra_multiplier"), "0.00"));
+        result_data.put("extra_bonus_chance", setDefaultValueIfNull(result_data.get("extra_bonus_chance"), "0.00"));
+        result_data.put("extra_bonus_multiplier", setDefaultValueIfNull(result_data.get("extra_bonus_multiplier"), "0.00"));
+
+        result_data.put("extra_fitness_points_ratio2", setDefaultValueIfNull(result_data.get("extra_fitness_points_ratio2"), "0.00"));
+        result_data.put("extra_resistance_ratio2", setDefaultValueIfNull(result_data.get("extra_resistance_ratio2"), "0.00"));
+        result_data.put("extra_multiplier_ratio2", setDefaultValueIfNull(result_data.get("extra_multiplier_ratio2"), "0.00"));
+        result_data.put("extra_bonus_chance_ratio2", setDefaultValueIfNull(result_data.get("extra_bonus_chance_ratio2"), "0.00"));
+        result_data.put("extra_bonus_multiplier_ratio2", setDefaultValueIfNull(result_data.get("extra_bonus_multiplier_ratio2"), "0.00"));
+
+        result_data.put("extra_regeneration_base", setDefaultValueIfNull(result_data.get("extra_regeneration_base"), "0"));
+        result_data.put("extra_regeneration_ratio", setDefaultValueIfNull(result_data.get("extra_regeneration_ratio"), "0.00"));
+
+        return result_data;
+    }
+
+    public ArrayList<Map<String, String>> getCurrentActiveLearntSkills(int type)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        return getActiveLearntSkills(user_id, exercise_id, type);
+    }
+
+    public ArrayList<Map<String, String>> getActiveLearntSkills(int user_id, int exercise_id, int type)
+    {
+        ArrayList<Map<String, String>> result_data = new ArrayList<Map<String, String>>();
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id LEFT JOIN user_exercises AS ue ON ues.user_id = ue.user_id AND ues.exercise_id = ue.exercise_id LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id",
+                new String[]{"sg.name AS group_name", "sg.skill_group_id", "s.label", "s.duration", "sg.target_type", "s.splash_multiplier", "MAX(s.skill_level) AS skill_level"},
+                "ues.user_id = ? AND ues.exercise_id = ? AND sg.type = ? AND (s.specialisation = 0 OR s.specialisation = ue.specialisation)",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(type)},
+                "sg.skill_group_id",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Map<String, String> m = new HashMap<String, String>();
+                    m.put("skill_label", cursor.getString(cursor.getColumnIndex("label")));
+                    m.put("skill_group_name", cursor.getString(cursor.getColumnIndex("group_name")));
+                    m.put("skill_group_id", cursor.getString(cursor.getColumnIndex("skill_group_id")));
+                    m.put("skill_level", cursor.getString(cursor.getColumnIndex("skill_level")));
+                    m.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+                    m.put("target_type", cursor.getString(cursor.getColumnIndex("target_type")));
+                    m.put("splash_multiplier", cursor.getString(cursor.getColumnIndex("splash_multiplier")));
+                    result_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return result_data;
+    }
+
+    public int getUserLevel(int user_id, int exercise_id)
+    {
+        long total_exp = getUserExerciseExp(user_id, exercise_id);
+        float user_level = getFloatPlayerLevel(total_exp);
+
+        return (int) user_level;
+    }
+
+    public int getUserFitnessPoints(int user_id, int exercise_id)
+    {
+        int user_level = getUserLevel(user_id, exercise_id);
+        int base   = Integer.parseInt(getLevelData(user_level).get("base_fp"));
+        int extra1 = Integer.parseInt(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_fitness_points"));
+        int extra2 = (int) Math.sqrt(getTrainingSumResult(user_id, exercise_id));
+        float ratio1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_fitness_points_ratio1"));
+
+        return (int)((base + extra1 + extra2) * (1 + ratio1));
+    }
+
+    public int getCurrentUserFitnessPoints()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserFitnessPoints(user_id, exercise_id);
+    }
+
+    public float getUserMultiplier(int user_id, int exercise_id)
+    {
+        int user_level = getUserLevel(user_id, exercise_id);
+        float base   = Float.parseFloat(getLevelData(user_level).get("base_multiplier"));
+        float extra1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_multiplier"));
+        float extra2 = 0;
+        float ratio1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_multiplier_ratio1"));
+
+        return (base + extra1 + extra2) * (1 + ratio1);
+    }
+
+    public float getCurrentUserMultiplier()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserMultiplier(user_id, exercise_id);
+    }
+
+    public float getUserBonusChance(int user_id, int exercise_id)
+    {
+        int user_level = getUserLevel(user_id, exercise_id);
+        float base = Float.parseFloat(getLevelData(user_level).get("base_bonus_chance"));
+        float extra1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_bonus_chance"));
+        float extra2 = 0;
+        float ratio1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_bonus_chance_ratio1"));
+
+        return (base + extra1 + extra2) * (1 + ratio1);
+    }
+
+    public float getCurrentUserBonusChance()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserBonusChance(user_id, exercise_id);
+    }
+
+    public float getUserBonusMultiplier(int user_id, int exercise_id)
+    {
+        int user_level = getUserLevel(user_id, exercise_id);
+        float base   = Float.parseFloat(getLevelData(user_level).get("base_bonus_multiplier"));
+        float extra1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_bonus_multiplier"));
+        float extra2 = 0;
+        float ratio1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_bonus_multiplier_ratio1"));
+
+        return (base + extra1 + extra2) * (1 + ratio1);
+    }
+
+    public float getCurrentUserBonusMultiplier()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserBonusMultiplier(user_id, exercise_id);
+    }
+
+    public int getUserResistance(int user_id, int exercise_id)
+    {
+        float RESISTANCE_RATIO = 537;
+        int user_level = getUserLevel(user_id, exercise_id);
+        Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getCachedUserLevel: " + user_level);
+        int base   = Integer.parseInt(getLevelData(user_level).get("base_resistance"));
+        int extra1 = Integer.parseInt(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_resistance"));
+        int extra2 = Math.round(getTrainingSumResult(user_id, exercise_id) / RESISTANCE_RATIO);
+        float ratio1 = Float.parseFloat(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_resistance_ratio1"));
+
+        return (int)((base + extra1 + extra2) * (1 + ratio1));
+    }
+
+    public int getCurrentUserResistance()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserResistance(user_id, exercise_id);
+    }
+
+    /*
+    public long updateNPCCache(int skill_id)
+    {
+        int total_count = getTotalCount4NPC(skill_id, false);
+        float float_skill_level = getFloatNPCLevel(total_count);
+        ContentValues skill_values = new ContentValues();
+        skill_values.put("count", total_count);
+        skill_values.put("level", float_skill_level);
+
+        return db.update("NPCs", skill_values, "skill_id = ?", new String[]{Integer.toString(skill_id)});
+    }
+*/
+    protected List<NonPlayerCharacterEntity> getNonPlayerCharactersData(int location_id)
+    {
+        int[] npc_levels = getNPClevelsForLocation(location_id);
+
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        List<NonPlayerCharacterEntity> nonPlayerCharacters_data = new ArrayList<NonPlayerCharacterEntity>();
+        Cursor cursor = db.query(
+                "non_player_characters AS n LEFT JOIN user_exercise_trainings AS t ON n.position = t.npc_position AND n.location_id = t.npc_location_id AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"n.npc_id", "n.fp", "n.max_res", "n.exp", "n.quest_cnt", "n.quest_exp", "n.name", "n.bonus_chance", "n.bonus_multiplier", "n.resistance", "n.multiplier", "n.position", "n.level", "sum(t.quest_owner) AS wins"},
+                "n.location_id = ? AND (n.position = 1 AND n.level = ? OR n.position = 2 AND n.level = ? OR n.position = 3 AND n.level = ? OR n.position = 4 AND n.level = ? OR n.position = 5 AND n.level = ?)",
+                new String[]{Integer.toString(location_id), Integer.toString(npc_levels[0]), Integer.toString(npc_levels[1]), Integer.toString(npc_levels[2]), Integer.toString(npc_levels[3]), Integer.toString(npc_levels[4])},
+                "n.position",
+                null,
+                "n.position ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
+                    int fitness_points = cursor.getInt(cursor.getColumnIndex("fp"));
+                    int max_result = cursor.getInt(cursor.getColumnIndex("max_res"));
+                    int exp = cursor.getInt(cursor.getColumnIndex("exp"));
+                    float multiplier = cursor.getFloat(cursor.getColumnIndex("multiplier"));
+
+                    String npc_info = String.format(
+                            Locale.ROOT,
+                            "%s: %d | %s: %d\n%s: %.2f | %s: %d",
+                            context.getString(R.string.txt_npc_info_count),
+                            fitness_points,
+                            context.getString(R.string.txt_npc_info_max_res),
+                            max_result,
+                            context.getString(R.string.txt_npc_info_multiplier),
+                            multiplier,
+                            context.getString(R.string.txt_npc_info_exp),
+                            exp
+                    );
+
+                    npc_entity.setName(cursor.getString(cursor.getColumnIndex("name")))
+                            .setInitialFitnessPoints(fitness_points)
+                            .setCurrentFitnessPoints(fitness_points)
+                            .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
+                            .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")))
+                            .setResistance(cursor.getInt(cursor.getColumnIndex("resistance")));
+
+                    npc_entity.setId(cursor.getInt(cursor.getColumnIndex("npc_id")))
+                            .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
+                            .setCurrentWins(cursor.getInt(cursor.getColumnIndex("wins")))
+                            .setExp(exp)
+                            .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
+                            .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
+                            .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
+                            .setMaxResult(max_result)
+                            .setLocationId(location_id)
+                            .setInfo(npc_info);
+
+                    nonPlayerCharacters_data.add(npc_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return nonPlayerCharacters_data;
+    }
+
+    public long getNPCsCount()
+    {
+        Cursor c = db.query("non_player_characters", new String[] { "COUNT(npc_id) as NPCs_count" }, null, null, null, null, null);
+        int NPCs_count = 0;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                NPCs_count = c.getInt(c.getColumnIndex("NPCs_count"));
+            }
+            c.close();
+        }
+
+        return NPCs_count;
+    }
+
+    public long getNPCsCountByLocationId(int location_id)
+    {
+        Cursor c = db.query("non_player_characters", new String[] { "COUNT(npc_id) as count" }, "location_id = ?", new String[]{Integer.toString(location_id)}, null, null, null);
+        int NPCs_count = 0;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                NPCs_count = c.getInt(c.getColumnIndex("count"));
+            }
+            c.close();
+        }
+
+        return NPCs_count;
+    }
+
+    public int removeAllNPCs()
+    {
+        return db.delete("non_player_characters", null, null);
+    }
+
+    // ============== Training
+
+//    + "training_id integer primary key autoincrement,"
+//            + "npc_id integer,"
+//            + "sum_result smallint,"
+//            + "max_result smallint,"
+//            + "exp integer,"
+//
+
+
+    public long addTraining(int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner)
+    {
+        ContentValues values = new ContentValues();
+        values.put("event_timestamp", gameHelper.getTodayTimestampString());
+        values.put("user_id", user_id);
+        values.put("exercise_id", exercise_id);
+        values.put("npc_id", npc_id);
+        values.put("sum_result", sum_result);
+        values.put("max_result", max_result);
+        values.put("number_of_moves", number_of_moves);
+        values.put("duration", duration);
+        values.put("result_state", result_state);
+        values.put("exp", exp);
+        values.put("npc_location_id", npc_location_id);
+        values.put("npc_position", npc_position);
+        values.put("quest_owner", quest_owner);
+
+       // Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: " + values.toString());
+
+
+        return db.insert("user_exercise_trainings", null, values);
+    }
+
+    public long updateTraining(long training_id, int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner)
+    {
+        ContentValues values = new ContentValues();
+        values.put("npc_id", npc_id);
+        values.put("sum_result", sum_result);
+        values.put("max_result", max_result);
+        values.put("number_of_moves", number_of_moves);
+        values.put("duration", duration);
+        values.put("result_state", result_state);
+        values.put("exp", exp);
+        values.put("npc_location_id", npc_location_id);
+        values.put("npc_position", npc_position);
+        values.put("quest_owner", quest_owner);
+
+        return db.update(
+                "user_exercise_trainings",
+                values,
+                "training_id = ? AND user_id = ? AND exercise_id = ?",
+                new String[] {
+                        Long.toString(training_id),
+                        Integer.toString(user_id),
+                        Integer.toString(exercise_id)
+                }
+        );
+    }
+/*
+    public long updateTraining(int training_id, int npc_id, int sum_result, int max_result, int exp)
+    {
+        ContentValues values = new ContentValues();
+        values.put("npc_id", npc_id);
+        values.put("sum_result", sum_result);
+        values.put("max_result", max_result);
+        values.put("exp", exp);
+
+        return db.update("trainings", values, "training_id = ?", new String[]{Integer.toString(training_id)});
+    }
+*/
+
+
+    public int getCurrentUserTrainingDaysCount()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getTrainingDaysCount(user_id, exercise_id);
+    }
+
+    public int getTrainingDaysCount(int user_id, int exercise_id)
+    {
+        int training_days = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"COUNT(DISTINCT(date(event_timestamp))) as training_days"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                training_days = cursor.getInt(cursor.getColumnIndex("training_days"));
+            }
+
+            cursor.close();
+        }
+
+        return training_days;
+    }
+
+    public int getTodayTrainingSumResult()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        int count = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_count"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(cursor.getColumnIndex("total_count"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getTodayTraining: " + count);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return count;
+    }
+
+    public int getCurrentUserTrainingSumResult()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getTrainingSumResult(user_id, exercise_id);
+    }
+
+    int getCurrentUserSkillPoints()
+    {
+        return getCurrentUserTrainingSumResult() + getAchievementSkillPoints() - getSpentSkillPoints();
+    }
+
+    int getAchievementSkillPoints()
+    {
+        int total_skill_points = 0;
+        ArrayList<Map<String, String>> achievement_data = getAchievementsData();
+        for (Map<String, String> data : achievement_data) {
+            total_skill_points += Integer.parseInt(data.get("skill_points"));
+        }
+
+        return total_skill_points;
+    }
+
+    public int getTrainingSumResult(int user_id, int exercise_id)
+    {
+        int count = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_count"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(cursor.getColumnIndex("total_count"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getTodayTraining: " + count);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return count;
+    }
+
+//                    + "event_timestamp DATETIME,"
+//                            + "sum_result smallint,"
+//                            + "max_result smallint,"
+//                            + "number_of_moves smallint,"
+    UserExerciseTrainingStat getUserExerciseTrainingStat(int from_field, int from_amount, int to_field, int to_amount)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        UserExerciseTrainingStat stat = new UserExerciseTrainingStat();
+
+//        String s1 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, 0);
+//        String s2 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, -1);
+//        String s3 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, -2);
+//        String s4 = gameHelper.getDateString(Calendar.WEEK_OF_YEAR, -1);
+//        String s5 = gameHelper.getDateString(Calendar.WEEK_OF_YEAR, -2);
+//        String s6 = gameHelper.getDateString(Calendar.MONTH, -1);
+//        String s7 = gameHelper.getDateString(Calendar.MONTH, -3);
+//        String s8 = gameHelper.getDateString(Calendar.MONTH, -6);
+//        String s9 = gameHelper.getDateString(Calendar.YEAR, -1);
+//        String s10 = gameHelper.getDateString(Calendar.YEAR, -2);
+
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_cnt, MAX(sum_result) AS max_competition_result, MAX(max_result) AS max_result, SUM(number_of_moves) AS total_number_of_moves, COUNT(DISTINCT(date(event_timestamp))) as training_days"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) > ? AND date(event_timestamp) <= ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getDateString(from_field, from_amount), gameHelper.getDateString(to_field, to_amount)},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                stat.total_cnt = cursor.getInt(cursor.getColumnIndex("total_cnt"));
+                stat.max_competition_result = cursor.getInt(cursor.getColumnIndex("max_competition_result"));
+                stat.max_result = cursor.getInt(cursor.getColumnIndex("max_result"));
+                stat.total_number_of_moves = cursor.getInt(cursor.getColumnIndex("total_number_of_moves"));
+                stat.training_days = cursor.getInt(cursor.getColumnIndex("training_days"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat: " + stat.toString());
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat: Cursor is null");
+
+        return stat;
+    }
+
+    public int getUserExerciseTrainingMaxCompetitionResult()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        int max_result = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"MAX(sum_result) AS max_result"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                max_result = cursor.getInt(cursor.getColumnIndex("max_result"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getTodayTraining: " + max_result);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return max_result;
+    }
+
+    public int getCurrentUserExerciseTrainingTotalNumberOfMoves()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseTrainingTotalNumberOfMoves(user_id, exercise_id);
+    }
+
+    public int getUserExerciseTrainingTotalNumberOfMoves(int user_id, int exercise_id)
+    {
+        int total_number_of_moves = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(number_of_moves) AS total_number_of_moves"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                total_number_of_moves = cursor.getInt(cursor.getColumnIndex("total_number_of_moves"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG total_number_of_moves: " + total_number_of_moves);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return total_number_of_moves;
+    }
+
+    public int getUserExerciseTrainingMaxDayResult()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        int max_day_result = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"MAX(max_result) AS max_day_result"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                max_day_result = cursor.getInt(cursor.getColumnIndex("max_day_result"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG max_day_result: " + max_day_result);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return max_day_result;
+    }
+
+    public int getUserExerciseTrainingTodayNumberOfMoves()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        int today_number_of_moves = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(number_of_moves) AS today_number_of_moves"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                today_number_of_moves = cursor.getInt(cursor.getColumnIndex("today_number_of_moves"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG today_number_of_moves: " + today_number_of_moves);
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return today_number_of_moves;
+    }
+
+    public ArrayList<Map<String, String>> getCurrentUserLastTrainingsData(int count)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        return getLastTrainingsData(user_id, exercise_id, count);
+    }
+
+    public String getDuration(int duration)
+    {
+        int hours = duration / 3600;
+        int t1 = duration - hours * 3600;
+        int minutes = t1 / 60;
+        int seconds = t1 - minutes * 60;
+
+        return String.format(
+                Locale.ROOT,
+                "%d:%02d:%02d",
+                hours,
+                minutes,
+                seconds
+        );
+    }
+
+    public ArrayList<Map<String, String>> getLastTrainingsData(int user_id, int exercise_id, int count)
+    {
+        ArrayList<Map<String, String>> last_trainings_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings AS uet LEFT JOIN non_player_characters AS n ON n.npc_id = uet.npc_id LEFT JOIN locations AS l ON n.location_id = l.location_id",
+                new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "n.name AS npc_name", "n.level AS npc_level", "l.name AS location_name", "uet.duration" },
+                "uet.user_id = ? AND uet.exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                "uet.training_id DESC LIMIT " + Integer.toString(count)
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+
+                do {
+                    m = new HashMap<String, String>();
+                    m.put("event_timestamp", cursor.getString(cursor.getColumnIndex("event_timestamp")));
+                    m.put("sum_result", cursor.getString(cursor.getColumnIndex("sum_result")));
+                    m.put("max_result", cursor.getString(cursor.getColumnIndex("max_result")));
+                    m.put("number_of_moves",cursor.getString(cursor.getColumnIndex("number_of_moves")));
+                    m.put("exp", cursor.getString(cursor.getColumnIndex("exp")));
+                    m.put("result_state", cursor.getString(cursor.getColumnIndex("result_state")));
+                    m.put("npc_name", cursor.getString(cursor.getColumnIndex("npc_name")));
+                    m.put("npc_level", cursor.getString(cursor.getColumnIndex("npc_level")));
+                    m.put("location_name", cursor.getString(cursor.getColumnIndex("location_name")));
+                    m.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+
+
+                    m.put("header", String.format(
+                            Locale.ROOT,
+                            "[%s | %s] %s ур. %s",
+                            m.get("event_timestamp"),
+                            m.get("location_name"),
+                            m.get("npc_name"),
+                            m.get("npc_level")
+                    ));
+                    m.put("info", String.format(
+                            Locale.ROOT,
+                            "%s | Опыт: %s | Суммарный результат: %s | Подходы: %s | Максимум: %s | Продолжительность: %s",
+                            gameHelper.getCompetitionStatus(Integer.parseInt(m.get("result_state"))),
+                            m.get("exp"),
+                            m.get("sum_result"),
+                            m.get("number_of_moves"),
+                            m.get("max_result"),
+                            getDuration(Integer.parseInt(m.get("duration")))
+                    ));
+
+                    last_trainings_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return last_trainings_data;
+    }
+
+    public int removeAllTrainings()
+    {
+        return db.delete("user_exercise_trainings", null, null);
+    }
+
+    // ============ user_exercise_quests
+    public long addUserExerciseQuest(int npc_location_id, int npc_position)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        ContentValues values = new ContentValues();
+        values.put("npc_location_id", npc_location_id);
+        values.put("npc_position", npc_position);
+        values.put("user_id", user_id);
+        values.put("exercise_id", exercise_id);
+
+        return db.insert("user_exercise_quests", null, values);
+    }
+
+    public boolean checkUserExerciseQuest(int npc_location_id, int npc_position)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        boolean check_status = false;
+        Cursor cursor = db.query(
+                "user_exercise_quests",
+                new String[]{"count(npc_location_id) AS total_count"},
+                "user_id = ? AND exercise_id = ? AND npc_location_id = ? AND npc_position = ?",
+                new String[]{
+                        Integer.toString(user_id),
+                        Integer.toString(exercise_id),
+                        Integer.toString(npc_location_id),
+                        Integer.toString(npc_position)
+                },
+                null,
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                if (cursor.getInt(cursor.getColumnIndex("total_count")) > 0) {
+                    check_status = true;
+                    Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseQuest: check_status = true");
+                };
+            }
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return check_status;
+    }
+
+    public int getUserExerciseQuestsExp(int user_id, int exercise_id)
+    {
+        int total_exp = 0;
+        Cursor cursor = db.query(
+                "user_exercise_quests AS q LEFT JOIN non_player_characters AS n ON q.npc_location_id = n.location_id AND q.npc_position = n.position",
+                new String[]{"SUM(n.quest_exp) AS total_exp"},
+                "q.user_id = ? AND q.exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                total_exp = cursor.getInt(cursor.getColumnIndex("total_exp"));
+            }
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return total_exp;
+    }
+
+    public int getUserExerciseFinishedQuestsCount(int user_id, int exercise_id)
+    {
+        int quests_count = 0;
+        Cursor cursor = db.query(
+                "user_exercise_quests",
+                new String[]{"count(npc_location_id) AS quests_count"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                quests_count = cursor.getInt(cursor.getColumnIndex("quests_count"));
+            }
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
+
+        return quests_count;
+    }
+
+    public int getCurrentUserExerciseFinishedQuestsCount()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseFinishedQuestsCount(user_id, exercise_id);
+    }
+
+    // ============ Other
+
+    public int getTotalCount4NPC(int skill_id, boolean without_today)
+    {
+        String selection = "skill_id = ?";
+        String[] selection_args;
+        if (without_today) {
+            selection += " AND date(event_timestamp) <> ?";
+            selection_args = new String[]{Integer.toString(skill_id), gameHelper.getTodayString()};
+        } else {
+            selection_args = new String[]{Integer.toString(skill_id)};
+        }
+
+        Cursor c = db.query("user_exercise_trainings", new String[] { "SUM(count) as total_count" }, selection, selection_args, null, null, null);
+        int total_count = 0;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                total_count = c.getInt(c.getColumnIndex("total_count"));
+            }
+            c.close();
+        }
+
+        return total_count;
+    }
+
+    private float getAbstractFloatLevel(long exp, String table_name, float default_result_level)
+    {
+        float result_level = default_result_level;
+        Cursor c = db.query(table_name, new String[] { "target_level", "diff_exp", "min_exp" }, "min_exp > ?", new String[] {Long.toString(exp)}, null, null, "target_level");
+        if (c != null) {
+            if (c.moveToFirst()) {
+                long min_exp = c.getInt(c.getColumnIndex("min_exp"));
+                float diff_exp = c.getFloat(c.getColumnIndex("diff_exp"));
+                int level = c.getInt(c.getColumnIndex("target_level"));
+                result_level = level + (exp - min_exp)/diff_exp;
+            }
+            c.close();
+        }
+
+        return result_level;
+    }
+
+    public float getFloatPlayerLevel(long exp)
+    {
+        return getAbstractFloatLevel(exp, "player_exp", context.getResources().getInteger(R.integer.max_player_level));
+    }
+
+    public long getUserExerciseTrainingsTotalExp(int user_id, int exercise_id)
+    {
+        Cursor c = db.query("user_exercise_trainings", new String[] { "SUM(exp) as total_exp" }, "user_id = ? AND exercise_id = ?", new String[] {Integer.toString(user_id), Integer.toString(exercise_id)}, null, null, null);
+        long total_exp = 0;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                total_exp = c.getLong(c.getColumnIndex("total_exp"));
+            }
+            c.close();
+        }
+
+        return total_exp;
+    }
+
+    public long getUserExerciseExp(int user_id, int exercise_id)
+    {
+        return getUserExerciseTrainingsTotalExp(user_id, exercise_id) + getUserExerciseQuestsExp(user_id, exercise_id);
+    }
+
+    public void updateUserInfo()
+    {
+        int user_id = gameHelper.getUserId();
+        long total_exp = getUserExerciseExp(gameHelper.getUserId(), gameHelper.getExerciseId());
+        float user_level = getFloatPlayerLevel(total_exp);
+
+        Log.d(context.getResources().getString(R.string.log_tag), "DEBUG updateUserInfo.user_level: " + user_level);
+        //int int_user_level = (int) user_level;
+        //int user_fitness_points = Integer.parseInt(getLevelData(int_user_level).get("base_fp"));
+        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = s_pref.edit();
+        editor.putInt(
+                context.getResources().getString(R.string.preference_name_user_encoded_level),
+                (int) Math.floor(user_level * 10000)
+        );
+        editor.putLong(context.getResources().getString(
+                R.string.preference_name_user_exp),
+                total_exp
+        );
+        editor.putString(
+                context.getResources().getString(R.string.preference_name_user_name),
+                getUserNameById(user_id)
+        );
+        editor.putInt(
+                context.getResources().getString(R.string.preference_name_user_encoded_level),
+                (int) Math.floor(user_level * 10000)
+        );
+        editor.commit();
+    }
+
+    public Map<String, String> getLevelData(int user_level)
+    {
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("target_level", Integer.toString(user_level));
+        Cursor cursor = db.query("player_exp", new String[] { "base_fp", "base_resistance", "base_multiplier", "base_bonus_chance", "base_bonus_multiplier" }, "target_level = ?", new String[] {Long.toString(user_level)}, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                data.put("base_fp", Integer.toString(cursor.getInt(cursor.getColumnIndex("base_fp"))));
+                data.put("base_resistance", Integer.toString(cursor.getInt(cursor.getColumnIndex("base_resistance"))));
+                data.put("base_multiplier", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_multiplier"))));
+                data.put("base_bonus_chance", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_bonus_chance"))));
+                data.put("base_bonus_multiplier", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_bonus_multiplier"))));
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    public ArrayList<Map<String, String>> getLevelsData()
+    {
+        ArrayList<Map<String, String>> player_exp_data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        Cursor cursor = db.query("player_exp", new String[] { "target_level", "diff_exp", "min_exp", "base_fp", "base_resistance", "base_multiplier", "base_bonus_chance", "base_bonus_multiplier" }, null, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+
+                do {
+                    m = new HashMap<String, String>();
+                    m.put("target_level", Integer.toString(cursor.getInt(cursor.getColumnIndex("target_level"))));
+                    m.put("min_exp", Long.toString(cursor.getLong(cursor.getColumnIndex("min_exp"))));
+                    m.put("diff_exp", Long.toString(cursor.getLong(cursor.getColumnIndex("diff_exp"))));
+                    m.put("base_fp", Integer.toString(cursor.getInt(cursor.getColumnIndex("base_fp"))));
+                    m.put("base_resistance", Integer.toString(cursor.getInt(cursor.getColumnIndex("base_resistance"))));
+                    m.put("base_multiplier", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_multiplier"))));
+                    m.put("base_bonus_chance", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_bonus_chance"))));
+                    m.put("base_bonus_multiplier", Float.toString(cursor.getFloat(cursor.getColumnIndex("base_bonus_multiplier"))));
+                    player_exp_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return player_exp_data;
+    }
+
+    public void updateUserInfoWithLevelCheck()
+    {
+        int user_level_old = gameHelper.getCachedUserLevel();
+        updateUserInfo();
+        int user_level_new = gameHelper.getCachedUserLevel();
+        if (user_level_new > user_level_old) {
+            String msg = user_level_new == 14 ?
+                    context.getResources().getString(R.string.msg_level_up_congratulations_specialisation)
+                    : context.getResources().getString(R.string.msg_level_up_congratulations);
+            Toast.makeText(
+                    context,
+                    String.format(msg, user_level_new),
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    public PlayerEntity getCurrentPlayerEntity()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        return getPlayerEntity(user_id, exercise_id);
+    }
+
+    public PlayerEntity getPlayerEntity(int user_id, int exercise_id)
+    {
+        PlayerEntity player_entity = new PlayerEntity(context, user_id, exercise_id);
+        player_entity.setName(getUserNameById(user_id))
+                .setInitialFitnessPoints(getUserFitnessPoints(user_id, exercise_id))
+                .setCurrentFitnessPoints(getUserFitnessPoints(user_id, exercise_id))
+                .setMultiplier(getUserMultiplier(user_id, exercise_id))
+                .setResistance(getUserResistance(user_id, exercise_id))
+                .setBonusChance(getUserBonusChance(user_id, exercise_id))
+                .setBonusMultiplier(getUserBonusMultiplier(user_id, exercise_id));
+        return player_entity;
+    }
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <exercise exercise_id="1" name="Подтягивания"/>
+    <exercise exercise_id="2" name="Отжимания"/>
+    <exercise exercise_id="3" name="Приседания"/>
+    <exercise exercise_id="4" name="Пресс"/>
+    <exercise exercise_id="5" name="Отжимания на брусьях"/>
+</data>

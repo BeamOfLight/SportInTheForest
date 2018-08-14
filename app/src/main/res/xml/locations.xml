@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <location location_id="1" name="Зелёный перелесок"/>
+    <location location_id="2" name="Цветущий луг"/>
+    <location location_id="3" name="Опушка"/>
+    <location location_id="4" name="Берёзовая роща"/>
+    <location location_id="5" name="Овраг"/>
+    <location location_id="6" name="Болото"/>
+    <location location_id="7" name="Речка"/>
+    <location location_id="8" name="Разнотравие"/>
+    <location location_id="9" name="Ручей"/>
+    <location location_id="10" name="Кустарники"/>
+    <location location_id="11" name="Родник"/>
+    <location location_id="12" name="Южный склон холма"/>
+    <location location_id="13" name="Холм"/>
+    <location location_id="14" name="Перелесок"/>
+    <location location_id="15" name="Северный склон холма"/>
+    <location location_id="16" name="Лес"/>
+    <location location_id="17" name="Сосновый бор"/>
+    <location location_id="18" name="Бурелом"/>
+</data>
