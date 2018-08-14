@@ -106,13 +106,13 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "draws integer,"
                 + "specialisation integer,"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
 
     protected void createTableExercises(SQLiteDatabase db)
     {
-        // создаем таблицу user_exercises
+        // создаем таблицу exercises
         db.execSQL("DROP TABLE IF EXISTS exercises;");
         db.execSQL("CREATE TABLE IF NOT EXISTS exercises ("
                 + "exercise_id integer primary key autoincrement,"
@@ -208,7 +208,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "npc_5_level integer,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
 
@@ -512,7 +512,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exercise_id integer,"
                 + "FOREIGN KEY(skill_id) REFERENCES skills(skill_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
 
@@ -526,7 +526,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exercise_id integer,"
                 + "FOREIGN KEY(npc_location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
 
@@ -550,7 +550,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "result_state smallint,"
                 + "quest_owner boolean,"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
     }
