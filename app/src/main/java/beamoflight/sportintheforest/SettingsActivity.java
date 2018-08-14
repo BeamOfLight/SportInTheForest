@@ -55,7 +55,7 @@ public class SettingsActivity extends Activity {
     GameHelper gameHelper;
     DBHelper dbHelper;
 
-    AlertDialog dialogAddExercise;
+//    AlertDialog dialogAddExercise;
 
     Button btnImportDB, btnExportDB, btnWipe, btnWipeSaveUserProgress;
     Button btnAddExercise, btnAction1;
@@ -78,15 +78,15 @@ public class SettingsActivity extends Activity {
         btnImportDB = (Button) findViewById(R.id.btnImportDB);
         btnImportDB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                importDB("SportInTheForestDB.db");
+                dbHelper.importDB("SportInTheForestDB.db");
             }
         });
 
         btnExportDB = (Button) findViewById(R.id.btnExportDB);
         btnExportDB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                exportDB("SportInTheForestDB.db", false);
-                exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", true);
+                dbHelper.exportDB("SportInTheForestDB.db", false);
+                dbHelper.exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", true);
             }
         });
 
@@ -121,7 +121,11 @@ public class SettingsActivity extends Activity {
         btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dialogAddExercise.show();
+                btnAddExercise.setEnabled(false);
+                Intent intent = new Intent(SettingsActivity.this, ExercisesActivity.class);
+                startActivity(intent);
+                btnAddExercise.setEnabled(true);
+//                dialogAddExercise.show();
             }
         });
 
@@ -204,44 +208,44 @@ public class SettingsActivity extends Activity {
 
     protected void onStart() {
         super.onStart();
-        initDialogAddExercise();
+//        initDialogAddExercise();
     }
 
-    private void initDialogAddExercise()
-    {
-        // get prompt_add_group.xmlgroup.xml view
-        LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_add_exercise, null);
-        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
-        alert_dialog_builder.setView(prompts_view);
-
-        final EditText et_input_user_name = (EditText) prompts_view.findViewById(R.id.editTextDialogExerciseInput);
-
-        // set dialog message
-        alert_dialog_builder
-                .setCancelable(false)
-                .setPositiveButton(R.string.btn_save_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                String exercise_name = et_input_user_name.getText().toString();
-                                if (dbHelper.checkExerciseExist(exercise_name)) {
-                                    Toast.makeText(getBaseContext(), "Упражнение с таким названием уже существует", Toast.LENGTH_LONG).show();
-                                } else {
-                                    dbHelper.createExercise(exercise_name);
-                                    Toast.makeText(getBaseContext(), "Упражнение создано", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        })
-                .setNegativeButton(R.string.btn_cancel_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        dialogAddExercise = alert_dialog_builder.create();
-    }
+//    private void initDialogAddExercise()
+//    {
+//        // get prompt_add_group.xmlgroup.xml view
+//        LayoutInflater li = LayoutInflater.from(this);
+//        View prompts_view = li.inflate(R.layout.prompt_add_exercise, null);
+//        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+//        alert_dialog_builder.setView(prompts_view);
+//
+//        final EditText et_input_user_name = (EditText) prompts_view.findViewById(R.id.editTextDialogExerciseInput);
+//
+//        // set dialog message
+//        alert_dialog_builder
+//                .setCancelable(false)
+//                .setPositiveButton(R.string.btn_save_text,
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                String exercise_name = et_input_user_name.getText().toString();
+//                                if (dbHelper.checkExerciseExist(exercise_name)) {
+//                                    Toast.makeText(getBaseContext(), "Упражнение с таким названием уже существует", Toast.LENGTH_LONG).show();
+//                                } else {
+//                                    dbHelper.createExercise(exercise_name);
+//                                    Toast.makeText(getBaseContext(), "Упражнение создано", Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//                        })
+//                .setNegativeButton(R.string.btn_cancel_text,
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//
+//        // create alert dialog
+//        dialogAddExercise = alert_dialog_builder.create();
+//    }
 
     private void prepareBackUpDir()
     {
@@ -261,71 +265,6 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    //importing database
-    private void importDB(String backup_filename) {
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
-                String currentDBPath = getDatabasePath("SportInTheForestDB").toString();
-                String baseBackupDBPath = "/SportInTheForest/";
-                String backupDBPath = baseBackupDBPath + backup_filename;
-
-                File backupDB = new File(currentDBPath);
-                File currentDB = new File(sd, backupDBPath);
-
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-                Toast.makeText(getBaseContext(), backupDB.toString(), Toast.LENGTH_LONG).show();
-                Log.d(getResources().getString(R.string.log_tag), "DEBUG: importDB SUCCESS" + backupDB.toString());
-            } else {
-                Toast.makeText(getBaseContext(), "Нет прав", Toast.LENGTH_LONG).show();
-                Log.d(getResources().getString(R.string.log_tag), "DEBUG: Нет прав");
-            }
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();
-            Log.d(getResources().getString(R.string.log_tag), "DEBUG: importDB FAIL " + e.toString());
-        }
-    }
-    //exporting database
-    private void exportDB(String backup_filename, boolean toastOn) {
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                String currentDBPath = getDatabasePath("SportInTheForestDB").toString();
-                //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
-                String baseBackupDBPath = "/SportInTheForest/";
-                String backupDBPath = baseBackupDBPath + backup_filename;
-
-
-                File currentDB = new File(currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-                Log.d(getResources().getString(R.string.log_tag), "currentDBPath: " + currentDBPath);
-                Log.d(getResources().getString(R.string.log_tag), "backupDBPath: " + backupDBPath);
-
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-                if (toastOn) Toast.makeText(getBaseContext(), backupDB.toString(), Toast.LENGTH_LONG).show();
-                Log.d(getResources().getString(R.string.log_tag), "DEBUG: exportDB SUCCESS" + backupDB.toString());
-            } else {
-                if (toastOn) Toast.makeText(getBaseContext(), "Нет прав", Toast.LENGTH_LONG).show();
-                Log.d(getResources().getString(R.string.log_tag), "DEBUG: Нет прав");
-            }
-        } catch (Exception e) {
-            if (toastOn) Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();
-            Log.d(getResources().getString(R.string.log_tag), "DEBUG: exportDB FAIL " + e.toString());
-        }
-    }
 /*
     Handler mainHandler;
     void run() throws IOException {

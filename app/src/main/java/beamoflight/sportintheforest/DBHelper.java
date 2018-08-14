@@ -236,6 +236,52 @@ class DBHelper extends DBHelperBaseLayer {
     {
         ArrayList<Map<String, String>> users_data = new ArrayList<>();
         Map<String, String> m;
+        Cursor cursor = db.query(
+                "exercises",
+                new String[]{"exercise_id", "name", "initial_name", "modification_date"},
+                null,
+                null,
+                "exercise_id",
+                null,
+                "name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("exercise_id", cursor.getString(cursor.getColumnIndex("exercise_id")));
+                    m.put("initial_name", cursor.getString(cursor.getColumnIndex("initial_name")));
+                    m.put("modification_date", cursor.getString(cursor.getColumnIndex("modification_date")));
+                    m.put("name",
+                            String.format(
+                                    Locale.ROOT,
+                                    "[ %s ]",
+                                    cursor.getString(cursor.getColumnIndex("name"))
+                            )
+                    );
+                    m.put("info",
+                            String.format(
+                                    Locale.ROOT,
+                                    "Исходное название: %s | Последнее изменение: %s",
+                                    m.get("initial_name"),
+                                    m.get("modification_date")
+                            )
+                    );
+
+                    users_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_data;
+    }
+
+    public ArrayList<Map<String, String>> getUserExercisesData()
+    {
+        ArrayList<Map<String, String>> users_data = new ArrayList<>();
+        Map<String, String> m;
         int user_id = gameHelper.getUserId();
         Cursor cursor = db.query(
                 "exercises AS e INNER JOIN user_exercises AS ue ON e.exercise_id = ue.exercise_id AND ue.user_id = " + Integer.toString(user_id),
@@ -292,12 +338,22 @@ class DBHelper extends DBHelperBaseLayer {
         return users_data;
     }
 
-    public void createExercise(String exercise_name)
+    public long addExercise(String exercise_name)
     {
         ContentValues values = new ContentValues();
         values.put("name", exercise_name);
+        values.put("initial_name", exercise_name);
+        values.put("modification_date", gameHelper.getTodayString());
 
-        db.insert("exercises", null, values);
+        return db.insert("exercises", null, values);
+    }
+
+    public long updateExercise(int exercise_id, String exercise_name)
+    {
+        ContentValues values = new ContentValues();
+        values.put("name", exercise_name);
+        values.put("modification_date", gameHelper.getTodayString());
+        return db.update("exercises", values, "exercise_id = ?", new String[]{Integer.toString(exercise_id)});
     }
 
     public String getExerciseName(int exercise_id)

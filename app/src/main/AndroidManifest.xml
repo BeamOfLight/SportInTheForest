@@ -52,6 +52,15 @@
         </activity>
 
         <activity
+            android:name=".UserExercisesActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.USER_EXERCISES" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ExercisesActivity"
             android:screenOrientation="portrait"
             >

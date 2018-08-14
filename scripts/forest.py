@@ -650,7 +650,7 @@ def get_skills_passive_regeneration_data():
 	value_last = 0
 	for required_level in [14, 21, 27, 32, 36, 40]:
 		skill_id = skill_group_id * 100 + skill_level
-		value_new = (int) (round((skill_level * skill_level) / 2) + 1)
+		value_new = (int) (round((skill_level * skill_level) / 0.9) + 1)
 		value_diff = value_new - value_last
 		value_current = value_last
 		data.append({

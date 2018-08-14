@@ -3,10 +3,18 @@ package beamoflight.sportintheforest;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 /**
  * Created by beamoflight on 30.05.17.
@@ -16,7 +24,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
-        super (current, "SportInTheForestDB", null, 2);
+        super (current, "SportInTheForestDB", null, 5);
 
         context = current;
     }
@@ -78,7 +86,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
     protected void createTableUsers(SQLiteDatabase db)
     {
-        // создаем таблицу exercises
+        // создаем таблицу user_exercises
         db.execSQL("DROP TABLE IF EXISTS users;");
         db.execSQL("CREATE TABLE IF NOT EXISTS users ("
                 + "user_id integer primary key autoincrement,"
@@ -98,19 +106,21 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "draws integer,"
                 + "specialisation integer,"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
                 + ");");
     }
 
     protected void createTableExercises(SQLiteDatabase db)
     {
-        // создаем таблицу exercises
+        // создаем таблицу user_exercises
         db.execSQL("DROP TABLE IF EXISTS exercises;");
         db.execSQL("CREATE TABLE IF NOT EXISTS exercises ("
                 + "exercise_id integer primary key autoincrement,"
+                + "modification_date date,"
+                + "initial_name text,"
                 + "name text" + ");");
 
-        String base_sql = "INSERT INTO exercises (exercise_id, name) VALUES";
+        String base_sql = "INSERT INTO exercises (exercise_id, modification_date, initial_name, name) VALUES";
         String sql = "";
         int id;
         String name;
@@ -124,7 +134,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                         if (xpp.getName().equals("exercise")) {
                             id = Integer.parseInt(xpp.getAttributeValue(0));
                             name = xpp.getAttributeValue(1);
-                            sql += ", ("+ id +", \"" + name +"\")";
+                            sql += ", (" + id + ", NOW(), \"" + name +"\", \"" + name +"\")";
                         }
                         break;
                     default:
@@ -198,7 +208,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "npc_5_level integer,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
                 + ");");
     }
 
@@ -502,7 +512,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exercise_id integer,"
                 + "FOREIGN KEY(skill_id) REFERENCES skills(skill_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
                 + ");");
     }
 
@@ -516,7 +526,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exercise_id integer,"
                 + "FOREIGN KEY(npc_location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
                 + ");");
     }
 
@@ -540,7 +550,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "result_state smallint,"
                 + "quest_owner boolean,"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
-                + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
+                + "FOREIGN KEY(exercise_id) REFERENCES user_exercises(exercise_id)"
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
     }
@@ -553,6 +563,72 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         createTableSkills(db);
         createTableSkillGroups(db);
         createTableAchievements(db);
+    }
+
+    //importing database
+    public void importDB(String backup_filename) {
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
+                String currentDBPath = context.getDatabasePath("SportInTheForestDB").toString();
+                String baseBackupDBPath = "/SportInTheForest/";
+                String backupDBPath = baseBackupDBPath + backup_filename;
+
+                File backupDB = new File(currentDBPath);
+                File currentDB = new File(sd, backupDBPath);
+
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                Toast.makeText(context, backupDB.toString(), Toast.LENGTH_LONG).show();
+                Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: importDB SUCCESS" + backupDB.toString());
+            } else {
+                Toast.makeText(context, "Нет прав", Toast.LENGTH_LONG).show();
+                Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: Нет прав");
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: importDB FAIL " + e.toString());
+        }
+    }
+    //exporting database
+    public void exportDB(String backup_filename, boolean toastOn) {
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String currentDBPath = context.getDatabasePath("SportInTheForestDB").toString();
+                //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
+                String baseBackupDBPath = "/SportInTheForest/";
+                String backupDBPath = baseBackupDBPath + backup_filename;
+
+
+                File currentDB = new File(currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.d(context.getResources().getString(R.string.log_tag), "currentDBPath: " + currentDBPath);
+                Log.d(context.getResources().getString(R.string.log_tag), "backupDBPath: " + backupDBPath);
+
+                FileChannel src = new FileInputStream(currentDB).getChannel();
+                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+                if (toastOn) Toast.makeText(context, backupDB.toString(), Toast.LENGTH_LONG).show();
+                Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: exportDB SUCCESS" + backupDB.toString());
+            } else {
+                if (toastOn) Toast.makeText(context, "Нет прав", Toast.LENGTH_LONG).show();
+                Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: Нет прав");
+            }
+        } catch (Exception e) {
+            if (toastOn) Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: exportDB FAIL " + e.toString());
+        }
     }
 
     @Override
@@ -571,17 +647,24 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
         // TODO: remove after debug
         //db.execSQL("INSERT INTO users (user_id, creation_date, modification_date, name) VALUES (1, \"1994-03-06\", \"1994-03-06\",\"test\");");
-        //db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id) SELECT 1 AS location_id, 1 as user_id, exercise_id FROM exercises");
+        //db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id) SELECT 1 AS location_id, 1 as user_id, exercise_id FROM user_exercises");
         //db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id) VALUES (1, 1, 1), (1, 1, 2), (1, 1, 3), (1, 1, 4), (1, 1, 5);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onUpgrade database ---");
+        //exportDB("update_backup.db", false);
+        //onCreate(getWritableDatabase());
+        //importDB("update_backup.db");
         recreateCommonTable(db);
-        /*if (oldVersion == 1 && newVersion == 2) {
-            recreateCommonTable(db);
-        }*/
+        if (newVersion == 5) {
+            db.execSQL("ALTER TABLE exercises ADD COLUMN initial_name text;");
+            db.execSQL("ALTER TABLE exercises ADD COLUMN modification_date date;");
+            db.execSQL("UPDATE exercises SET initial_name = name");
+
+            //importDB("update_backup.db");
+        }
     }
 
     @Override

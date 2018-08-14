@@ -16,9 +16,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class UsersActivity extends Activity {
@@ -27,7 +25,7 @@ public class UsersActivity extends Activity {
     GameHelper gameHelper;
     List<Map<String, String>> usersData;
 
-    FloatingActionButton fabAddUser, fabSettings;
+    FloatingActionButton fabAddUser;
     TextView tvUsersListInfo;
     ListView lvUsers;
 
@@ -74,7 +72,7 @@ public class UsersActivity extends Activity {
                                     int position, long id) {
                 int user_id = Integer.parseInt(usersData.get(position).get("user_id"));
                 gameHelper.saveUserId2Preferences(user_id);
-                Intent intent = new Intent(UsersActivity.this, ExercisesActivity.class);
+                Intent intent = new Intent(UsersActivity.this, UserExercisesActivity.class);
                 startActivity(intent);
             }
         });

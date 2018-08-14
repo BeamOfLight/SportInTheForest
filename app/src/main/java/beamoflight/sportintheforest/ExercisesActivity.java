@@ -4,21 +4,16 @@ package beamoflight.sportintheforest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Map;
@@ -28,112 +23,86 @@ public class ExercisesActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
     List<Map<String, String>> exercisesData;
-    ListView lvExercises;
-    TextView tvExercisesListInfo;
 
-    FloatingActionButton fabAddUserExercise;
-    AlertDialog dialogAddUserExercise;
+    FloatingActionButton fabAddExercise;
+    TextView tvExercisesListInfo;
+    ListView lvExercises;
+
+    AlertDialog dialogAddOrEditExercise;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.exercises);
+        setContentView(R.layout.user_exercises);
 
         dbHelper = new DBHelper( this );
-        gameHelper = new GameHelper(this );
+        gameHelper = new GameHelper(this.getBaseContext());
+        //dbHelper.onCreate(dbHelper.getWritableDatabase());
 
-        TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvUserName.setText(dbHelper.getUserNameById(gameHelper.getUserId()));
         tvExercisesListInfo = (TextView) findViewById(R.id.tvExercisesListInfo);
 
-        initExercisesListView();
+        initUsersListView();
 
+        initFABAddExercise();
     }
 
     protected void onStart() {
         super.onStart();
 
-        initExercisesListView();
-        initFABAddUser();
+        showExercisesList();
     }
 
-    private void initFABAddUser()
+    private void initFABAddExercise()
     {
-        fabAddUserExercise = (FloatingActionButton) findViewById(R.id.fabAddUserExercise);
-        fabAddUserExercise.setOnClickListener(new View.OnClickListener() {
+        fabAddExercise = (FloatingActionButton) findViewById(R.id.fabAddUserExercise);
+        fabAddExercise.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                initDialogAddUserExercise();
-                dialogAddUserExercise.show();
+            initDialogAddOrEditUser(-1);
+                dialogAddOrEditExercise.show();
             }
         });
     }
 
-    private void initDialogAddUserExercise()
-    {
-        LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_add_user_exercise, null);
-        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
-        alert_dialog_builder.setView(prompts_view);
-
-        final Spinner spinnerAddUserExercise = (Spinner) prompts_view.findViewById(R.id.spinnerAddUserExercise);
-        ArrayAdapter<ExerciseEntity> spinnerAddUserExerciseAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dbHelper.getExercises(gameHelper.getUserId()));
-        spinnerAddUserExerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAddUserExercise.setAdapter(spinnerAddUserExerciseAdapter);
-
-        // set dialog message
-        alert_dialog_builder
-                .setCancelable(false)
-                .setPositiveButton(R.string.btn_save_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                int exerciseId = ((ExerciseEntity) spinnerAddUserExercise.getSelectedItem()).getId();
-                                dbHelper.createUserExercise(gameHelper.getUserId(), exerciseId);
-                                dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
-
-                                showExercisesList();
-                            }
-                        })
-                .setNegativeButton(R.string.btn_cancel_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        dialogAddUserExercise = alert_dialog_builder.create();
-    }
-
-    private void initExercisesListView()
+    private void initUsersListView()
     {
         lvExercises = (ListView) findViewById(R.id.lvExercises);
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+//                int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
+//                Intent intent = new Intent(ExercisesActivity.this, UserExercisesActivity.class);
+//                startActivity(intent);
+
                 int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
-                gameHelper.saveExerciseId2Preferences(exercise_id);
-/*
-                int user_id = gameHelper.getUserId();
-                Map<String, String> user_exercise_data = dbHelper.getUserExerciseData(user_id, exercise_id);
-                if (user_exercise_data == null) {
-                    dbHelper.createUserExercise(user_id, exercise_id);
-                    dbHelper.openLocationForCurrentUserExercise(1);
-                }
-*/
-                Intent intent = new Intent(ExercisesActivity.this, TabsActivity.class);
-                startActivity(intent);
+                initDialogAddOrEditUser(exercise_id);
+                dialogAddOrEditExercise.show();
             }
         });
+//
+//        lvExercises.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//            int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
+//            initDialogAddOrEditUser(exercise_id);
+//            dialogAddOrEditExercise.show();
+//
+//            return true;
+//            }
+//        });
 
         lvExercises.setFooterDividersEnabled(true);
-        showExercisesList();
     }
 
     private void showExercisesList()
     {
         exercisesData = dbHelper.getExercisesData();
+        if (exercisesData.size() > 0) {
+            tvExercisesListInfo.setText("");
+        } else {
+            tvExercisesListInfo.setText(getResources().getString(R.string.exercises_list_info_msg));
+        }
+
         lvExercises.invalidateViews();
-        SimpleAdapter exercisesAdapter = new SimpleAdapter(
+        SimpleAdapter usersAdapter = new SimpleAdapter(
                 this,
                 exercisesData,
                 android.R.layout.simple_list_item_2,
@@ -141,11 +110,64 @@ public class ExercisesActivity extends Activity {
                 new int[] {android.R.id.text1, android.R.id.text2}
         );
 
-        lvExercises.setAdapter(exercisesAdapter);
-        String exercises_list_info = "";
-        if (exercisesData.size() == 0) {
-            exercises_list_info = "У вас пока нет активных упражнений";
+        lvExercises.setAdapter(usersAdapter);
+    }
+
+    private void initDialogAddOrEditUser(int current_exercise_id)
+    {
+        // get prompt_add_group.xmlgroup.xml view
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_add_exercise, null);
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+        alert_dialog_builder.setView(prompts_view);
+
+        final EditText et_input_exercise_name = (EditText) prompts_view.findViewById(R.id.editTextDialogExerciseInput);
+
+        final int exercise_id = current_exercise_id;
+        if (current_exercise_id != -1) {
+            et_input_exercise_name.setText(dbHelper.getExerciseName(current_exercise_id));
+        } else {
+            et_input_exercise_name.setText("");
         }
-        tvExercisesListInfo.setText(exercises_list_info);
+
+        // set dialog message
+        alert_dialog_builder
+            .setCancelable(false)
+            .setPositiveButton(R.string.btn_save_text,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                    String exercise_name = et_input_exercise_name.getText().toString();
+                    if (exercise_name.trim().length() == 0) {
+                        Toast.makeText(getBaseContext(), R.string.msg_exercise_need_name, Toast.LENGTH_SHORT).show();
+                    } else if (dbHelper.checkExerciseExist(exercise_name)) {
+                        Toast.makeText(getBaseContext(), R.string.msg_exercise_name_already_exists, Toast.LENGTH_SHORT).show();
+                    } else if (exercise_id == -1) {
+                        long result = dbHelper.addExercise(exercise_name);
+                        if (result > 0) {
+                            showExercisesList();
+                            Toast.makeText(getBaseContext(), R.string.msg_exercise_add_success, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getBaseContext(), R.string.msg_exercise_add_error, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        long result = dbHelper.updateExercise(exercise_id, exercise_name);
+                        if (result > 0) {
+                            showExercisesList();
+                            Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_success, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_error, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    }
+                })
+            .setNegativeButton(R.string.btn_cancel_text,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                    dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        dialogAddOrEditExercise = alert_dialog_builder.create();
     }
 }

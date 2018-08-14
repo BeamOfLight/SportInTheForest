@@ -53,6 +53,6 @@
         android:id="@+id/btnAddExercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Добавить новый вид упражнения" />
+        android:text="Настройка упражнений" />
 
 </LinearLayout>
