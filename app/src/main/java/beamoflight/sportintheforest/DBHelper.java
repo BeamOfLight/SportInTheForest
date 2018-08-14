@@ -1227,6 +1227,18 @@ class DBHelper extends DBHelperBaseLayer {
         return getUserMultiplier(user_id, exercise_id);
     }
 
+    public int getUserRegeneration(int user_id, int exercise_id)
+    {
+        return Integer.parseInt(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_regeneration_base"));
+    }
+
+    public int getCurrentUserRegeneration()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserRegeneration(user_id, exercise_id);
+    }
+
     public float getUserBonusChance(int user_id, int exercise_id)
     {
         int user_level = getUserLevel(user_id, exercise_id);

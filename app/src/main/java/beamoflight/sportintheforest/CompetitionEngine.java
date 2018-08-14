@@ -512,8 +512,13 @@ class CompetitionEngine {
             for (CharacterEntity character : teamData) {
                 if (character.getCurrentFitnessPoints() > 0) {
                     int old_fitness_points = character.getCurrentFitnessPoints();
+                    int player_regeneration = 0;
+                    if (character.isPlayer()) {
+                        PlayerEntity player_entity = (PlayerEntity) character;
+                        player_regeneration = dbHelper.getUserRegeneration(player_entity.getUserId(), player_entity.getExerciseId());
+                    }
                     int new_fitness_points = Math.min(
-                            character.getCurrentFitnessPoints() + character.getRegeneration(),
+                            character.getCurrentFitnessPoints() + player_regeneration + character.getRegeneration(),
                             character.getInitialFitnessPoints()
                     );
                     character.setCurrentFitnessPoints(new_fitness_points);
