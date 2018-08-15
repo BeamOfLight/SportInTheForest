@@ -1,6 +1,7 @@
 package beamoflight.sportintheforest;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
@@ -15,6 +16,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by beamoflight on 30.05.17.
@@ -86,7 +90,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
     protected void createTableUsers(SQLiteDatabase db)
     {
-        // создаем таблицу user_exercises
+        // создаем таблицу users
         db.execSQL("DROP TABLE IF EXISTS users;");
         db.execSQL("CREATE TABLE IF NOT EXISTS users ("
                 + "user_id integer primary key autoincrement,"
@@ -134,7 +138,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                         if (xpp.getName().equals("exercise")) {
                             id = Integer.parseInt(xpp.getAttributeValue(0));
                             name = xpp.getAttributeValue(1);
-                            sql += ", (" + id + ", NOW(), \"" + name +"\", \"" + name +"\")";
+                            sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\")";
                         }
                         break;
                     default:
@@ -671,5 +675,77 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onDowngrade database ---");
         recreateCommonTable(db);
+    }
+
+    public static String implode(String separator, String... data) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < data.length - 1; i++) {
+            //data.length - 1 => to not add separator at the end
+            if (!data[i].matches(" *")) {//empty string are ""; " "; "  "; and so on
+                sb.append(data[i]);
+                sb.append(separator);
+            }
+        }
+        sb.append(data[data.length - 1].trim());
+        return sb.toString();
+    }
+
+    public void setTableData(SQLiteDatabase db, String table_name, ArrayList<Map<String, String>> data)
+    {
+        Log.d("DEBUG2", data.toString());
+        String[] fields = getFieldsByTableName(table_name);
+        String base_sql = "DELETE FROM " + table_name + "; VACUUM; INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
+        String sql = "";
+        int cnt = 0;
+        for (Map<String, String> row : data) {
+            cnt++;
+            sql += ", (";
+            for (int i = 0; i < fields.length; i++) {
+                sql += "\"" + row.get(fields[i]) + "\", ";
+            }
+            sql = sql.substring(0, sql.length() - 2);
+            sql += ")";
+        }
+        sql += ";";
+        Log.d("DEBUG3", base_sql + sql);
+        if (cnt > 0) {
+            db.execSQL(base_sql + sql.substring(1));
+        }
+    }
+
+    public ArrayList<Map<String, String>> getTableData(SQLiteDatabase db, String table_name)
+    {
+        String[] fields = getFieldsByTableName(table_name);
+        ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        Map<String, String> m;
+        Cursor cursor = db.query(table_name, fields, null, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    for (int i = 0; i < fields.length; i++) {
+                        m.put(fields[i], cursor.getString(cursor.getColumnIndex(fields[i])));
+                    }
+                    data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    private String[] getFieldsByTableName(String table_name)
+    {
+        Map<String, String[]> m = new HashMap<>();
+        m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
+        m.put("user_exercises", new String[] {"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation"});
+        m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name"});
+        m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
+        m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
+        m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
+        m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
+
+        return m.get(table_name);
     }
 }

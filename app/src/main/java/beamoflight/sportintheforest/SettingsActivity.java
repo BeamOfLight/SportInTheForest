@@ -54,10 +54,11 @@ import okhttp3.Response;
 public class SettingsActivity extends Activity {
     GameHelper gameHelper;
     DBHelper dbHelper;
+    DBProgressSaver dbProgressSaver;
 
 //    AlertDialog dialogAddExercise;
 
-    Button btnImportDB, btnExportDB, btnWipe, btnWipeSaveUserProgress;
+    Button btnImportDBold, btnImportDB, btnExportDB, btnWipe, btnWipeSaveUserProgress;
     Button btnAddExercise, btnAction1;
     Button btnTest;
 
@@ -73,12 +74,28 @@ public class SettingsActivity extends Activity {
 
         gameHelper = new GameHelper(this.getBaseContext());
         dbHelper = new DBHelper(getBaseContext());
+        dbProgressSaver = new DBProgressSaver(getBaseContext());
 
         prepareBackUpDir();
+        btnImportDBold = (Button) findViewById(R.id.btnImportDBold);
+        btnImportDBold.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.importDB("SportInTheForestDB.db");
+            }
+        });
+
         btnImportDB = (Button) findViewById(R.id.btnImportDB);
         btnImportDB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dbHelper.importDB("SportInTheForestDB.db");
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                SQLiteDatabase saver_db = dbProgressSaver.getWritableDatabase();
+                dbHelper.onCreate(db);
+                dbProgressSaver.importDB("SportInTheForestProgressDB.db");
+                String tables[] = new String[] {"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
+                //dbProgressSaver.onCreate(saver_db);
+                for (int i = 0; i < tables.length; i++) {
+                    dbHelper.setTableData(db, tables[i], dbProgressSaver.getTableData(saver_db, tables[i]));
+                }
             }
         });
 
@@ -87,6 +104,15 @@ public class SettingsActivity extends Activity {
             public void onClick(View v) {
                 dbHelper.exportDB("SportInTheForestDB.db", false);
                 dbHelper.exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", true);
+                SQLiteDatabase saver_db = dbProgressSaver.getWritableDatabase();
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                String tables[] = new String[] {"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
+                dbProgressSaver.onCreate(saver_db);
+                for (int i = 0; i < tables.length; i++) {
+                    dbProgressSaver.setTableData(saver_db, tables[i], dbHelper.getTableData(db, tables[i]));
+                }
+                dbProgressSaver.exportDB("SportInTheForestProgressDB.db", false);
+                dbProgressSaver.exportDB("SportInTheForestProgressDB_" + gameHelper.getTodayString() + ".db", true);
             }
         });
 

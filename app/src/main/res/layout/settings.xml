@@ -5,6 +5,12 @@
     android:weightSum="1">
 
     <Button
+        android:id="@+id/btnImportDBold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Загрузка данных old" />
+
+    <Button
         android:id="@+id/btnImportDB"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
