@@ -8,13 +8,21 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,16 +32,17 @@ import java.util.Map;
  * Created by beamoflight on 30.05.17.
  */
 class DBHelperBaseLayer extends SQLiteOpenHelper {
+    protected SQLiteDatabase db;
     protected Context context;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
         super (current, "SportInTheForestDB", null, 5);
-
         context = current;
+        db = getWritableDatabase();
     }
 
-    protected void createTablePlayerExp(SQLiteDatabase db)
+    protected void createTablePlayerExp()
     {
         db.execSQL("DROP TABLE IF EXISTS player_exp;");
         db.execSQL("CREATE TABLE IF NOT EXISTS player_exp ("
@@ -88,7 +97,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableUsers(SQLiteDatabase db)
+    protected void createTableUsers()
     {
         // создаем таблицу users
         db.execSQL("DROP TABLE IF EXISTS users;");
@@ -99,7 +108,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "name text" + ");");
     }
 
-    protected void createTableUserExercises(SQLiteDatabase db) {
+    protected void createTableUserExercises() {
         // создаем таблицу user_exercises
         db.execSQL("DROP TABLE IF EXISTS user_exercises;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercises ("
@@ -114,7 +123,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + ");");
     }
 
-    protected void createTableExercises(SQLiteDatabase db)
+    protected void createTableExercises()
     {
         // создаем таблицу exercises
         db.execSQL("DROP TABLE IF EXISTS exercises;");
@@ -157,7 +166,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableLocations(SQLiteDatabase db)
+    protected void createTableLocations()
     {
         // создаем таблицу locations
         db.execSQL("DROP TABLE IF EXISTS locations;");
@@ -198,7 +207,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableUserExerciseLocations(SQLiteDatabase db) {
+    protected void createTableUserExerciseLocations() {
         // создаем таблицу user_exercise_locations
         db.execSQL("DROP TABLE IF EXISTS user_exercise_locations;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_locations ("
@@ -216,7 +225,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + ");");
     }
 
-    protected void createTableNonPlayerCharacters(SQLiteDatabase db)
+    protected void createTableNonPlayerCharacters()
     {
         // создаем таблицу non_player_characters
         db.execSQL("DROP TABLE IF EXISTS non_player_characters;");
@@ -291,7 +300,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableSkills(SQLiteDatabase db)
+    protected void createTableSkills()
     {
         // создаем таблицу skills
         db.execSQL("DROP TABLE IF EXISTS skills;");
@@ -406,7 +415,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableAchievements(SQLiteDatabase db)
+    protected void createTableAchievements()
     {
         // создаем таблицу achievements
         db.execSQL("DROP TABLE IF EXISTS achievements;");
@@ -456,7 +465,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableSkillGroups(SQLiteDatabase db)
+    protected void createTableSkillGroups()
     {
         // создаем таблицу skill_groups
         db.execSQL("DROP TABLE IF EXISTS skill_groups;");
@@ -507,7 +516,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
-    protected void createTableUserExerciseSkills(SQLiteDatabase db) {
+    protected void createTableUserExerciseSkills() {
         // создаем таблицу user_exercise_skills
         db.execSQL("DROP TABLE IF EXISTS user_exercise_skills;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_skills ("
@@ -520,7 +529,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + ");");
     }
 
-    protected void createTableUserExerciseQuests(SQLiteDatabase db) {
+    protected void createTableUserExerciseQuests() {
         // создаем таблицу user_exercise_quests
         db.execSQL("DROP TABLE IF EXISTS user_exercise_quests;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_quests ("
@@ -534,7 +543,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + ");");
     }
 
-    protected void createUserExerciseTrainingsTable(SQLiteDatabase db)
+    protected void createUserExerciseTrainingsTable()
     {
         // создаем таблицу trainings
         db.execSQL("DROP TABLE IF EXISTS user_exercise_trainings;");
@@ -559,14 +568,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + ");");
     }
 
-    public void recreateCommonTable(SQLiteDatabase db)
+    public void recreateCommonTable()
     {
-        createTablePlayerExp(db);
-        createTableLocations(db);
-        createTableNonPlayerCharacters(db);
-        createTableSkills(db);
-        createTableSkillGroups(db);
-        createTableAchievements(db);
+        createTablePlayerExp();
+        createTableLocations();
+        createTableNonPlayerCharacters();
+        createTableSkills();
+        createTableSkillGroups();
+        createTableAchievements();
     }
 
     //importing database
@@ -638,16 +647,17 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onCreate database ---");
+        this.db = db;
 
-        createTableExercises(db);
-        createUserExerciseTrainingsTable(db);
-        createTableUsers(db);
-        createTableUserExercises(db);
-        createTableUserExerciseLocations(db);
-        createTableUserExerciseSkills(db);
-        createTableUserExerciseQuests(db);
+        createTableExercises();
+        createUserExerciseTrainingsTable();
+        createTableUsers();
+        createTableUserExercises();
+        createTableUserExerciseLocations();
+        createTableUserExerciseSkills();
+        createTableUserExerciseQuests();
 
-        recreateCommonTable(db);
+        recreateCommonTable();
 
         // TODO: remove after debug
         //db.execSQL("INSERT INTO users (user_id, creation_date, modification_date, name) VALUES (1, \"1994-03-06\", \"1994-03-06\",\"test\");");
@@ -658,10 +668,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onUpgrade database ---");
+        this.db = db;
+
         //exportDB("update_backup.db", false);
         //onCreate(getWritableDatabase());
         //importDB("update_backup.db");
-        recreateCommonTable(db);
+        recreateCommonTable();
         if (newVersion == 5) {
             db.execSQL("ALTER TABLE exercises ADD COLUMN initial_name text;");
             db.execSQL("ALTER TABLE exercises ADD COLUMN modification_date date;");
@@ -674,7 +686,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onDowngrade database ---");
-        recreateCommonTable(db);
+        this.db = db;
+
+        recreateCommonTable();
     }
 
     public static String implode(String separator, String... data) {
@@ -690,11 +704,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    public void setTableData(SQLiteDatabase db, String table_name, ArrayList<Map<String, String>> data)
+    public void setTableData(String table_name, ArrayList<Map<String, String>> data)
     {
         Log.d("DEBUG2", data.toString());
         String[] fields = getFieldsByTableName(table_name);
-        String base_sql = "DELETE FROM " + table_name + "; VACUUM; INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
+        String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
         String sql = "";
         int cnt = 0;
         for (Map<String, String> row : data) {
@@ -707,13 +721,18 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             sql += ")";
         }
         sql += ";";
-        Log.d("DEBUG3", base_sql + sql);
+        Log.d("DEBUG3", base_sql + sql.substring(1));
         if (cnt > 0) {
+            Log.d("DEBUG7", "db.execSQL " + table_name);
+            db.beginTransaction();
+            db.execSQL("DELETE FROM " + table_name + ";");
             db.execSQL(base_sql + sql.substring(1));
+            db.setTransactionSuccessful();
+            db.endTransaction();
         }
     }
 
-    public ArrayList<Map<String, String>> getTableData(SQLiteDatabase db, String table_name)
+    public ArrayList<Map<String, String>> getTableData(String table_name)
     {
         String[] fields = getFieldsByTableName(table_name);
         ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
@@ -747,5 +766,89 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
 
         return m.get(table_name);
+    }
+
+    class Record
+    {
+        @SerializedName("tables")
+        @Expose
+        Map<String, ArrayList<Map<String, String>>> tables;
+
+        Record()
+        {
+            tables = new HashMap<>();
+        }
+    }
+
+    public String[] getTables2Save()
+    {
+        return new String[]{"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
+    }
+
+    public void save2file()
+    {
+        File sd = Environment.getExternalStorageDirectory();
+        String baseBackupDBPath = "/SportInTheForest/" + "out.txt";
+        Record record = new Record();
+        String tables[] = getTables2Save();
+        for (int i = 0; i < tables.length; i++) {
+            record.tables.put(tables[i], getTableData(tables[i]));
+        }
+        String json_string = new Gson().toJson(record);
+
+        try {
+            File fout = new File(sd, baseBackupDBPath);
+            FileOutputStream fos = new FileOutputStream(fout);
+
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+            bw.write(json_string);
+//        for (int i = 0; i < 10; i++) {
+//            bw.write("something");
+//            bw.newLine();
+//        }
+            bw.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadFromFile()
+    {
+        String json_string = "";
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            if (sd.canRead()) {
+                //String path = sd.getAbsolutePath();
+                File file = new File(sd, "/SportInTheForest/out.txt");
+                StringBuilder text = new StringBuilder();
+
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                json_string = text.toString();
+            }
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Record record;
+        if (json_string.length() > 0) {
+            record = (new Gson()).fromJson(json_string, Record.class);
+            String tables[] = getTables2Save();
+            for (String table_name : tables) {
+                setTableData(table_name, record.tables.get(table_name));
+            }
+
+            Log.d("DEBUG9", getTableData("users").toString());
+        } else {
+            Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

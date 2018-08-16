@@ -8,16 +8,17 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -25,11 +26,12 @@ import java.util.Map;
  */
 class DBProgressSaver extends SQLiteOpenHelper {
     protected Context context;
+    protected SQLiteDatabase db;
 
     public DBProgressSaver(Context current) {
         // конструктор суперкласса
         super (current, "SportInTheForestProgressDB", null, 1);
-
+        db = getWritableDatabase();
         context = current;
     }
 
@@ -46,11 +48,11 @@ class DBProgressSaver extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    public void setTableData(SQLiteDatabase db, String table_name, ArrayList<Map<String, String>> data)
+    public void setTableData(String table_name, ArrayList<Map<String, String>> data)
     {
         Log.d("DEBUG2", data.toString());
         String[] fields = getFieldsByTableName(table_name);
-        String base_sql = "DELETE FROM " + table_name + "; VACUUM; INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
+        String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
         String sql = "";
         int cnt = 0;
         for (Map<String, String> row : data) {
@@ -63,13 +65,19 @@ class DBProgressSaver extends SQLiteOpenHelper {
             sql += ")";
         }
         sql += ";";
-        Log.d("DEBUG3", base_sql + sql);
+        Log.d("DEBUG3", base_sql + sql.substring(1));
         if (cnt > 0) {
+            Log.d("DEBUG7", "db.execSQL " + table_name);
+            db.beginTransaction();
+            db.execSQL("DELETE FROM " + table_name + ";");
             db.execSQL(base_sql + sql.substring(1));
+            db.setTransactionSuccessful();
+            db.endTransaction();
         }
+
     }
 
-    public ArrayList<Map<String, String>> getTableData(SQLiteDatabase db, String table_name)
+    public ArrayList<Map<String, String>> getTableData(String table_name)
     {
         String[] fields = getFieldsByTableName(table_name);
         ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
@@ -105,7 +113,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
         return m.get(table_name);
     }
 
-    protected void createTableUsers(SQLiteDatabase db)
+    protected void createTableUsers()
     {
         db.execSQL("DROP TABLE IF EXISTS users;");
         db.execSQL("CREATE TABLE IF NOT EXISTS users ("
@@ -115,7 +123,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
                 + "name text" + ");");
     }
 
-    protected void createTableUserExercises(SQLiteDatabase db) {
+    protected void createTableUserExercises() {
         db.execSQL("DROP TABLE IF EXISTS user_exercises;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercises ("
                 + "user_id integer,"
@@ -162,7 +170,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
 //        return data;
 //    }
 
-    protected void createTableExercises(SQLiteDatabase db)
+    protected void createTableExercises()
     {
         db.execSQL("DROP TABLE IF EXISTS exercises;");
         db.execSQL("CREATE TABLE IF NOT EXISTS exercises ("
@@ -172,7 +180,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
                 + "name text" + ");");
     }
 
-    protected void createTableUserExerciseLocations(SQLiteDatabase db) {
+    protected void createTableUserExerciseLocations() {
         // создаем таблицу user_exercise_locations
         db.execSQL("DROP TABLE IF EXISTS user_exercise_locations;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_locations ("
@@ -186,7 +194,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
                 + "npc_5_level integer" + ");");
     }
 
-    protected void createTableUserExerciseSkills(SQLiteDatabase db) {
+    protected void createTableUserExerciseSkills() {
         // создаем таблицу user_exercise_skills
         db.execSQL("DROP TABLE IF EXISTS user_exercise_skills;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_skills ("
@@ -195,7 +203,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
                 + "exercise_id integer" + ");");
     }
 
-    protected void createTableUserExerciseQuests(SQLiteDatabase db) {
+    protected void createTableUserExerciseQuests() {
         // создаем таблицу user_exercise_quests
         db.execSQL("DROP TABLE IF EXISTS user_exercise_quests;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_quests ("
@@ -205,7 +213,7 @@ class DBProgressSaver extends SQLiteOpenHelper {
                 + "exercise_id integer" + ");");
     }
 
-    protected void createUserExerciseTrainingsTable(SQLiteDatabase db)
+    protected void createUserExerciseTrainingsTable()
     {
         // создаем таблицу trainings
         db.execSQL("DROP TABLE IF EXISTS user_exercise_trainings;");
@@ -230,7 +238,6 @@ class DBProgressSaver extends SQLiteOpenHelper {
     public void importDB(String backup_filename) {
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
                 //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
@@ -294,20 +301,21 @@ class DBProgressSaver extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(context.getResources().getString(R.string.log_tag), "--- onCreate database ---");
+        this.db = db;
+        //Log.d(context.getResources().getString(R.string.log_tag), "--- onCreate database ---");
 
-        createTableExercises(db);
-        createUserExerciseTrainingsTable(db);
-        createTableUsers(db);
-        createTableUserExercises(db);
-        createTableUserExerciseLocations(db);
-        createTableUserExerciseSkills(db);
-        createTableUserExerciseQuests(db);
+        createTableExercises();
+        createUserExerciseTrainingsTable();
+        createTableUsers();
+        createTableUserExercises();
+        createTableUserExerciseLocations();
+        createTableUserExerciseSkills();
+        createTableUserExerciseQuests();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(context.getResources().getString(R.string.log_tag), "--- onUpgrade database ---");
+        //Log.d(context.getResources().getString(R.string.log_tag), "--- onUpgrade database ---");
     }
 
     @Override

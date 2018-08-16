@@ -19,14 +19,12 @@ import java.util.Map;
  * Created by beamoflight on 30.05.17.
  */
 class DBHelper extends DBHelperBaseLayer {
-    private SQLiteDatabase db;
     private GameHelper gameHelper;
     private Context context;
 
     public DBHelper(Context current) {
         super (current);
 
-        db = getWritableDatabase();
         gameHelper = new GameHelper(current);
         context = current;
     }

@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
         DBHelper dbHelper = new DBHelper( getBaseContext() );
 
         //TODO: DB version. Update if version changes
-        dbHelper.recreateCommonTable(dbHelper.getWritableDatabase());
+        dbHelper.recreateCommonTable();
     }
 
     private void showVersion()
