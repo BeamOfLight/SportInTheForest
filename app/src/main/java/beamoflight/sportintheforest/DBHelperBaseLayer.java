@@ -34,6 +34,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
+    protected int formatVersion = 2;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -559,6 +560,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "max_result smallint,"
                 + "number_of_moves smallint,"
                 + "duration smallint,"
+                + "my_team_fp integer,"
+                + "op_team_fp integer,"
                 + "exp integer,"
                 + "result_state smallint,"
                 + "quest_owner boolean,"
@@ -582,7 +585,6 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     public void importDB(String backup_filename) {
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
                 //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
@@ -644,6 +646,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         }
     }
 
+    public void customOnCreate()
+    {
+        onCreate(getWritableDatabase());
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onCreate database ---");
@@ -670,17 +677,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         Log.d(context.getResources().getString(R.string.log_tag), "--- onUpgrade database ---");
         this.db = db;
 
-        //exportDB("update_backup.db", false);
-        //onCreate(getWritableDatabase());
-        //importDB("update_backup.db");
         recreateCommonTable();
-        if (newVersion == 5) {
-            db.execSQL("ALTER TABLE exercises ADD COLUMN initial_name text;");
-            db.execSQL("ALTER TABLE exercises ADD COLUMN modification_date date;");
-            db.execSQL("UPDATE exercises SET initial_name = name");
-
-            //importDB("update_backup.db");
-        }
     }
 
     @Override
@@ -704,10 +701,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    public void setTableData(String table_name, ArrayList<Map<String, String>> data)
+    public void setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version)
     {
-        Log.d("DEBUG2", data.toString());
-        String[] fields = getFieldsByTableName(table_name);
+        String[] fields = getFieldsByTableName(table_name, old_format_version);
         String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
         String sql = "";
         int cnt = 0;
@@ -721,9 +717,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             sql += ")";
         }
         sql += ";";
-        Log.d("DEBUG3", base_sql + sql.substring(1));
         if (cnt > 0) {
-            Log.d("DEBUG7", "db.execSQL " + table_name);
             db.beginTransaction();
             db.execSQL("DELETE FROM " + table_name + ";");
             db.execSQL(base_sql + sql.substring(1));
@@ -734,7 +728,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
     public ArrayList<Map<String, String>> getTableData(String table_name)
     {
-        String[] fields = getFieldsByTableName(table_name);
+        String[] fields = getFieldsByTableName(table_name, formatVersion);
         ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
         Map<String, String> m;
         Cursor cursor = db.query(table_name, fields, null, null, null, null, null);
@@ -754,7 +748,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return data;
     }
 
-    private String[] getFieldsByTableName(String table_name)
+    private String[] getFieldsByTableName(String table_name, int format_version)
     {
         Map<String, String[]> m = new HashMap<>();
         m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
@@ -763,7 +757,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
         m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
-        m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
+        if (format_version == 1) {
+            m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
+        } else if (format_version == 2) {
+            m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp"});
+        }
 
         return m.get(table_name);
     }
@@ -774,8 +772,13 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         @Expose
         Map<String, ArrayList<Map<String, String>>> tables;
 
+        @SerializedName("format_version")
+        @Expose
+        int format_version;
+
         Record()
         {
+            format_version = formatVersion;
             tables = new HashMap<>();
         }
     }
@@ -843,10 +846,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             record = (new Gson()).fromJson(json_string, Record.class);
             String tables[] = getTables2Save();
             for (String table_name : tables) {
-                setTableData(table_name, record.tables.get(table_name));
+                setTableData(table_name, record.tables.get(table_name), record.format_version);
             }
-
-            Log.d("DEBUG9", getTableData("users").toString());
         } else {
             Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
         }

@@ -77,7 +77,7 @@ class CompetitionEngine {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     dbHelper.addCompetition2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
                     player_entity.setCurrentTrainingId(
-                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), 0, getQuestOwner(player_entity))
+                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), 0, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)))
                     );
                 }
             }
@@ -98,7 +98,8 @@ class CompetitionEngine {
                     if (player_entity.getTeamIdx() == mainPlayerTeamIdx && player_entity.getIdxInTeam() == mainPlayerIdx) {
                         state = GameHelper.RESULT_STATE_LEFT;
                     }
-                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, state, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, state, npc_location_id, npc_position, duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
+
                 }
             }
         }
@@ -551,7 +552,7 @@ class CompetitionEngine {
                 for (CharacterEntity character : teamData) {
                     if (character.isPlayer()) {
                         PlayerEntity player_entity = (PlayerEntity) character;
-                        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity));
+                        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
                     }
                 }
             }
@@ -567,7 +568,7 @@ class CompetitionEngine {
                 if (character.isPlayer()) {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     int result_exp = Math.round(getTeamExp(getOppositeTeamIdx(character.getTeamIdx())) * (float)(0.2) * getExpRatio(player_entity.getTeamIdx()));
-                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), result_exp, numberOfMoves, GameHelper.RESULT_STATE_DRAW, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity));
+                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), result_exp, numberOfMoves, GameHelper.RESULT_STATE_DRAW, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
                     dbHelper.addDraw2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
                     if (character.getTeamIdx() == mainPlayerTeamIdx && character.getIdxInTeam() == mainPlayerIdx) {
                         addCompetitionLogMessage(
@@ -597,7 +598,7 @@ class CompetitionEngine {
     private int processWin4Player(PlayerEntity player_entity, int npc_id, int npc_location_id, int npc_position, int duration)
     {
         int exp = Math.round(getTeamExp(getOppositeTeamIdx(player_entity.getTeamIdx())) * getExpRatio(player_entity.getTeamIdx()));
-        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_WIN, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_WIN, npc_location_id, npc_position, duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
         dbHelper.addWin2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
 
         return exp;
@@ -612,7 +613,7 @@ class CompetitionEngine {
     {
         int exp = Math.round(((1 - (float) getTeamFP(getOppositeTeamIdx(player_entity.getTeamIdx())) / getTeamInitialFP(getOppositeTeamIdx(player_entity.getTeamIdx()))) * ((float) getTeamExp(getOppositeTeamIdx(player_entity.getTeamIdx())) / 10)) * getExpRatio(player_entity.getTeamIdx()));
 
-        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_DEFEAT, npc_location_id, npc_position, duration, getQuestOwner(player_entity));
+        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_id, player_entity.getSumResult(), player_entity.getMaxResult(), exp, numberOfMoves, GameHelper.RESULT_STATE_DEFEAT, npc_location_id, npc_position, duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
 
         return exp;
     }

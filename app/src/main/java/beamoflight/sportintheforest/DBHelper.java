@@ -1414,7 +1414,7 @@ class DBHelper extends DBHelperBaseLayer {
 //
 
 
-    public long addTraining(int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner)
+    public long addTraining(int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp)
     {
         ContentValues values = new ContentValues();
         values.put("event_timestamp", gameHelper.getTodayTimestampString());
@@ -1430,6 +1430,8 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("npc_location_id", npc_location_id);
         values.put("npc_position", npc_position);
         values.put("quest_owner", quest_owner);
+        values.put("my_team_fp", my_team_fp);
+        values.put("op_team_fp", op_team_fp);
 
        // Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: " + values.toString());
 
@@ -1437,7 +1439,7 @@ class DBHelper extends DBHelperBaseLayer {
         return db.insert("user_exercise_trainings", null, values);
     }
 
-    public long updateTraining(long training_id, int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner)
+    public long updateTraining(long training_id, int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp)
     {
         ContentValues values = new ContentValues();
         values.put("npc_id", npc_id);
@@ -1450,6 +1452,8 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("npc_location_id", npc_location_id);
         values.put("npc_position", npc_position);
         values.put("quest_owner", quest_owner);
+        values.put("my_team_fp", my_team_fp);
+        values.put("op_team_fp", op_team_fp);
 
         return db.update(
                 "user_exercise_trainings",
@@ -1767,7 +1771,7 @@ class DBHelper extends DBHelperBaseLayer {
 
         Cursor cursor = db.query(
                 "user_exercise_trainings AS uet LEFT JOIN non_player_characters AS n ON n.npc_id = uet.npc_id LEFT JOIN locations AS l ON n.location_id = l.location_id",
-                new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "n.name AS npc_name", "n.level AS npc_level", "l.name AS location_name", "uet.duration" },
+                new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "n.name AS npc_name", "n.level AS npc_level", "l.name AS location_name", "uet.duration", "uet.my_team_fp", "uet.op_team_fp" },
                 "uet.user_id = ? AND uet.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 null,
@@ -1778,7 +1782,7 @@ class DBHelper extends DBHelperBaseLayer {
             if (cursor.moveToFirst()) {
 
                 do {
-                    m = new HashMap<String, String>();
+                    m = new HashMap<>();
                     m.put("event_timestamp", cursor.getString(cursor.getColumnIndex("event_timestamp")));
                     m.put("sum_result", cursor.getString(cursor.getColumnIndex("sum_result")));
                     m.put("max_result", cursor.getString(cursor.getColumnIndex("max_result")));
@@ -1789,7 +1793,8 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("npc_level", cursor.getString(cursor.getColumnIndex("npc_level")));
                     m.put("location_name", cursor.getString(cursor.getColumnIndex("location_name")));
                     m.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
-
+                    m.put("my_team_fp", cursor.getString(cursor.getColumnIndex("my_team_fp")));
+                    m.put("op_team_fp", cursor.getString(cursor.getColumnIndex("op_team_fp")));
 
                     m.put("header", String.format(
                             Locale.ROOT,
@@ -1801,13 +1806,15 @@ class DBHelper extends DBHelperBaseLayer {
                     ));
                     m.put("info", String.format(
                             Locale.ROOT,
-                            "%s | Опыт: %s | Суммарный результат: %s | Подходы: %s | Максимум: %s | Продолжительность: %s",
+                            "%s | Опыт: %s | Суммарный результат: %s | Подходы: %s | Максимум: %s | Продолжительность: %s | Счёт: %s : %s",
                             gameHelper.getCompetitionStatus(Integer.parseInt(m.get("result_state"))),
                             m.get("exp"),
                             m.get("sum_result"),
                             m.get("number_of_moves"),
                             m.get("max_result"),
-                            getDuration(Integer.parseInt(m.get("duration")))
+                            getDuration(Integer.parseInt(m.get("duration"))),
+                            m.get("my_team_fp"),
+                            m.get("op_team_fp")
                     ));
 
                     last_trainings_data.add(m);
