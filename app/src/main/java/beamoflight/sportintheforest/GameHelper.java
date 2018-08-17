@@ -166,17 +166,31 @@ public class GameHelper {
         );
     }
 
-    public int getShardePreferencesInt(String key, int default_value)
+    public int getSharedPreferencesInt(String key, int default_value)
     {
         SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
         return sPref.getInt(key, default_value);
     }
 
-    public void setShardePreferencesInt(String key, int value)
+    public void setSharedPreferencesInt(String key, int value)
     {
         SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = s_pref.edit();
         editor.putInt(key, value);
+        editor.commit();
+    }
+
+    public String getSharedPreferencesString(String key, String default_value)
+    {
+        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        return sPref.getString(key, default_value);
+    }
+
+    public void setSharedPreferencesString(String key, String value)
+    {
+        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = s_pref.edit();
+        editor.putString(key, value);
         editor.commit();
     }
 

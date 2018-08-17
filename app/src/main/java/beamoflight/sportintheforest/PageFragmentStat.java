@@ -79,7 +79,7 @@ public class PageFragmentStat extends Fragment {
         ArrayAdapter<UserExerciseTrainingStatTimeOption> adapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item, timeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFragmentPageStatTime.setAdapter(adapter);
-        spinnerFragmentPageStatTime.setSelection(gameHelper.getShardePreferencesInt("stat_spinner_position", 0));
+        spinnerFragmentPageStatTime.setSelection(gameHelper.getSharedPreferencesInt("stat_spinner_position", 0));
 
         spinnerFragmentPageStatTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -98,7 +98,7 @@ public class PageFragmentStat extends Fragment {
                 tvFragmentPageStatMaxResult.setText(String.format(Locale.ROOT, "%d", stat.max_result));
                 tvFragmentPageStatTotalNumberOfMoves.setText(String.format(Locale.ROOT, "%d", stat.total_number_of_moves));
                 tvFragmentPageStatAverageResult.setText(stat.getAverageResultString());
-                gameHelper.setShardePreferencesInt("stat_spinner_position", position);
+                gameHelper.setSharedPreferencesInt("stat_spinner_position", position);
             }
 
             @Override
