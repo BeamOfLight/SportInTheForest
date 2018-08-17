@@ -785,10 +785,10 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return new String[]{"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
     }
 
-    public void save2file()
+    public void save2file(String filename)
     {
         File sd = Environment.getExternalStorageDirectory();
-        String baseBackupDBPath = "/SportInTheForest/" + "out.txt";
+        String baseBackupDBPath = "/SportInTheForest/" + filename;
         Record record = new Record();
         String tables[] = getTables2Save();
         for (int i = 0; i < tables.length; i++) {
@@ -813,14 +813,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         }
     }
 
-    public void loadFromFile()
+    public void loadFromFile(String filename)
     {
         String json_string = "";
         try {
             File sd = Environment.getExternalStorageDirectory();
             if (sd.canRead()) {
                 //String path = sd.getAbsolutePath();
-                File file = new File(sd, "/SportInTheForest/out.txt");
+                File file = new File(sd, "/SportInTheForest/" + filename);
                 StringBuilder text = new StringBuilder();
 
                 BufferedReader br = new BufferedReader(new FileReader(file));

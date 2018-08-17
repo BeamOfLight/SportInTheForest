@@ -57,6 +57,14 @@ public class GameHelper {
         return date_format.format(calendar.getTime());
     }
 
+    public String getTodayStringWithHours()
+    {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd_HH", Locale.ROOT);
+
+        return date_format.format(calendar.getTime());
+    }
+
     public String getTodayTimestampString()
     {
         Calendar cal = Calendar.getInstance();

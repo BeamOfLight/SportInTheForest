@@ -16,17 +16,17 @@
         android:layout_height="wrap_content"
         android:text="Сохранение данных old" />
 
-    <Button
-        android:id="@+id/btnImportDB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Загрузка данных" />
+    <!--<Button-->
+        <!--android:id="@+id/btnImportDB"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Загрузка данных" />-->
 
-    <Button
-        android:id="@+id/btnExportDB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Сохранение данных" />
+    <!--<Button-->
+        <!--android:id="@+id/btnExportDB"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Сохранение данных" />-->
 
     <Button
         android:id="@+id/btnImportDBnew"
