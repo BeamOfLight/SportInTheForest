@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
     private void showVersion()
     {
         tvVersion.setText(
-            String.format(Locale.ROOT, "%s", getResources().getString(R.string.app_version))
+            String.format(Locale.ROOT, "ver. %s", getResources().getString(R.string.app_version))
         );
         btMenuStart.setEnabled(true);
         btMenuSettings.setEnabled(true);
@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
         btMenuKnowledge.setEnabled(false);
 
         String app_version = gameHelper.getSharedPreferencesString("app_version", null);
-        if (app_version != getResources().getString(R.string.app_version)) {
+        if (!app_version.equals(getResources().getString(R.string.app_version))) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
