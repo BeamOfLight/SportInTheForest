@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
-    <string name="app_version">0.2.5</string>
+    <string name="app_version">0.2.6</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>

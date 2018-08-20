@@ -2110,4 +2110,40 @@ class DBHelper extends DBHelperBaseLayer {
                 .setBonusMultiplier(getUserBonusMultiplier(user_id, exercise_id));
         return player_entity;
     }
+
+    public Map<String, String> getParameters()
+    {
+        Map<String, String> result_data = new HashMap<String, String>();
+        try {
+            Cursor cursor = db.query("parameters", new String[]{"app_version"}, null, null, null, null, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    result_data.put("app_version", cursor.getString(cursor.getColumnIndex("app_version")));
+                }
+                cursor.close();
+            }
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.d(context.getResources().getString(R.string.log_tag), "GetParameters exception: " + e.getMessage() + " " + e.toString());
+        }
+
+        return result_data;
+    }
+
+    public String getAppVersion()
+    {
+        Map<String, String> parameters = getParameters();
+        String app_version = null;
+        if (parameters.containsKey("app_version")) {
+            app_version = parameters.get("app_version");
+        }
+
+        return app_version;
+    }
+
+    public long updateAppVersion(String app_version)
+    {
+        ContentValues values = new ContentValues();
+        values.put("app_version", app_version);
+        return db.update("parameters", values, null, null);
+    }
 }

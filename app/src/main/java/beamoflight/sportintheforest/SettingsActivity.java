@@ -80,7 +80,7 @@ public class SettingsActivity extends Activity {
         btnImportDBold = (Button) findViewById(R.id.btnImportDBold);
         btnImportDBold.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dbHelper.importDB("SportInTheForestDB.db");
+                dbHelper.importDB("SportInTheForestDB.db", true);
             }
         });
 
@@ -127,7 +127,7 @@ public class SettingsActivity extends Activity {
         btnImportDBnew.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("SportInTheForest.sif");
+                dbHelper.loadFromFile("SportInTheForest.sif", true);
                 Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
             }
         });

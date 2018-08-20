@@ -34,7 +34,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected int formatVersion = 2;
+    protected int formatVersion = 3;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -122,6 +122,15 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
+    }
+
+    protected void createTableParameters() {
+        // создаем таблицу user_exercises
+        db.execSQL("DROP TABLE IF EXISTS parameters;");
+        db.execSQL("CREATE TABLE IF NOT EXISTS parameters ("
+                + "id integer,"
+                + "app_version text" + ");");
+        db.execSQL("INSERT INTO parameters (id, app_version) VALUES (\"1\", \"0.0.0\");");
     }
 
     protected void createTableExercises()
@@ -573,6 +582,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 
     public void recreateCommonTable()
     {
+        createTableParameters();
         createTablePlayerExp();
         createTableLocations();
         createTableNonPlayerCharacters();
@@ -582,7 +592,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     }
 
     //importing database
-    public void importDB(String backup_filename) {
+    public void importDB(String backup_filename, boolean toastOn) {
         try {
             File sd = Environment.getExternalStorageDirectory();
 
@@ -600,15 +610,15 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
-                Toast.makeText(context, backupDB.toString(), Toast.LENGTH_LONG).show();
                 Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: importDB SUCCESS" + backupDB.toString());
+                if (toastOn) Toast.makeText(context, backupDB.toString(), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(context, "Нет прав", Toast.LENGTH_LONG).show();
                 Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: Нет прав");
+                if (toastOn) Toast.makeText(context, "Нет прав", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
             Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: importDB FAIL " + e.toString());
+            if (toastOn) Toast.makeText(context, e.toString(), Toast.LENGTH_LONG).show();
         }
     }
     //exporting database
@@ -757,10 +767,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
         m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
-        if (format_version == 1) {
-            m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
-        } else if (format_version == 2) {
+        m.put("parameters", new String[] {"app_version"});
+        if (format_version >= 2) {
             m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp"});
+        } else if (format_version == 1) {
+            m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
         }
 
         return m.get(table_name);
@@ -783,9 +794,16 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         }
     }
 
-    public String[] getTables2Save()
+    public String[] getTables2Save(int format_version)
     {
-        return new String[]{"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
+        String[] data;
+        if (format_version >= 3)
+            data = new String[]{"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings", "parameters"};
+        else {
+            data = new String[]{"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
+        }
+
+        return data;
     }
 
     public void save2file(String filename)
@@ -793,7 +811,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         File sd = Environment.getExternalStorageDirectory();
         String baseBackupDBPath = "/SportInTheForest/" + filename;
         Record record = new Record();
-        String tables[] = getTables2Save();
+        String tables[] = getTables2Save(formatVersion);
         for (int i = 0; i < tables.length; i++) {
             record.tables.put(tables[i], getTableData(tables[i]));
         }
@@ -810,13 +828,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
 //            bw.newLine();
 //        }
             bw.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadFromFile(String filename)
+    public void loadFromFile(String filename, boolean toastOn)
     {
         String json_string = "";
         try {
@@ -844,12 +861,13 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         Record record;
         if (json_string.length() > 0) {
             record = (new Gson()).fromJson(json_string, Record.class);
-            String tables[] = getTables2Save();
+            String tables[] = getTables2Save(record.format_version);
             for (String table_name : tables) {
                 setTableData(table_name, record.tables.get(table_name), record.format_version);
             }
         } else {
-            Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
+            Log.d("myLogs", "error");
+            if (toastOn) Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
         }
     }
 }

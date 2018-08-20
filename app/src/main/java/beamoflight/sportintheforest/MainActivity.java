@@ -11,10 +11,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     DBHelper dbHelper;
@@ -32,7 +36,7 @@ public class MainActivity extends Activity {
         dbHelper = new DBHelper( getBaseContext() );
         gameHelper = new GameHelper( getBaseContext() );
 
-        app_version = gameHelper.getSharedPreferencesString("app_version", null);
+        app_version = dbHelper.getAppVersion();
         tvVersion = (TextView) findViewById(R.id.tvVersion);
 
         initMenuButtons();
@@ -51,14 +55,9 @@ public class MainActivity extends Activity {
 
     private void autoUpdate()
     {
-        dbHelper.save2file("autosave.sif");
         dbHelper.customOnCreate();
-        dbHelper.loadFromFile("autosave.sif");
-
-        gameHelper.setSharedPreferencesString(
-            "app_version",
-            getResources().getString(R.string.app_version)
-        );
+        dbHelper.loadFromFile("autosave.sif", false);
+        dbHelper.updateAppVersion(getResources().getString(R.string.app_version));
     }
 
     private void checkVersion()
@@ -67,8 +66,8 @@ public class MainActivity extends Activity {
         btMenuSettings.setEnabled(false);
         btMenuKnowledge.setEnabled(false);
 
-        String app_version = gameHelper.getSharedPreferencesString("app_version", null);
-        if (!app_version.equals(getResources().getString(R.string.app_version))) {
+        String app_version = dbHelper.getAppVersion();
+        if (app_version == null || !app_version.equals(getResources().getString(R.string.app_version))) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -87,7 +86,7 @@ public class MainActivity extends Activity {
                 String.format(
                     Locale.ROOT,
                     "Обновляю версию: %s => %s",
-                    gameHelper.getSharedPreferencesString("app_version", null),
+                    dbHelper.getAppVersion(),
                     getResources().getString(R.string.app_version)
                 )
             );
@@ -139,5 +138,22 @@ public class MainActivity extends Activity {
                     PackageManager.PERMISSION_GRANTED
             );
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("APP", "onDestroy " + gameHelper.getTodayTimestampString());
+        try {
+            dbHelper.exportDB("autosave_" + gameHelper.getDayInWeekString() + ".db", false);
+            dbHelper.exportDB("autosave.db", false);
+
+            dbHelper.save2file("autosave_" + gameHelper.getDayInWeekString() + ".sif");
+            dbHelper.save2file("autosave.sif");
+        } catch (Exception e) {
+            Log.d("APP", e.toString());
+        }
+        Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
     }
 }
