@@ -176,6 +176,53 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
+    protected void createTableLocationPositions()
+    {
+        // создаем таблицу locations
+        db.execSQL("DROP TABLE IF EXISTS location_positions;");
+        db.execSQL("CREATE TABLE IF NOT EXISTS location_positions ("
+                + "location_id integer,"
+                + "position integer,"
+                + "level integer,"
+                + "npc_id integer,"
+                + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
+                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
+                + ");");
+
+        String base_sql = "INSERT INTO location_positions (location_id, position, level, npc_id) VALUES";
+        String sql = "";
+        int location_id, position, level, npc_id;
+
+        try {
+            XmlPullParser xpp = context.getResources().getXml(R.xml.location_positions);
+
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                switch (xpp.getEventType()) {
+                    case XmlPullParser.START_TAG:
+                        if (xpp.getName().equals("location_position")) {
+                            location_id = Integer.parseInt(xpp.getAttributeValue(0));
+                            position = Integer.parseInt(xpp.getAttributeValue(1));
+                            level = Integer.parseInt(xpp.getAttributeValue(2));
+                            npc_id = Integer.parseInt(xpp.getAttributeValue(3));
+                            sql += ", (" + location_id + ", " + position + ", " + level + ", " + npc_id + ")";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                // следующий элемент
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sql += ";";
+        db.execSQL(base_sql + sql.substring(1));
+    }
+
     protected void createTableLocations()
     {
         // создаем таблицу locations
@@ -241,8 +288,6 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS non_player_characters;");
         db.execSQL("CREATE TABLE IF NOT EXISTS non_player_characters ("
                 + "npc_id integer primary key autoincrement,"
-                + "location_id integer,"
-                + "position integer,"
                 + "type text,"
                 + "level integer,"
                 + "fp integer,"
@@ -255,13 +300,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "bonus_chance float,"
                 + "bonus_multiplier float,"
                 + "name text,"
-                + "team text,"
-                + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
-                + ");");
+                + "team text" + ");");
 
-        String base_sql = "INSERT INTO non_player_characters (npc_id, location_id, position, type, level, fp, max_res, multiplier, exp, resistance, quest_cnt, quest_exp, bonus_chance, bonus_multiplier, name, team) VALUES";
+        String base_sql = "INSERT INTO non_player_characters (npc_id, type, level, fp, max_res, multiplier, exp, resistance, quest_cnt, quest_exp, bonus_chance, bonus_multiplier, name, team) VALUES";
         String sql = "";
-        int id, location_id, position, level, fp, max_res, resistance, quest_cnt;
+        int id, level, fp, max_res, resistance, quest_cnt;
         long exp, quest_exp;
         float multiplier, bonus_chance, bonus_multiplier;
         String type, name, team;
@@ -274,22 +317,20 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("npc")) {
                             id = Integer.parseInt(xpp.getAttributeValue(0));
-                            location_id = Integer.parseInt(xpp.getAttributeValue(1));
-                            position = Integer.parseInt(xpp.getAttributeValue(2));
-                            type = xpp.getAttributeValue(3);
-                            level = Integer.parseInt(xpp.getAttributeValue(4));
-                            fp = Integer.parseInt(xpp.getAttributeValue(5));
-                            max_res = Integer.parseInt(xpp.getAttributeValue(6));
-                            multiplier = Float.parseFloat(xpp.getAttributeValue(7));
-                            exp = Long.parseLong(xpp.getAttributeValue(8));
-                            resistance = Integer.parseInt(xpp.getAttributeValue(9));
-                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(10));
-                            quest_exp = Long.parseLong(xpp.getAttributeValue(11));
-                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(12));
-                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(13));
-                            name = xpp.getAttributeValue(14);
-                            team = xpp.getAttributeValue(15);
-                            sql += ", ("+ id + ", " + location_id + ", " + position + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
+                            type = xpp.getAttributeValue(1);
+                            level = Integer.parseInt(xpp.getAttributeValue(2));
+                            fp = Integer.parseInt(xpp.getAttributeValue(3));
+                            max_res = Integer.parseInt(xpp.getAttributeValue(4));
+                            multiplier = Float.parseFloat(xpp.getAttributeValue(5));
+                            exp = Long.parseLong(xpp.getAttributeValue(6));
+                            resistance = Integer.parseInt(xpp.getAttributeValue(7));
+                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(8));
+                            quest_exp = Long.parseLong(xpp.getAttributeValue(9));
+                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(10));
+                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(11));
+                            name = xpp.getAttributeValue(12);
+                            team = xpp.getAttributeValue(13);
+                            sql += ", ("+ id + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
                                     + multiplier + ", " + exp + ", " + resistance + ", " + quest_cnt + ", " + quest_exp + ", " + bonus_chance + ", "
                                     + bonus_multiplier + ", \"" + name +"\", \"" + team +"\")";
                         }
@@ -586,6 +627,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         createTablePlayerExp();
         createTableLocations();
         createTableNonPlayerCharacters();
+        createTableLocationPositions();
         createTableSkills();
         createTableSkillGroups();
         createTableAchievements();

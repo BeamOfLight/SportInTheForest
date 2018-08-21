@@ -619,8 +619,8 @@ class DBHelper extends DBHelperBaseLayer {
         npc_entity.npcId = npc_id;
 
         Cursor cursor = db.query(
-                "non_player_characters AS n LEFT JOIN user_exercise_trainings AS t ON n.location_id = t.npc_location_id AND n.position = t.npc_position AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"n.location_id", "n.level", "n.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "n.quest_cnt", "n.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.team", "n.resistance", "count(t.training_id) AS wins"},
+                "non_player_characters AS n LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN user_exercise_trainings AS t ON lp.location_id = t.npc_location_id AND lp.position = t.npc_position AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "n.quest_cnt", "n.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.team", "n.resistance", "count(t.training_id) AS wins"},
                 "n.npc_id = ?",
                 new String[]{Integer.toString(npc_id)},
                 null,
@@ -1149,13 +1149,13 @@ class DBHelper extends DBHelperBaseLayer {
         int exercise_id = gameHelper.getExerciseId();
         List<NonPlayerCharacterEntity> nonPlayerCharacters_data = new ArrayList<NonPlayerCharacterEntity>();
         Cursor cursor = db.query(
-                "non_player_characters AS n LEFT JOIN user_exercise_trainings AS t ON n.position = t.npc_position AND n.location_id = t.npc_location_id AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"n.npc_id", "n.fp", "n.max_res", "n.exp", "n.quest_cnt", "n.quest_exp", "n.name", "n.bonus_chance", "n.bonus_multiplier", "n.resistance", "n.multiplier", "n.position", "n.level", "sum(t.quest_owner) AS wins"},
-                "n.location_id = ? AND (n.position = 1 AND n.level = ? OR n.position = 2 AND n.level = ? OR n.position = 3 AND n.level = ? OR n.position = 4 AND n.level = ? OR n.position = 5 AND n.level = ?)",
+                "non_player_characters AS n LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN user_exercise_trainings AS t ON lp.position = t.npc_position AND lp.location_id = t.npc_location_id AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"n.npc_id", "n.fp", "n.max_res", "n.exp", "n.quest_cnt", "n.quest_exp", "n.name", "n.bonus_chance", "n.bonus_multiplier", "n.resistance", "n.multiplier", "lp.position", "n.level", "sum(t.quest_owner) AS wins"},
+                "lp.location_id = ? AND (lp.position = 1 AND n.level = ? OR lp.position = 2 AND n.level = ? OR lp.position = 3 AND n.level = ? OR lp.position = 4 AND lp.level = ? OR lp.position = 5 AND n.level = ?)",
                 new String[]{Integer.toString(location_id), Integer.toString(npc_levels[0]), Integer.toString(npc_levels[1]), Integer.toString(npc_levels[2]), Integer.toString(npc_levels[3]), Integer.toString(npc_levels[4])},
-                "n.position",
+                "lp.position",
                 null,
-                "n.position ASC"
+                "lp.position ASC"
         );
 
         if (cursor != null) {
@@ -1454,7 +1454,7 @@ class DBHelper extends DBHelperBaseLayer {
         Map<String, String> m;
 
         Cursor cursor = db.query(
-                "user_exercise_trainings AS uet LEFT JOIN non_player_characters AS n ON n.npc_id = uet.npc_id LEFT JOIN locations AS l ON n.location_id = l.location_id",
+                "user_exercise_trainings AS uet LEFT JOIN non_player_characters AS n ON n.npc_id = uet.npc_id LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN locations AS l ON lp.location_id = l.location_id",
                 new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "n.name AS npc_name", "n.level AS npc_level", "l.name AS location_name", "uet.duration", "uet.my_team_fp", "uet.op_team_fp" },
                 "uet.user_id = ? AND uet.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
@@ -1561,7 +1561,7 @@ class DBHelper extends DBHelperBaseLayer {
     {
         int total_exp = 0;
         Cursor cursor = db.query(
-                "user_exercise_quests AS q LEFT JOIN non_player_characters AS n ON q.npc_location_id = n.location_id AND q.npc_position = n.position",
+                "user_exercise_quests AS q LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN non_player_characters AS n ON q.npc_location_id = lp.location_id AND q.npc_position = lp.position",
                 new String[]{"SUM(n.quest_exp) AS total_exp"},
                 "q.user_id = ? AND q.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
