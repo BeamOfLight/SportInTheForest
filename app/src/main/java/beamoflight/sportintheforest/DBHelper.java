@@ -140,42 +140,6 @@ class DBHelper extends DBHelperBaseLayer {
         return users_entities;
     }
 
-    public ArrayList<UserEntity> getUsers()
-    {
-        ArrayList<UserEntity> users_entities = new ArrayList<>();
-        Cursor cursor = db.query(
-                "users",
-                new String[]{"user_id", "name", "creation_date", "modification_date"},
-                null,
-                null,
-                null,
-                null,
-                "name ASC"
-        );
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    UserEntity user_entity = new UserEntity();
-                    user_entity.id = cursor.getInt(cursor.getColumnIndex("user_id"));
-                    user_entity.name = cursor.getString(cursor.getColumnIndex("name"));
-                    user_entity.creationDate = cursor.getString(cursor.getColumnIndex("creation_date"));
-                    user_entity.modificationDate = cursor.getString(cursor.getColumnIndex("modification_date"));
-                    user_entity.info = String.format(
-                            Locale.ROOT,
-                            "Создан: %s | Изменён: %s",
-                            user_entity.creationDate,
-                            user_entity.modificationDate
-                    );
-                     users_entities.add(user_entity);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-
-        return users_entities;
-    }
-
     public boolean checkExerciseExist(String exercise_name) {
         boolean status = false;
         Cursor cursor = db.query(
@@ -592,17 +556,6 @@ class DBHelper extends DBHelperBaseLayer {
         int exercise_id = gameHelper.getExerciseId();
         ArrayList<Map<String, String>> locations_data = new ArrayList<Map<String, String>>();
         Map<String, String> m;
-        /*
-        Cursor cursor = db.query(
-                "locations AS l INNER JOIN user_exercise_locations AS uel ON l.location_id = uel.location_id LEFT JOIN NPCs AS n ON l.location_id = n.location_id",
-                new String[]{"l.location_id", "l.name AS location_name", "count(n.npc_id) AS npcs_count"},
-                "uel.user_id = ? AND uel.exercise_id = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
-                "l.location_id",
-                null,
-                "l.location_id ASC"
-        );*/
-
         Cursor cursor = db.query(
                 "locations AS l INNER JOIN user_exercise_locations AS uel ON l.location_id = uel.location_id LEFT JOIN user_exercise_quests AS ueq ON l.location_id = ueq.npc_location_id AND uel.user_id = ueq.user_id AND uel.exercise_id = ueq.exercise_id",
                 new String[]{"l.location_id", "l.name AS location_name", "count(ueq.npc_location_id) AS finished_quests_count"},
@@ -650,11 +603,6 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return data;
-    }
-
-    public int removeAllLocations()
-    {
-        return db.delete("locations", null, null);
     }
 
     // ===================  non_player_characters
@@ -721,73 +669,8 @@ class DBHelper extends DBHelperBaseLayer {
 
         return userName;
     }
-    //========= Skills
-    public ArrayList<Map<String, String>> getSkillGroupsData(int user_id, int exercise_id)
-    {
-        ArrayList<Map<String, String>> skills_data = new ArrayList<Map<String, String>>();
-        Map<String, String> m;
-        Cursor cursor = db.query(
-                "skills AS s LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id",
-                new String[]{"s.skill_group_id", "MAX(s.skill_level) max_skill_level", "sg.name AS skill_group_name"},
-                "ues.user_id IS NULL AND ues.exercise_id IS NULL OR ues.user_id = ? AND ues.exercise_id = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
-                "s.skill_group_id",
-                null,
-                null
-        );
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    m = new HashMap<String, String>();
-                    m.put("skill_group_id", cursor.getString(cursor.getColumnIndex("skill_group_id")));
-                    m.put("skill_group_name", cursor.getString(cursor.getColumnIndex("skill_group_name")));
-                    m.put("max_skill_level", cursor.getString(cursor.getColumnIndex("max_skill_level")));
-//                    m.put("info", String.format(
-//                            Locale.ROOT,
-//                            "Требуемый уровень: %s | Очки навыков: %s",
-//                            m.get("required_level"),
-//                            m.get("skill_points")
-//                    ));
-                    m.put("info", String.format(
-                            Locale.ROOT,
-                            "Текущий уровень: %s",
-                            m.get("max_skill_level") != null ? m.get("max_skill_level") : "0"
-                    ));
-
-                    skills_data.add(m);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-
-        return skills_data;
-    }
 
     //========= Skills
-    public String getSkillGroupName(int skill_group_id)
-    {
-        String skill_group_name = "";
-        Cursor cursor = db.query(
-                "skill_groups",
-                new String[]{"name"},
-                "skill_group_id = ?",
-                new String[]{Integer.toString(skill_group_id)},
-                null,
-                null,
-                null
-        );
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                skill_group_name = cursor.getString(cursor.getColumnIndex("name"));
-            }
-            cursor.close();
-        }
-
-        return skill_group_name;
-    }
-
     public ArrayList<Map<String, String>> getUnexploredSkillsData()
     {
         int user_id = gameHelper.getUserId();
@@ -948,26 +831,6 @@ class DBHelper extends DBHelperBaseLayer {
             db.execSQL("INSERT INTO user_exercise_skills (skill_id, user_id, exercise_id) VALUES ("
                     + Integer.toString(skill_id) + ", " + Integer.toString(user_id) + ", " + Integer.toString(exercise_id) + ");");
         }
-/*
-        Cursor cursor1 = db.query(
-                "user_exercise_skills AS ues",
-                new String[]{"ues.user_id"},
-                "ues.skill_id = ? AND ues.user_id = ? AND ues.exercise_id = ?",
-                new String[]{Integer.toString(skill_id), Integer.toString(user_id), Integer.toString(exercise_id)},
-                null,
-                null,
-                null
-        );
-
-        if (cursor1 != null) {
-            if (cursor1.moveToFirst()) {
-                do {
-                    Log.d("myLogs", cursor1.getString(cursor1.getColumnIndex("user_id")));
-                } while (cursor1.moveToNext());
-            }
-            cursor1.close();
-        }
-*/
     }
 
     public int getSpentSkillPoints()
@@ -1140,14 +1003,6 @@ class DBHelper extends DBHelperBaseLayer {
         return result_data;
     }
 
-    public ArrayList<Map<String, String>> getCurrentActiveLearntSkills(int type)
-    {
-        int user_id = gameHelper.getUserId();
-        int exercise_id = gameHelper.getExerciseId();
-
-        return getActiveLearntSkills(user_id, exercise_id, type);
-    }
-
     public ArrayList<Map<String, String>> getActiveLearntSkills(int user_id, int exercise_id, int type)
     {
         ArrayList<Map<String, String>> result_data = new ArrayList<Map<String, String>>();
@@ -1230,13 +1085,6 @@ class DBHelper extends DBHelperBaseLayer {
         return Integer.parseInt(getExtraParametersFromLearntSkills(user_id, exercise_id, 0).get("extra_regeneration_base"));
     }
 
-    public int getCurrentUserRegeneration()
-    {
-        int user_id = gameHelper.getUserId();
-        int exercise_id = gameHelper.getExerciseId();
-        return getUserRegeneration(user_id, exercise_id);
-    }
-
     public float getUserBonusChance(int user_id, int exercise_id)
     {
         int user_level = getUserLevel(user_id, exercise_id);
@@ -1293,18 +1141,6 @@ class DBHelper extends DBHelperBaseLayer {
         return getUserResistance(user_id, exercise_id);
     }
 
-    /*
-    public long updateNPCCache(int skill_id)
-    {
-        int total_count = getTotalCount4NPC(skill_id, false);
-        float float_skill_level = getFloatNPCLevel(total_count);
-        ContentValues skill_values = new ContentValues();
-        skill_values.put("count", total_count);
-        skill_values.put("level", float_skill_level);
-
-        return db.update("NPCs", skill_values, "skill_id = ?", new String[]{Integer.toString(skill_id)});
-    }
-*/
     protected List<NonPlayerCharacterEntity> getNonPlayerCharactersData(int location_id)
     {
         int[] npc_levels = getNPClevelsForLocation(location_id);
@@ -1371,49 +1207,7 @@ class DBHelper extends DBHelperBaseLayer {
         return nonPlayerCharacters_data;
     }
 
-    public long getNPCsCount()
-    {
-        Cursor c = db.query("non_player_characters", new String[] { "COUNT(npc_id) as NPCs_count" }, null, null, null, null, null);
-        int NPCs_count = 0;
-        if (c != null) {
-            if (c.moveToFirst()) {
-                NPCs_count = c.getInt(c.getColumnIndex("NPCs_count"));
-            }
-            c.close();
-        }
-
-        return NPCs_count;
-    }
-
-    public long getNPCsCountByLocationId(int location_id)
-    {
-        Cursor c = db.query("non_player_characters", new String[] { "COUNT(npc_id) as count" }, "location_id = ?", new String[]{Integer.toString(location_id)}, null, null, null);
-        int NPCs_count = 0;
-        if (c != null) {
-            if (c.moveToFirst()) {
-                NPCs_count = c.getInt(c.getColumnIndex("count"));
-            }
-            c.close();
-        }
-
-        return NPCs_count;
-    }
-
-    public int removeAllNPCs()
-    {
-        return db.delete("non_player_characters", null, null);
-    }
-
     // ============== Training
-
-//    + "training_id integer primary key autoincrement,"
-//            + "npc_id integer,"
-//            + "sum_result smallint,"
-//            + "max_result smallint,"
-//            + "exp integer,"
-//
-
-
     public long addTraining(int user_id, int exercise_id, int npc_id, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int npc_location_id, int npc_position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp)
     {
         ContentValues values = new ContentValues();
@@ -1432,9 +1226,6 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("quest_owner", quest_owner);
         values.put("my_team_fp", my_team_fp);
         values.put("op_team_fp", op_team_fp);
-
-       // Log.d(context.getResources().getString(R.string.log_tag), "DEBUG: " + values.toString());
-
 
         return db.insert("user_exercise_trainings", null, values);
     }
@@ -1466,19 +1257,6 @@ class DBHelper extends DBHelperBaseLayer {
                 }
         );
     }
-/*
-    public long updateTraining(int training_id, int npc_id, int sum_result, int max_result, int exp)
-    {
-        ContentValues values = new ContentValues();
-        values.put("npc_id", npc_id);
-        values.put("sum_result", sum_result);
-        values.put("max_result", max_result);
-        values.put("exp", exp);
-
-        return db.update("trainings", values, "training_id = ?", new String[]{Integer.toString(training_id)});
-    }
-*/
-
 
     public int getCurrentUserTrainingDaysCount()
     {
@@ -1509,32 +1287,6 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return training_days;
-    }
-
-    public int getTodayTrainingSumResult()
-    {
-        int user_id = gameHelper.getUserId();
-        int exercise_id = gameHelper.getExerciseId();
-        int count = 0;
-        Cursor cursor = db.query(
-                "user_exercise_trainings",
-                new String[]{"SUM(sum_result) AS total_count"},
-                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
-                "user_id, exercise_id",
-                null,
-                null
-        );
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                count = cursor.getInt(cursor.getColumnIndex("total_count"));
-            }
-            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getTodayTraining: " + count);
-            cursor.close();
-        } else
-            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
-
-        return count;
     }
 
     public int getCurrentUserTrainingSumResult()
@@ -1584,27 +1336,11 @@ class DBHelper extends DBHelperBaseLayer {
         return count;
     }
 
-//                    + "event_timestamp DATETIME,"
-//                            + "sum_result smallint,"
-//                            + "max_result smallint,"
-//                            + "number_of_moves smallint,"
     UserExerciseTrainingStat getUserExerciseTrainingStat(int from_field, int from_amount, int to_field, int to_amount)
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
         UserExerciseTrainingStat stat = new UserExerciseTrainingStat();
-
-//        String s1 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, 0);
-//        String s2 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, -1);
-//        String s3 = gameHelper.getDateString(Calendar.DAY_OF_YEAR, -2);
-//        String s4 = gameHelper.getDateString(Calendar.WEEK_OF_YEAR, -1);
-//        String s5 = gameHelper.getDateString(Calendar.WEEK_OF_YEAR, -2);
-//        String s6 = gameHelper.getDateString(Calendar.MONTH, -1);
-//        String s7 = gameHelper.getDateString(Calendar.MONTH, -3);
-//        String s8 = gameHelper.getDateString(Calendar.MONTH, -6);
-//        String s9 = gameHelper.getDateString(Calendar.YEAR, -1);
-//        String s10 = gameHelper.getDateString(Calendar.YEAR, -2);
-
 
         Cursor cursor = db.query(
                 "user_exercise_trainings",
@@ -1686,58 +1422,6 @@ class DBHelper extends DBHelperBaseLayer {
             Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
 
         return total_number_of_moves;
-    }
-
-    public int getUserExerciseTrainingMaxDayResult()
-    {
-        int user_id = gameHelper.getUserId();
-        int exercise_id = gameHelper.getExerciseId();
-        int max_day_result = 0;
-        Cursor cursor = db.query(
-                "user_exercise_trainings",
-                new String[]{"MAX(max_result) AS max_day_result"},
-                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
-                "user_id, exercise_id",
-                null,
-                null
-        );
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                max_day_result = cursor.getInt(cursor.getColumnIndex("max_day_result"));
-            }
-            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG max_day_result: " + max_day_result);
-            cursor.close();
-        } else
-            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
-
-        return max_day_result;
-    }
-
-    public int getUserExerciseTrainingTodayNumberOfMoves()
-    {
-        int user_id = gameHelper.getUserId();
-        int exercise_id = gameHelper.getExerciseId();
-        int today_number_of_moves = 0;
-        Cursor cursor = db.query(
-                "user_exercise_trainings",
-                new String[]{"SUM(number_of_moves) AS today_number_of_moves"},
-                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getTodayString()},
-                "user_id, exercise_id",
-                null,
-                null
-        );
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                today_number_of_moves = cursor.getInt(cursor.getColumnIndex("today_number_of_moves"));
-            }
-            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG today_number_of_moves: " + today_number_of_moves);
-            cursor.close();
-        } else
-            Log.d(context.getResources().getString(R.string.log_tag), "Cursor is null");
-
-        return today_number_of_moves;
     }
 
     public ArrayList<Map<String, String>> getCurrentUserLastTrainingsData(int count)
@@ -1824,11 +1508,6 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return last_trainings_data;
-    }
-
-    public int removeAllTrainings()
-    {
-        return db.delete("user_exercise_trainings", null, null);
     }
 
     // ============ user_exercise_quests
@@ -1932,29 +1611,6 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ============ Other
-
-    public int getTotalCount4NPC(int skill_id, boolean without_today)
-    {
-        String selection = "skill_id = ?";
-        String[] selection_args;
-        if (without_today) {
-            selection += " AND date(event_timestamp) <> ?";
-            selection_args = new String[]{Integer.toString(skill_id), gameHelper.getTodayString()};
-        } else {
-            selection_args = new String[]{Integer.toString(skill_id)};
-        }
-
-        Cursor c = db.query("user_exercise_trainings", new String[] { "SUM(count) as total_count" }, selection, selection_args, null, null, null);
-        int total_count = 0;
-        if (c != null) {
-            if (c.moveToFirst()) {
-                total_count = c.getInt(c.getColumnIndex("total_count"));
-            }
-            c.close();
-        }
-
-        return total_count;
-    }
 
     private float getAbstractFloatLevel(long exp, String table_name, float default_result_level)
     {
