@@ -89,17 +89,6 @@ public class GameHelper {
         return date_format.format(cal.getTime());
     }
 
-    public String getCachedUserName()
-    {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        String userName = sPref.getString(
-                context.getResources().getString(R.string.preference_name_user_name),
-                "Аноним"
-        );
-
-        return userName;
-    }
-
     public String getSpecialisationName(int specialisation_id)
     {
         String specialisation_name = "";
@@ -142,16 +131,6 @@ public class GameHelper {
         );
 
         return (float) (encodedUserLevel % 10000.0) / 100;
-    }
-
-    public long getUserExp()
-    {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-
-        return sPref.getLong(
-            context.getResources().getString(R.string.preference_name_user_exp),
-            context.getResources().getInteger(R.integer.default_user_exp)
-        );
     }
 
     public int getUserId()

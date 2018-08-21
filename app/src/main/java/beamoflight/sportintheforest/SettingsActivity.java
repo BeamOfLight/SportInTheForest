@@ -54,7 +54,6 @@ import okhttp3.Response;
 public class SettingsActivity extends Activity {
     GameHelper gameHelper;
     DBHelper dbHelper;
-    DBProgressSaver dbProgressSaver;
 
 //    AlertDialog dialogAddExercise;
 
@@ -74,7 +73,6 @@ public class SettingsActivity extends Activity {
 
         gameHelper = new GameHelper(getBaseContext());
         dbHelper = new DBHelper(getBaseContext());
-        dbProgressSaver = new DBProgressSaver(getBaseContext());
 
         prepareBackUpDir();
         btnImportDBold = (Button) findViewById(R.id.btnImportDBold);
@@ -91,37 +89,6 @@ public class SettingsActivity extends Activity {
                 dbHelper.exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", true);
             }
         });
-
-//        btnImportDB = (Button) findViewById(R.id.btnImportDB);
-//        btnImportDB.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                dbHelper.onCreate(dbHelper.getWritableDatabase());
-//
-//                dbProgressSaver.importDB("SportInTheForestProgressDB.db");
-//                String tables[] = new String[] {"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
-//                //dbProgressSaver.onCreate(saver_db);
-//                for (int i = 0; i < tables.length; i++) {
-//                    dbHelper.setTableData(tables[i], dbProgressSaver.getTableData(tables[i]));
-//                }
-//                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-//            }
-//        });
-//
-//        btnExportDB = (Button) findViewById(R.id.btnExportDB);
-//        btnExportDB.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                String tables[] = new String[] {"users", "user_exercises", "exercises", "user_exercise_locations", "user_exercise_skills", "user_exercise_quests", "user_exercise_trainings"};
-//                dbProgressSaver.onCreate(dbProgressSaver.getWritableDatabase());
-//                for (int i = 0; i < tables.length; i++) {
-//                    dbProgressSaver.setTableData(tables[i], dbHelper.getTableData(tables[i]));
-//                }
-//                //dbProgressSaver.getWritableDatabase().execSQL("INSERT INTO users (user_id, creation_date, modification_date, name) VALUES (\"1\", \"1994-03-06\", \"2018-04-07\", \"BeamOfLight\"), (\"2\", \"2018-04-18\", \"2018-05-04\", \"testB\"), (\"3\", \"2018-04-30\", \"2018-04-30\", \" test2\"), (\"4\", \"2018-05-08\", \"2018-05-08\", \"testElf\");");
-//                Log.d("DEBUG7", dbProgressSaver.getTableData("users").toString());
-//                dbProgressSaver.exportDB("SportInTheForestProgressDB.db", false);
-//                dbProgressSaver.exportDB("SportInTheForestProgressDB_" + gameHelper.getTodayString() + ".db", true);
-//                Toast.makeText(getBaseContext(), "Сохранено!", Toast.LENGTH_LONG).show();
-//            }
-//        });
 
         btnImportDBnew = (Button) findViewById(R.id.btnImportDBnew);
         btnImportDBnew.setOnClickListener(new View.OnClickListener() {
