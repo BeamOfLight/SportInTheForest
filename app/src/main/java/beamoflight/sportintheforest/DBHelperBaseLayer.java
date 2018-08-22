@@ -54,8 +54,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "base_resistance int,"
                 + "base_multiplier float,"
                 + "base_bonus_chance float,"
-                + "base_bonus_multiplier float"
-                + ");");
+                + "base_bonus_multiplier float" + ");");
 
         String base_sql = "INSERT INTO player_exp (target_level, min_exp, diff_exp, base_fp, base_resistance, base_multiplier, base_bonus_chance, base_bonus_multiplier) VALUES";
         String sql = "";
@@ -181,6 +180,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         // создаем таблицу locations
         db.execSQL("DROP TABLE IF EXISTS location_positions;");
         db.execSQL("CREATE TABLE IF NOT EXISTS location_positions ("
+                + "location_level_position_id integer primary key autoincrement,"
                 + "location_id integer,"
                 + "position integer,"
                 + "level integer,"
@@ -191,9 +191,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
 
-        String base_sql = "INSERT INTO location_positions (location_id, position, level, npc_id, quest_cnt, quest_exp) VALUES";
+        String base_sql = "INSERT INTO location_positions (location_level_position_id, location_id, position, level, npc_id, quest_cnt, quest_exp) VALUES";
         String sql = "";
-        int location_id, position, level, npc_id, quest_cnt;
+        int location_level_position_id, location_id, position, level, npc_id, quest_cnt;
         int quest_exp;
 
         try {
@@ -203,13 +203,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("location_position")) {
-                            location_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            position = Integer.parseInt(xpp.getAttributeValue(1));
-                            level = Integer.parseInt(xpp.getAttributeValue(2));
-                            npc_id = Integer.parseInt(xpp.getAttributeValue(3));
-                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(4));
-                            quest_exp = Integer.parseInt(xpp.getAttributeValue(5));
-                            sql += ", (" + location_id + ", " + position + ", " + level + ", " + npc_id + ", " + quest_cnt + ", " + quest_exp + ")";
+                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(0));
+                            location_id = Integer.parseInt(xpp.getAttributeValue(1));
+                            position = Integer.parseInt(xpp.getAttributeValue(2));
+                            level = Integer.parseInt(xpp.getAttributeValue(3));
+                            npc_id = Integer.parseInt(xpp.getAttributeValue(4));
+                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(5));
+                            quest_exp = Integer.parseInt(xpp.getAttributeValue(6));
+                            sql += ", (" + location_level_position_id + ", " + location_id + ", " + position + ", " + level + ", " + npc_id + ", " + quest_cnt + ", " + quest_exp + ")";
                         }
                         break;
                     default:
@@ -293,6 +294,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS non_player_characters;");
         db.execSQL("CREATE TABLE IF NOT EXISTS non_player_characters ("
                 + "npc_id integer primary key autoincrement,"
+                + "teammate boolean,"
                 + "type text,"
                 + "level integer,"
                 + "fp integer,"
@@ -304,9 +306,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "bonus_multiplier float,"
                 + "name text" + ");");
 
-        String base_sql = "INSERT INTO non_player_characters (npc_id, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name) VALUES";
+        String base_sql = "INSERT INTO non_player_characters (npc_id, teammate, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name) VALUES";
         String sql = "";
-        int id, level, fp, max_res, resistance;
+        int id, level, fp, max_res, resistance, teammate;
         long exp;
         float multiplier, bonus_chance, bonus_multiplier;
         String type, name;
@@ -319,17 +321,18 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("npc")) {
                             id = Integer.parseInt(xpp.getAttributeValue(0));
-                            type = xpp.getAttributeValue(1);
-                            level = Integer.parseInt(xpp.getAttributeValue(2));
-                            fp = Integer.parseInt(xpp.getAttributeValue(3));
-                            max_res = Integer.parseInt(xpp.getAttributeValue(4));
-                            multiplier = Float.parseFloat(xpp.getAttributeValue(5));
-                            exp = Long.parseLong(xpp.getAttributeValue(6));
-                            resistance = Integer.parseInt(xpp.getAttributeValue(7));
-                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(8));
-                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(9));
-                            name = xpp.getAttributeValue(10);
-                            sql += ", ("+ id + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
+                            teammate = Integer.parseInt(xpp.getAttributeValue(1));
+                            type = xpp.getAttributeValue(2);
+                            level = Integer.parseInt(xpp.getAttributeValue(3));
+                            fp = Integer.parseInt(xpp.getAttributeValue(4));
+                            max_res = Integer.parseInt(xpp.getAttributeValue(5));
+                            multiplier = Float.parseFloat(xpp.getAttributeValue(6));
+                            exp = Long.parseLong(xpp.getAttributeValue(7));
+                            resistance = Integer.parseInt(xpp.getAttributeValue(8));
+                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(9));
+                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(10));
+                            name = xpp.getAttributeValue(11);
+                            sql += ", ("+ id + ", " + teammate + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
                                     + multiplier + ", " + exp + ", " + resistance + ", " + bonus_chance + ", "
                                     + bonus_multiplier + ", \"" + name +"\")";
                         }
@@ -780,7 +783,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     public ArrayList<Map<String, String>> getTableData(String table_name)
     {
         String[] fields = getFieldsByTableName(table_name, formatVersion);
-        ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, String>> data = new ArrayList<>();
         Map<String, String> m;
         Cursor cursor = db.query(table_name, fields, null, null, null, null, null);
         if (cursor != null) {

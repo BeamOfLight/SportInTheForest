@@ -103,8 +103,8 @@ for location_id in xrange(1, forest.get_locations_count()):
 			current_exp_ratio *= exp_ratio
 
 for row in npc_data:
-	print '    <npc id="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
+	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], "0", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
 
 for row in npc_extra_data:
-	print '    <npc id="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
+	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], "1", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
 forest.print_xml_footer()

@@ -61,10 +61,13 @@ for location_id in xrange(1, forest.get_locations_count()):
 			npc_id += 1
 
 
-
+location_level_position_id = 1
 for row in main_data:
-	print '    <location_position location_id="{}" position="{}" level="{}" npc_id="{}" quest_cnt="{}" quest_exp="{}"/>'.format(row['location_id'], row['position'], row['level'], row['npc_id'], row['quest_cnt'], row['quest_exp'])
+	print '    <location_position location_level_position_id="{}" location_id="{}" position="{}" level="{}" npc_id="{}" quest_cnt="{}" quest_exp="{}"/>'.format(location_level_position_id, row['location_id'], row['position'], row['level'], row['npc_id'], row['quest_cnt'], row['quest_exp'])
+	location_level_position_id += 1
 
 for row in extra_data:
-	print '    <location_position location_id="{}" position="{}" level="{}" npc_id="{}" quest_cnt="{}" quest_exp="{}"/>'.format(row['location_id'], row['position'], row['level'], row['npc_id'], row['quest_cnt'], row['quest_exp'])
+	print '    <location_position location_level_position_id="{}" location_id="{}" position="{}" level="{}" npc_id="{}" quest_cnt="{}" quest_exp="{}"/>'.format(location_level_position_id, row['location_id'], row['position'], row['level'], row['npc_id'], row['quest_cnt'], row['quest_exp'])
+	location_level_position_id += 1
+	
 forest.print_xml_footer()

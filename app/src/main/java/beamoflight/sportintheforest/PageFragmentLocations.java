@@ -34,7 +34,7 @@ public class PageFragmentLocations extends Fragment {
         lvLocations = (ListView) rootView.findViewById(R.id.lvLocations);
         lvLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(mContainer.getContext(), NonPlayerCharactersActivity.class);
+                Intent intent = new Intent(mContainer.getContext(), LocationPositionsActivity.class);
                 intent.setAction(locationsData.get(position).get("location_id"));
                 startActivity(intent);
             }

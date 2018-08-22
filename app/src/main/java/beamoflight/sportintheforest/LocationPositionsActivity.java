@@ -11,12 +11,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class NonPlayerCharactersActivity extends Activity {
+public class LocationPositionsActivity extends Activity {
 
     int locationId;
     DBHelper dbHelper;
     GameHelper gameHelper;
-    List<NonPlayerCharacterEntity> nonPlayerCharactersData;
+    List<NonPlayerCharacterEntity> locationPositionData;
 
     TextView tvNPCsListInfo;
     ListView lvNPCs;
@@ -39,38 +39,26 @@ public class NonPlayerCharactersActivity extends Activity {
         initNPCsListView();
     }
 
-    /*
-    private void initFABAddNPC()
-    {
-        fabAddNPC = (FloatingActionButton) findViewById(R.id.fabAddNPC);
-        fabAddNPC.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            initDialogAddOrEditNPC(-1);
-            dialogAddOrEditNPC.show();
-            }
-        });
-    }*/
-
     private void initNPCsListView()
     {
         lvNPCs = (ListView) findViewById(R.id.lvNPCs);
         lvNPCs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(NonPlayerCharactersActivity.this, CompetitionActivity.class);
-                intent.setAction(Integer.toString(nonPlayerCharactersData.get(position).getId()));
+                Intent intent = new Intent(LocationPositionsActivity.this, CompetitionActivity.class);
+                intent.setAction(Integer.toString(locationPositionData.get(position).getId()));
                 startActivity(intent);
             }
         });
 
-        refreshNPCsData();
-        showNPCsList();
+        refreshData();
+        showList();
     }
 
 
-    private void showNPCsList()
+    private void showList()
     {
         lvNPCs.invalidateViews();
-        NonPlayerCharacterItemArrayAdapter adapter = new NonPlayerCharacterItemArrayAdapter(this, nonPlayerCharactersData);
+        NonPlayerCharacterItemArrayAdapter adapter = new NonPlayerCharacterItemArrayAdapter(this, locationPositionData);
 
         lvNPCs.setAdapter(adapter);
         lvNPCs.setFooterDividersEnabled(true);
@@ -87,10 +75,10 @@ public class NonPlayerCharactersActivity extends Activity {
         }
     }
 
-    private void refreshNPCsData()
+    private void refreshData()
     {
-        nonPlayerCharactersData = dbHelper.getNonPlayerCharactersData(locationId);
-        if (nonPlayerCharactersData.size() > 0) {
+        locationPositionData = dbHelper.getNonPlayerCharactersData(locationId);
+        if (locationPositionData.size() > 0) {
             tvNPCsListInfo.setText("");
         } else {
             tvNPCsListInfo.setText(getResources().getString(R.string.npcs_list_info_msg));
