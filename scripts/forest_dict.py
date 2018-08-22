@@ -195,3 +195,11 @@ def get_characters():
 	names[17][3]="Шустрый олень"
 	names[17][4]="Олень-вожак"
 	return names
+
+def get_extra_character_name(name, id):
+	extras = []
+	extras.append(''); 				# id = 0
+	extras.append('-защитник'); 	# id = 1
+	extras.append('-лекарь');		# id = 2
+	extras.append('-спортсмен');	# id = 3
+	return '{}{}'.format(name, extras[id % 4])

@@ -185,13 +185,16 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "position integer,"
                 + "level integer,"
                 + "npc_id integer,"
+                + "quest_cnt integer,"
+                + "quest_exp integer,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
 
-        String base_sql = "INSERT INTO location_positions (location_id, position, level, npc_id) VALUES";
+        String base_sql = "INSERT INTO location_positions (location_id, position, level, npc_id, quest_cnt, quest_exp) VALUES";
         String sql = "";
-        int location_id, position, level, npc_id;
+        int location_id, position, level, npc_id, quest_cnt;
+        int quest_exp;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.location_positions);
@@ -204,7 +207,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             position = Integer.parseInt(xpp.getAttributeValue(1));
                             level = Integer.parseInt(xpp.getAttributeValue(2));
                             npc_id = Integer.parseInt(xpp.getAttributeValue(3));
-                            sql += ", (" + location_id + ", " + position + ", " + level + ", " + npc_id + ")";
+                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(4));
+                            quest_exp = Integer.parseInt(xpp.getAttributeValue(5));
+                            sql += ", (" + location_id + ", " + position + ", " + level + ", " + npc_id + ", " + quest_cnt + ", " + quest_exp + ")";
                         }
                         break;
                     default:
@@ -295,19 +300,16 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "multiplier float,"
                 + "exp integer,"
                 + "resistance integer,"
-                + "quest_cnt integer,"
-                + "quest_exp integer,"
                 + "bonus_chance float,"
                 + "bonus_multiplier float,"
-                + "name text,"
-                + "team text" + ");");
+                + "name text" + ");");
 
-        String base_sql = "INSERT INTO non_player_characters (npc_id, type, level, fp, max_res, multiplier, exp, resistance, quest_cnt, quest_exp, bonus_chance, bonus_multiplier, name, team) VALUES";
+        String base_sql = "INSERT INTO non_player_characters (npc_id, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name) VALUES";
         String sql = "";
-        int id, level, fp, max_res, resistance, quest_cnt;
-        long exp, quest_exp;
+        int id, level, fp, max_res, resistance;
+        long exp;
         float multiplier, bonus_chance, bonus_multiplier;
-        String type, name, team;
+        String type, name;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.non_player_characters);
@@ -324,15 +326,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             multiplier = Float.parseFloat(xpp.getAttributeValue(5));
                             exp = Long.parseLong(xpp.getAttributeValue(6));
                             resistance = Integer.parseInt(xpp.getAttributeValue(7));
-                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(8));
-                            quest_exp = Long.parseLong(xpp.getAttributeValue(9));
-                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(10));
-                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(11));
-                            name = xpp.getAttributeValue(12);
-                            team = xpp.getAttributeValue(13);
+                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(8));
+                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(9));
+                            name = xpp.getAttributeValue(10);
                             sql += ", ("+ id + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
-                                    + multiplier + ", " + exp + ", " + resistance + ", " + quest_cnt + ", " + quest_exp + ", " + bonus_chance + ", "
-                                    + bonus_multiplier + ", \"" + name +"\", \"" + team +"\")";
+                                    + multiplier + ", " + exp + ", " + resistance + ", " + bonus_chance + ", "
+                                    + bonus_multiplier + ", \"" + name +"\")";
                         }
                         break;
                     default:

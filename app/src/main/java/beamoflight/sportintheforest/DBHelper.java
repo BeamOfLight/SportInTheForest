@@ -613,6 +613,57 @@ class DBHelper extends DBHelperBaseLayer {
         return getNonPlayerCharacterById(npc_id, user_id, exercise_id);
     }
 
+    public ArrayList<NonPlayerCharacterEntity> getNonPlayerCharactersByLocationPosition4CurrentUser(int location_id, int position)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getNonPlayerCharactersByLocationPosition(location_id, position, user_id, exercise_id);
+    }
+
+    public ArrayList<NonPlayerCharacterEntity> getNonPlayerCharactersByLocationPosition(int location_id, int position, int user_id, int exercise_id)
+    {
+        ArrayList<NonPlayerCharacterEntity> entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "non_player_characters AS n LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN user_exercise_trainings AS t ON lp.location_id = t.npc_location_id AND lp.position = t.npc_position AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
+                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "lp.quest_cnt", "lp.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.resistance", "count(t.training_id) AS wins"},
+                "lp.location_id = ? AND lp.position = ?",
+                new String[]{Integer.toString(location_id), Integer.toString(position)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
+                    int fitness_points = cursor.getInt(cursor.getColumnIndex("fp"));
+                    npc_entity.setName(cursor.getString(cursor.getColumnIndex("name")))
+                            .setInitialFitnessPoints(fitness_points)
+                            .setCurrentFitnessPoints(fitness_points)
+                            .setMultiplier(cursor.getFloat(cursor.getColumnIndex("multiplier")))
+                            .setResistance(cursor.getInt(cursor.getColumnIndex("resistance")))
+                            .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
+                            .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")));
+                    npc_entity.setExp(cursor.getInt(cursor.getColumnIndex("exp")))
+                            .setMaxResult(cursor.getInt(cursor.getColumnIndex("max_res")))
+                            .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
+                            .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
+                            .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
+                            .setType(cursor.getString(cursor.getColumnIndex("type")))
+                            .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
+                            .setCurrentWins(cursor.getInt(cursor.getColumnIndex("wins")))
+                            .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")));
+                    entities.add(npc_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return entities;
+    }
+
+
     public NonPlayerCharacterEntity getNonPlayerCharacterById(int npc_id, int user_id, int exercise_id)
     {
         NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
@@ -620,7 +671,7 @@ class DBHelper extends DBHelperBaseLayer {
 
         Cursor cursor = db.query(
                 "non_player_characters AS n LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN user_exercise_trainings AS t ON lp.location_id = t.npc_location_id AND lp.position = t.npc_position AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "n.quest_cnt", "n.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.team", "n.resistance", "count(t.training_id) AS wins"},
+                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "lp.quest_cnt", "lp.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.resistance", "count(t.training_id) AS wins"},
                 "n.npc_id = ?",
                 new String[]{Integer.toString(npc_id)},
                 null,
@@ -644,7 +695,6 @@ class DBHelper extends DBHelperBaseLayer {
                         .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
                         .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
                         .setType(cursor.getString(cursor.getColumnIndex("type")))
-                        .setTeam(cursor.getString(cursor.getColumnIndex("team")))
                         .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
                         .setCurrentWins(cursor.getInt(cursor.getColumnIndex("wins")))
                         .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")));
@@ -1150,7 +1200,7 @@ class DBHelper extends DBHelperBaseLayer {
         List<NonPlayerCharacterEntity> nonPlayerCharacters_data = new ArrayList<NonPlayerCharacterEntity>();
         Cursor cursor = db.query(
                 "non_player_characters AS n LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN user_exercise_trainings AS t ON lp.position = t.npc_position AND lp.location_id = t.npc_location_id AND t.result_state = 2 AND t.user_id = " + Integer.toString(user_id) + " AND t.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"n.npc_id", "n.fp", "n.max_res", "n.exp", "n.quest_cnt", "n.quest_exp", "n.name", "n.bonus_chance", "n.bonus_multiplier", "n.resistance", "n.multiplier", "lp.position", "n.level", "sum(t.quest_owner) AS wins"},
+                new String[]{"n.npc_id", "n.fp", "n.max_res", "n.exp", "lp.quest_cnt", "lp.quest_exp", "n.name", "n.bonus_chance", "n.bonus_multiplier", "n.resistance", "n.multiplier", "lp.position", "n.level", "sum(t.quest_owner) AS wins"},
                 "lp.location_id = ? AND (lp.position = 1 AND n.level = ? OR lp.position = 2 AND n.level = ? OR lp.position = 3 AND n.level = ? OR lp.position = 4 AND lp.level = ? OR lp.position = 5 AND n.level = ?)",
                 new String[]{Integer.toString(location_id), Integer.toString(npc_levels[0]), Integer.toString(npc_levels[1]), Integer.toString(npc_levels[2]), Integer.toString(npc_levels[3]), Integer.toString(npc_levels[4])},
                 "lp.position",
@@ -1557,13 +1607,13 @@ class DBHelper extends DBHelperBaseLayer {
         return check_status;
     }
 
-    public int getUserExerciseQuestsExp(int user_id, int exercise_id)
+    public long getUserExerciseQuestsExp(int user_id, int exercise_id)
     {
-        int total_exp = 0;
+        long total_exp = 0;
         Cursor cursor = db.query(
-                "user_exercise_quests AS q LEFT JOIN location_positions AS lp ON n.npc_id = lp.npc_id LEFT JOIN non_player_characters AS n ON q.npc_location_id = lp.location_id AND q.npc_position = lp.position",
-                new String[]{"SUM(n.quest_exp) AS total_exp"},
-                "q.user_id = ? AND q.exercise_id = ?",
+                "user_exercise_quests AS ueq LEFT JOIN location_positions AS lp ON ueq.npc_location_id = lp.location_id AND ueq.npc_position = lp.position",
+                new String[]{"SUM(lp.quest_exp) AS total_exp"},
+                "ueq.user_id = ? AND ueq.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 null,
                 null,
@@ -1571,7 +1621,7 @@ class DBHelper extends DBHelperBaseLayer {
         );
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                total_exp = cursor.getInt(cursor.getColumnIndex("total_exp"));
+                total_exp = cursor.getLong(cursor.getColumnIndex("total_exp"));
             }
             cursor.close();
         } else

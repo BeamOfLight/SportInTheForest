@@ -390,24 +390,13 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
     private void initCompetitionTeamRight()
     {
+        // TODO fix npc_id logic to location_position logic
         npcId = Integer.parseInt(getIntent().getAction());
         npc_entity = dbHelper.getNonPlayerCharacterById4CurrentUser(npcId);
-        competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, npc_entity);
 
-        String[] teammate_ids = npc_entity.getTeam().split(";");
-        int teammate_number = 1;
-        for(String teammate_id_str: teammate_ids) {
-            if (teammate_id_str.length() > 0) {
-                int teammate_id = Integer.parseInt(teammate_id_str);
-                NonPlayerCharacterEntity teammate_entity = dbHelper.getNonPlayerCharacterById4CurrentUser(teammate_id);
-                teammate_entity.setInitialFitnessPoints(teammate_entity.getInitialFitnessPoints() / 4)
-                        .setCurrentFitnessPoints(teammate_entity.getCurrentFitnessPoints() / 4)
-                        .setName("Помощник " + Integer.toString(teammate_number));
-                teammate_entity.setExp(teammate_entity.getExp() / 4)
-                        .setMaxResult(teammate_entity.getMaxResult() / 4);
-                competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, teammate_entity);
-                teammate_number++;
-            }
+        ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPosition4CurrentUser(npc_entity.getLocationId(), npc_entity.getPosition());
+        for (NonPlayerCharacterEntity entity: entities) {
+            competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, entity);
         }
     }
 

@@ -1206,4 +1206,11 @@ def debug_player_params():
 	for loc_id in xrange(1, 34):
 		print loc_id, "\t", get_expected_player_fitness_points(loc_id), "\t", get_resistance_in_percents(get_expected_player_resistance(loc_id)), "\t", get_expected_player_resistance(loc_id), "\t", get_expected_player_multiplier(loc_id), "\t", get_expected_player_bonus_multiplier(loc_id), "\t", get_expected_player_bonus_chance(loc_id)
 
+def get_player_prev_fp(location_id):
+	if location_id == 1:
+		player_prev_fp = 2
+	else:
+		player_prev_fp = get_expected_player_fitness_points(location_id - 1)
+	return player_prev_fp
+
 #debug_player_params()

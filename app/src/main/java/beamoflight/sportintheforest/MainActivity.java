@@ -40,13 +40,12 @@ public class MainActivity extends Activity {
         tvVersion = (TextView) findViewById(R.id.tvVersion);
 
         initMenuButtons();
-        checkVersion();
     }
 
     private void showVersion()
     {
         tvVersion.setText(
-            String.format(Locale.ROOT, "ver. %s", getResources().getString(R.string.app_version))
+            String.format(Locale.ROOT, "ver. %s", dbHelper.getAppVersion())
         );
         btMenuStart.setEnabled(true);
         btMenuSettings.setEnabled(true);
@@ -138,6 +137,7 @@ public class MainActivity extends Activity {
                     PackageManager.PERMISSION_GRANTED
             );
         }
+        checkVersion();
     }
 
 

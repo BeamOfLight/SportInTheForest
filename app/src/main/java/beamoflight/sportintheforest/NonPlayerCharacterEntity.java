@@ -12,7 +12,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public int position;
     public String info;
     public String type;
-    public String team;
     public int exp;
     public int maxRes;
     public int questExpectedWins;
@@ -107,12 +106,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
         return this;
     }
 
-    public NonPlayerCharacterEntity setTeam(String team_)
-    {
-        team = team_;
-        return this;
-    }
-
     public NonPlayerCharacterEntity setInfo(String info_)
     {
         info = info_;
@@ -161,9 +154,5 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public String getType()
     {
         return type;
-    }
-    public String getTeam()
-    {
-        return team;
     }
 }
