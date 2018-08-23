@@ -216,7 +216,6 @@ class CompetitionEngine {
         for (CharacterEntity character : teamsData.get(getOppositeTeamIdx(current_character.teamIdx))) {
             if (character.isActive()) {
                 current_character.move.targetId = character.idxInTeam;
-                break;
             }
         }
         current_character.move.isReady = true;
@@ -375,10 +374,33 @@ class CompetitionEngine {
         addCompetitionLogMessage(log_message);
     }
 
+    private void proceedAI() {
+        for (List<CharacterEntity> teamData : teamsData) {
+            for (CharacterEntity character : teamData) {
+                if (character.isActive() && !character.isPlayer()) {
+                    proceedAI4Character((NonPlayerCharacterEntity) character);
+                }
+            }
+        }
+    }
+
+    private void proceedAI4Character(NonPlayerCharacterEntity current_character)
+    {
+        SkillView skill_view = dbHelper.getSkillView(519, current_character.getName());
+        current_character.addActiveSkill(skill_view);
+        log_message += String.format(
+            Locale.ROOT,
+            "%s использовал(а) \"%s\". ",
+            current_character.getName(),
+            skill_view.name
+        );
+    }
+
     void proceed() {
         cleanLogMessage();
 
         // Main loop start
+        proceedAI();
         proceedActiveSkillsAndTargets();
         proceedMoveCalculation();
         calculateFitnessPoints();

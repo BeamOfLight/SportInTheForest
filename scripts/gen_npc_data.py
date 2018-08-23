@@ -67,6 +67,7 @@ for location_id in xrange(1, forest.get_locations_count()):
 					row['exp'] = int(row['exp']) / 4
 					row['max_res'] = int(row['max_res']) / 4
 					row['name'] = forest_dict.get_extra_character_name(row['name'], idx)
+					row['skills'] = ''
 					npc_extra_data.append(row)
 					extra_npc_id += 1
 				if len(team) > 0:
@@ -94,7 +95,8 @@ for location_id in xrange(1, forest.get_locations_count()):
 				#'quest_exp': str(quest_exp),
 				'bonus_chance': str(character_bonus_chance),
 				'bonus_multiplier': str(character_bonus_multiplier),
-				'name': names[location_id - 1][position - 1]
+				'name': names[location_id - 1][position - 1],
+				'skills': ''
 			})
 
 #			print '    <npc id="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" quest_cnt="{}" quest_exp="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(str(id), rb_state, str(level), str(fitness_points), str(max_result), str(multiplier), str(exp), str(resistance), str(quest_cnt), str(quest_exp), str(character_bonus_chance), str(character_bonus_multiplier), names[location_id - 1][position - 1])
@@ -103,8 +105,8 @@ for location_id in xrange(1, forest.get_locations_count()):
 			current_exp_ratio *= exp_ratio
 
 for row in npc_data:
-	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], "0", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
+	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" skills="{}" />'.format(row['npc_id'], "0", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'], row['skills'])
 
 for row in npc_extra_data:
-	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(row['npc_id'], "1", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'])
+	print '    <npc id="{}" teammate="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" skills="{}" />'.format(row['npc_id'], "1", row['type'], row['level'], row['fp'], row['max_res'], row['multiplier'], row['exp'], row['resistance'], row['bonus_chance'], row['bonus_multiplier'], row['name'], row['skills'])
 forest.print_xml_footer()

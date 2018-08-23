@@ -1053,6 +1053,36 @@ class DBHelper extends DBHelperBaseLayer {
         return result_data;
     }
 
+    public SkillView getSkillView(int skill_id, String owner_name)
+    {
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id",
+                new String[]{"sg.name AS group_name", "sg.skill_group_id", "s.label", "s.duration", "sg.target_type", "s.splash_multiplier", "MAX(s.skill_level) AS skill_level"},
+                "s.skill_id = ?",
+                new String[]{Integer.toString(skill_id)},
+                null,
+                null,
+                null
+        );
+
+        SkillView skill_view = null;
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                skill_view = new SkillView(
+                        cursor.getString(cursor.getColumnIndex("label")),
+                        cursor.getInt(cursor.getColumnIndex("skill_group_id")),
+                        cursor.getInt(cursor.getColumnIndex("skill_level")),
+                        cursor.getInt(cursor.getColumnIndex("duration")),
+                        cursor.getInt(cursor.getColumnIndex("target_type")),
+                        owner_name,
+                        cursor.getFloat(cursor.getColumnIndex("splash_multiplier"))
+                );
+            }
+        }
+        return skill_view;
+    }
+
     public ArrayList<Map<String, String>> getActiveLearntSkills(int user_id, int exercise_id, int type)
     {
         ArrayList<Map<String, String>> result_data = new ArrayList<Map<String, String>>();

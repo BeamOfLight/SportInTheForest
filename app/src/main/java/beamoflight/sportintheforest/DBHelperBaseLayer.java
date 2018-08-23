@@ -304,14 +304,15 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "resistance integer,"
                 + "bonus_chance float,"
                 + "bonus_multiplier float,"
-                + "name text" + ");");
+                + "name text,"
+                + "skills text" + ");");
 
-        String base_sql = "INSERT INTO non_player_characters (npc_id, teammate, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name) VALUES";
+        String base_sql = "INSERT INTO non_player_characters (npc_id, teammate, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name, skills) VALUES";
         String sql = "";
         int id, level, fp, max_res, resistance, teammate;
         long exp;
         float multiplier, bonus_chance, bonus_multiplier;
-        String type, name;
+        String type, name, skills;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.non_player_characters);
@@ -332,9 +333,10 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             bonus_chance = Float.parseFloat(xpp.getAttributeValue(9));
                             bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(10));
                             name = xpp.getAttributeValue(11);
+                            skills = xpp.getAttributeValue(12);
                             sql += ", ("+ id + ", " + teammate + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
                                     + multiplier + ", " + exp + ", " + resistance + ", " + bonus_chance + ", "
-                                    + bonus_multiplier + ", \"" + name +"\")";
+                                    + bonus_multiplier + ", \"" + name +"\", \"" + skills + "\")";
                         }
                         break;
                     default:
