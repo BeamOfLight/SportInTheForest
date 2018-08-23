@@ -57,9 +57,10 @@ public class SettingsActivity extends Activity {
 
 //    AlertDialog dialogAddExercise;
 
-    Button btnImportDBold, btnExportDBold, btnImportDB, btnExportDB, btnImportDBnew, btnExportDBnew;
-    Button btnAddExercise, btnWipe, btnWipeSaveUserProgress;
-    Button btnTest;
+    Button btnImportDBold, btnExportDBold, btnImportDBnew, btnExportDBnew;
+    Button btnAddExercise, btnWipe, btnWipeSaveUserProgress, btnTest;
+    Button btnImportDBAuto, btnImportDBAutoMon, btnImportDBAutoTue, btnImportDBAutoWed;
+    Button btnImportDBAutoThu, btnImportDBAutoFri, btnImportDBAutoSat, btnImportDBAutoSun;
 
     //TextView txtString;
 
@@ -75,6 +76,79 @@ public class SettingsActivity extends Activity {
         dbHelper = new DBHelper(getBaseContext());
 
         prepareBackUpDir();
+
+        btnImportDBAuto = (Button) findViewById(R.id.btnImportDBAuto);
+        btnImportDBAuto.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoMon = (Button) findViewById(R.id.btnImportDBAutoMon);
+        btnImportDBAutoMon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Mon.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoTue = (Button) findViewById(R.id.btnImportDBAutoTue);
+        btnImportDBAutoTue.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Tue.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoWed = (Button) findViewById(R.id.btnImportDBAutoWed);
+        btnImportDBAutoWed.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Wed.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoThu = (Button) findViewById(R.id.btnImportDBAutoThu);
+        btnImportDBAutoThu.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Thu.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoFri = (Button) findViewById(R.id.btnImportDBAutoFri);
+        btnImportDBAutoFri.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Fri.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoSat = (Button) findViewById(R.id.btnImportDBAutoSat);
+        btnImportDBAutoSat.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Sat.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        btnImportDBAutoSun = (Button) findViewById(R.id.btnImportDBAutoSun);
+        btnImportDBAutoSun.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                dbHelper.loadFromFile("autosave_Sun.sif", true);
+                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+            }
+        });
+
         btnImportDBold = (Button) findViewById(R.id.btnImportDBold);
         btnImportDBold.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

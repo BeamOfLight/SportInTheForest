@@ -4,6 +4,58 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnImportDBAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto" />
+        <Button
+            android:id="@+id/btnImportDBAutoMon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mon" />
+        <Button
+            android:id="@+id/btnImportDBAutoTue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tue" />
+        <Button
+            android:id="@+id/btnImportDBAutoWed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wed" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnImportDBAutoThu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thu" />
+        <Button
+            android:id="@+id/btnImportDBAutoFri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fri" />
+        <Button
+            android:id="@+id/btnImportDBAutoSat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sat" />
+        <Button
+            android:id="@+id/btnImportDBAutoSun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sun" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnImportDBold"
         android:layout_width="match_parent"
