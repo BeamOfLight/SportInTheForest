@@ -639,7 +639,8 @@ class DBHelper extends DBHelperBaseLayer {
                 do {
                     NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
                     int fitness_points = cursor.getInt(cursor.getColumnIndex("fp"));
-                    npc_entity.setName(cursor.getString(cursor.getColumnIndex("name")))
+                    npc_entity.setId(cursor.getInt(cursor.getColumnIndex("npc_id")))
+                            .setName(cursor.getString(cursor.getColumnIndex("name")))
                             .setInitialFitnessPoints(fitness_points)
                             .setCurrentFitnessPoints(fitness_points)
                             .setMultiplier(cursor.getFloat(cursor.getColumnIndex("multiplier")))

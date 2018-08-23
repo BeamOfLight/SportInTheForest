@@ -22,6 +22,7 @@ class CompetitionEngine {
     private final static int MAX_CHARACTERS_COUNT_PER_TEAM = 5;
     private ArrayList<Map<String, String>> logData;
     private List<List<CharacterEntity>> teamsData;
+    private NonPlayerCharacterEntity mainCharacter;
     private GameHelper gameHelper;
     private DBHelper dbHelper;
     private String log_message;
@@ -55,6 +56,11 @@ class CompetitionEngine {
         return view;
     }
 
+    void setMainCharacter(NonPlayerCharacterEntity _mainCharacter)
+    {
+        mainCharacter = _mainCharacter;
+    }
+
     CompetitionEngine(Context current, String exerciseName) {
         logData = new ArrayList<>();
         teamsData = new ArrayList<>();
@@ -67,7 +73,6 @@ class CompetitionEngine {
     }
 
     void start() {
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
         numberOfMoves = 0;
         competitionStartTime = System.currentTimeMillis()/1000;
 
@@ -77,7 +82,7 @@ class CompetitionEngine {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     dbHelper.addCompetition2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
                     player_entity.setCurrentTrainingId(
-                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), 0, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)))
+                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), mainCharacter.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, mainCharacter.getLocationId(), mainCharacter.getPosition(), 0, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)))
                     );
                 }
             }
@@ -386,14 +391,14 @@ class CompetitionEngine {
 
     private void proceedAI4Character(NonPlayerCharacterEntity current_character)
     {
-        SkillView skill_view = dbHelper.getSkillView(519, current_character.getName());
-        current_character.addActiveSkill(skill_view);
-        log_message += String.format(
-            Locale.ROOT,
-            "%s использовал(а) \"%s\". ",
-            current_character.getName(),
-            skill_view.name
-        );
+//        SkillView skill_view = dbHelper.getSkillView(519, current_character.getName());
+//        current_character.addActiveSkill(skill_view);
+//        log_message += String.format(
+//            Locale.ROOT,
+//            "%s использовал(а) \"%s\". ",
+//            current_character.getName(),
+//            skill_view.name
+//        );
     }
 
     void proceed() {
@@ -569,12 +574,11 @@ class CompetitionEngine {
             processDefeat();
         } else {
             int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
-            NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
             for (List<CharacterEntity> teamData : teamsData) {
                 for (CharacterEntity character : teamData) {
                     if (character.isPlayer()) {
                         PlayerEntity player_entity = (PlayerEntity) character;
-                        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, GameHelper.RESULT_STATE_UNFINISHED, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
+                        dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), mainCharacter.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, numberOfMoves, GameHelper.RESULT_STATE_UNFINISHED, mainCharacter.getLocationId(), mainCharacter.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
                     }
                 }
             }
@@ -584,13 +588,12 @@ class CompetitionEngine {
     private void processDraw()
     {
         int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 if (character.isPlayer()) {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     int result_exp = Math.round(getTeamExp(getOppositeTeamIdx(character.getTeamIdx())) * (float)(0.2) * getExpRatio(player_entity.getTeamIdx()));
-                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), result_exp, numberOfMoves, GameHelper.RESULT_STATE_DRAW, npc_entity.getLocationId(), npc_entity.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
+                    dbHelper.updateTraining(player_entity.getCurrentTrainingId(), player_entity.getUserId(), player_entity.getExerciseId(), mainCharacter.getId(), player_entity.getSumResult(), player_entity.getMaxResult(), result_exp, numberOfMoves, GameHelper.RESULT_STATE_DRAW, mainCharacter.getLocationId(), mainCharacter.getPosition(), duration, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)));
                     dbHelper.addDraw2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
                     if (character.getTeamIdx() == mainPlayerTeamIdx && character.getIdxInTeam() == mainPlayerIdx) {
                         addCompetitionLogMessage(
@@ -643,13 +646,12 @@ class CompetitionEngine {
     private void processWin()
     {
         int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 if (character.isPlayer()) {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     if (character.getTeamIdx() == mainPlayerTeamIdx) {
-                        int team_exp = processWin4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        int team_exp = processWin4Player(player_entity, mainCharacter.getId(), mainCharacter.getLocationId(), mainCharacter.getPosition(), duration);
                         if (character.getIdxInTeam() == mainPlayerIdx) {
                             addCompetitionLogMessage(
                                     String.format(
@@ -659,8 +661,8 @@ class CompetitionEngine {
                                             gameHelper.getCorrectPointWordRU(team_exp)
                                     )
                             );
-                            if (npc_entity.getLevel() < npc_entity.getExpectedWins()) {
-                                dbHelper.levelUpForNPC(player_entity.getUserId(), player_entity.getExerciseId(), npc_entity.getLocationId(), npc_entity.getPosition());
+                            if (mainCharacter.getLevel() < mainCharacter.getExpectedWins()) {
+                                dbHelper.levelUpForNPC(player_entity.getUserId(), player_entity.getExerciseId(), mainCharacter.getLocationId(), mainCharacter.getPosition());
                             }
 
                             processQuestLogic();
@@ -668,7 +670,7 @@ class CompetitionEngine {
                         }
 
                     } else {
-                        processDefeat4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        processDefeat4Player(player_entity, mainCharacter.getId(), mainCharacter.getLocationId(), mainCharacter.getPosition(), duration);
                     }
                 }
             }
@@ -680,13 +682,12 @@ class CompetitionEngine {
     private void processDefeat()
     {
         int duration = (int)(System.currentTimeMillis()/1000 - competitionStartTime);
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 if (character.isPlayer()) {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     if (character.getTeamIdx() == mainPlayerTeamIdx) {
-                        int result_exp = processDefeat4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        int result_exp = processDefeat4Player(player_entity, mainCharacter.getId(), mainCharacter.getLocationId(), mainCharacter.getPosition(), duration);
                         if (character.getIdxInTeam() == mainPlayerIdx) {
                             addCompetitionLogMessage(
                                     String.format(
@@ -700,7 +701,7 @@ class CompetitionEngine {
                         }
 
                     } else {
-                        processWin4Player(player_entity, npc_entity.getId(), npc_entity.getLocationId(), npc_entity.getPosition(), duration);
+                        processWin4Player(player_entity, mainCharacter.getId(), mainCharacter.getLocationId(), mainCharacter.getPosition(), duration);
                     }
                 }
             }
@@ -729,9 +730,8 @@ class CompetitionEngine {
 
     private void processQuestLogic()
     {
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
-        if (npc_entity.getCurrentWins() + 1 >= npc_entity.getExpectedWins()) {
-            if (!dbHelper.checkUserExerciseQuest(npc_entity.getLocationId(), npc_entity.getPosition())) {
+        if (mainCharacter.getCurrentWins() + 1 >= mainCharacter.getExpectedWins()) {
+            if (!dbHelper.checkUserExerciseQuest(mainCharacter.getLocationId(), mainCharacter.getPosition())) {
                 completeQuest();
                 openNewLocation();
             }
@@ -740,8 +740,8 @@ class CompetitionEngine {
                     String.format(
                             Locale.ROOT,
                             "Прогресс выполнения задания: %d / %d",
-                            npc_entity.getCurrentWins() + 1,
-                            npc_entity.getExpectedWins()
+                            mainCharacter.getCurrentWins() + 1,
+                            mainCharacter.getExpectedWins()
                     )
             );
         }
@@ -749,10 +749,9 @@ class CompetitionEngine {
 
     private void openNewLocation()
     {
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
-        if (npc_entity.getType().equals("rb")) {
-            if (dbHelper.openLocationForCurrentUserExercise(npc_entity.getLocationId() + 1)) {
-                String location_name = dbHelper.getLocationName(npc_entity.getLocationId() + 1);
+        if (mainCharacter.getType().equals("rb")) {
+            if (dbHelper.openLocationForCurrentUserExercise(mainCharacter.getLocationId() + 1)) {
+                String location_name = dbHelper.getLocationName(mainCharacter.getLocationId() + 1);
                 if (location_name != null) {
                     addCompetitionLogMessage(
                             String.format(
@@ -768,14 +767,13 @@ class CompetitionEngine {
 
     private void completeQuest()
     {
-        NonPlayerCharacterEntity npc_entity = (NonPlayerCharacterEntity) teamsData.get(RIGHT_TEAM_IDX).get(0);
-        dbHelper.addUserExerciseQuest(npc_entity.getLocationId(), npc_entity.getPosition());
+        dbHelper.addUserExerciseQuest(mainCharacter.getLocationId(), mainCharacter.getPosition());
         addCompetitionLogMessage(
                 String.format(
                         Locale.ROOT,
                         "Вы выполнили задание и получили %d %s опыта.",
-                        npc_entity.getQuestExp(),
-                        gameHelper.getCorrectPointWordRU(npc_entity.getQuestExp())
+                        mainCharacter.getQuestExp(),
+                        gameHelper.getCorrectPointWordRU(mainCharacter.getQuestExp())
                 )
         );
     }

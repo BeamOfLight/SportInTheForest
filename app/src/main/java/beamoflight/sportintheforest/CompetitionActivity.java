@@ -396,6 +396,10 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
         ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPosition4CurrentUser(npc_entity.getLocationId(), npc_entity.getPosition());
         for (NonPlayerCharacterEntity entity: entities) {
+            if (npc_entity.getId() == entity.getId()) {
+                entity.setCurrentWins(npc_entity.getCurrentWins());
+                competitionEngine.setMainCharacter(entity);
+            }
             competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, entity);
         }
     }
