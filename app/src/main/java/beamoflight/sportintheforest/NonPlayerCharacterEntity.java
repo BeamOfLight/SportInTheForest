@@ -19,6 +19,26 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public int questExp;
     public int level;
     public boolean questOwner;
+    protected String actions;
+    protected String preActions;
+
+    public String getActions() {
+        return actions;
+    }
+
+    public NonPlayerCharacterEntity setActions(String actions) {
+        this.actions = actions;
+        return this;
+    }
+
+    public String getPreActions() {
+        return preActions;
+    }
+
+    public NonPlayerCharacterEntity setPreActions(String preActions) {
+        this.preActions = preActions;
+        return this;
+    }
 
     public boolean isPlayer()
     {

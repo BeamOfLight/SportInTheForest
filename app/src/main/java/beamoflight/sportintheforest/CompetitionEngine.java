@@ -214,9 +214,29 @@ class CompetitionEngine {
     }
 
     private void makeMove(NonPlayerCharacterEntity current_character) {
-        current_character.move.result = (int) Math.round(current_character.maxRes * 0.6 + current_character.maxRes * 0.4 * Math.random());
         current_character.move.action = null;
+        String[] possible_actions = current_character.getActions().split(";");
+        if (!possible_actions[0].equals("")) {
+            for (String possible_action_str : possible_actions) {
+                int possible_action_id = Integer.parseInt(possible_action_str);
+                if (!current_character.alreadyUsedActiveSkills.contains(possible_action_id) && Math.random() < 0.6) {
+                    current_character.move.action = dbHelper.getSkillView(possible_action_id, current_character.getName());
+                }
+            }
+        }
+
         current_character.move.preAction = null;
+        String[] possible_pre_actions = current_character.getPreActions().split(";");
+        if (!possible_pre_actions[0].equals("")) {
+            for (String possible_pre_action_str : possible_pre_actions) {
+                int possible_pre_action_id = Integer.parseInt(possible_pre_action_str);
+                if (!current_character.alreadyUsedActiveSkills.contains(possible_pre_action_id) && Math.random() < 0.6) {
+                    current_character.move.preAction = dbHelper.getSkillView(possible_pre_action_id, current_character.getName());
+                }
+            }
+        }
+
+        current_character.move.result = (int) Math.round(current_character.maxRes * 0.6 + current_character.maxRes * 0.4 * Math.random());
         current_character.move.targetId = 0;
         for (CharacterEntity character : teamsData.get(getOppositeTeamIdx(current_character.teamIdx))) {
             if (character.isActive()) {
@@ -224,6 +244,9 @@ class CompetitionEngine {
             }
         }
         current_character.move.isReady = true;
+        if (current_character.move.action != null) {
+            current_character.move.action.result = current_character.move.result;
+        }
     }
 
     private float getBonusRate(float bonusChance, float bonusDefaultRate) {
@@ -379,33 +402,10 @@ class CompetitionEngine {
         addCompetitionLogMessage(log_message);
     }
 
-    private void proceedAI() {
-        for (List<CharacterEntity> teamData : teamsData) {
-            for (CharacterEntity character : teamData) {
-                if (character.isActive() && !character.isPlayer()) {
-                    proceedAI4Character((NonPlayerCharacterEntity) character);
-                }
-            }
-        }
-    }
-
-    private void proceedAI4Character(NonPlayerCharacterEntity current_character)
-    {
-//        SkillView skill_view = dbHelper.getSkillView(519, current_character.getName());
-//        current_character.addActiveSkill(skill_view);
-//        log_message += String.format(
-//            Locale.ROOT,
-//            "%s использовал(а) \"%s\". ",
-//            current_character.getName(),
-//            skill_view.name
-//        );
-    }
-
     void proceed() {
         cleanLogMessage();
 
         // Main loop start
-        proceedAI();
         proceedActiveSkillsAndTargets();
         proceedMoveCalculation();
         calculateFitnessPoints();
@@ -489,32 +489,34 @@ class CompetitionEngine {
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 if (character.isActive()) {
-                    if (character.move.preAction != null) {
+                    if (character.move.preAction != null && !character.alreadyUsedActiveSkills.contains(character.move.preAction.groupId)) {
                         character.alreadyUsedActiveSkills.add(character.move.preAction.groupId);
                         addActiveSkillFromPreActionOrAction(character, character.move.preAction);
-
-                        log_message += String.format(
-                                Locale.ROOT,
-                                "%s использовал(а) \"%s\". ",
-                                character.getName(),
-                                character.move.preAction.name
-                        );
+                        addSkillUseLogMessage(character, character.move.preAction.name);
+                    } else {
+                        character.move.preAction = null;
                     }
 
-                    if (character.move.action != null) {
+                    if (character.move.action != null && !character.alreadyUsedActiveSkills.contains(character.move.action.groupId)) {
                         character.alreadyUsedActiveSkills.add(character.move.action.groupId);
                         addActiveSkillFromPreActionOrAction(character, character.move.action);
-
-                        log_message += String.format(
-                                Locale.ROOT,
-                                "%s использовал(а) \"%s\". ",
-                                character.getName(),
-                                character.move.action.name
-                        );
+                        addSkillUseLogMessage(character, character.move.action.name);
+                    } else {
+                        character.move.action = null;
                     }
                 }
             }
         }
+    }
+
+    private void addSkillUseLogMessage(CharacterEntity character, String message)
+    {
+        log_message += String.format(
+                Locale.ROOT,
+                "%s использовал(а) \"%s\". ",
+                character.getName(),
+                message
+        );
     }
 
     private void proceedMoveCalculation() {
@@ -541,6 +543,8 @@ class CompetitionEngine {
                 if (character.getCurrentFitnessPoints() > 0) {
                     int old_fitness_points = character.getCurrentFitnessPoints();
                     int player_regeneration = 0;
+
+                    //TODO: regeneration for non players
                     if (character.isPlayer()) {
                         PlayerEntity player_entity = (PlayerEntity) character;
                         player_regeneration = dbHelper.getUserRegeneration(player_entity.getUserId(), player_entity.getExerciseId());

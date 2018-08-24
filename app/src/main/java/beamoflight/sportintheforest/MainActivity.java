@@ -3,6 +3,8 @@ package beamoflight.sportintheforest;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -28,6 +30,8 @@ public class MainActivity extends Activity {
     Button btMenuStart, btMenuSettings, btMenuKnowledge;
     String app_version;
 
+    boolean updateStarted = false;
+
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,7 @@ public class MainActivity extends Activity {
         tvVersion = (TextView) findViewById(R.id.tvVersion);
 
         initMenuButtons();
+        checkVersion();
     }
 
     private void showVersion()
@@ -47,26 +52,35 @@ public class MainActivity extends Activity {
         tvVersion.setText(
             String.format(Locale.ROOT, "ver. %s", dbHelper.getAppVersion())
         );
-        btMenuStart.setEnabled(true);
-        btMenuSettings.setEnabled(true);
-        btMenuKnowledge.setEnabled(true);
     }
 
     private void autoUpdate()
     {
-        dbHelper.customOnCreate();
-        dbHelper.loadFromFile("autosave.sif", false);
-        dbHelper.updateAppVersion(getResources().getString(R.string.app_version));
+        try {
+            dbHelper.customOnCreate();
+            dbHelper.loadFromFile("autosave.sif", false);
+            dbHelper.updateAppVersion(getResources().getString(R.string.app_version));
+            updateStarted = false;
+        } catch (Exception e){
+            // Toast.makeText(getBaseContext(), "Не удалось загрузить автосохранение", Toast.LENGTH_LONG).show();
+            Log.d("APP", "Не удалось загрузить автосохранение: " + e.toString());
+        }
+    }
+
+    private void turnOnOffButtons(boolean status)
+    {
+        btMenuStart.setEnabled(status);
+        btMenuSettings.setEnabled(status);
+        btMenuKnowledge.setEnabled(status);
     }
 
     private void checkVersion()
     {
-        btMenuStart.setEnabled(false);
-        btMenuSettings.setEnabled(false);
-        btMenuKnowledge.setEnabled(false);
+        turnOnOffButtons(false);
 
         String app_version = dbHelper.getAppVersion();
         if (app_version == null || !app_version.equals(getResources().getString(R.string.app_version))) {
+            updateStarted = true;
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -76,6 +90,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             showVersion();
+                            turnOnOffButtons(true);
                         }
                     });
                 }
@@ -93,6 +108,7 @@ public class MainActivity extends Activity {
             thread.start();
         } else {
             showVersion();
+            turnOnOffButtons(true);
         }
     }
 
@@ -137,7 +153,9 @@ public class MainActivity extends Activity {
                     PackageManager.PERMISSION_GRANTED
             );
         }
-        checkVersion();
+        if (!updateStarted) {
+            showVersion();
+        }
     }
 
 
@@ -145,15 +163,36 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("APP", "onDestroy " + gameHelper.getTodayTimestampString());
-        try {
-            dbHelper.exportDB("autosave_" + gameHelper.getDayInWeekString() + ".db", false);
-            dbHelper.exportDB("autosave.db", false);
 
-            dbHelper.save2file("autosave_" + gameHelper.getDayInWeekString() + ".sif");
-            dbHelper.save2file("autosave.sif");
-        } catch (Exception e) {
-            Log.d("APP", e.toString());
+        if (!updateStarted) {
+            try {
+                dbHelper.exportDB("autosave_" + gameHelper.getDayInWeekString() + ".db", false);
+                dbHelper.exportDB("autosave.db", false);
+
+                dbHelper.save2file("autosave_" + gameHelper.getDayInWeekString() + ".sif");
+                dbHelper.save2file("autosave.sif");
+            } catch (Exception e) {
+                Log.d("APP", e.toString());
+            }
+            Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
         }
-        Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (updateStarted) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Обновление не завершилось, вы уверены?")
+                    .setCancelable(false)
+                    .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton("Нет", null)
+                    .show();
+        } else {
+            finish();
+        }
     }
 }

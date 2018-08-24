@@ -21,27 +21,27 @@ public class SettingsActivity extends Activity {
     Button btnImportDBAuto, btnImportDBAutoMon, btnImportDBAutoTue, btnImportDBAutoWed;
     Button btnImportDBAutoThu, btnImportDBAutoFri, btnImportDBAutoSat, btnImportDBAutoSun;
 
-    private void turnOnOffButtons(boolean enabled)
+    private void turnOnOffButtons(boolean status)
     {
-        btnImportDBAuto.setEnabled(enabled);
-        btnExportDBold.setEnabled(enabled);
-        btnImportDBnew.setEnabled(enabled);
-        btnExportDBnew.setEnabled(enabled);
+        btnImportDBAuto.setEnabled(status);
+        btnExportDBold.setEnabled(status);
+        btnImportDBnew.setEnabled(status);
+        btnExportDBnew.setEnabled(status);
 
-        btnAddExercise.setEnabled(enabled);
-        btnWipe.setEnabled(enabled);
-        btnWipeSaveUserProgress.setEnabled(enabled);
-        btnTest.setEnabled(enabled);
+        btnAddExercise.setEnabled(status);
+        btnWipe.setEnabled(status);
+        btnWipeSaveUserProgress.setEnabled(status);
+        btnTest.setEnabled(status);
 
-        btnImportDBAuto.setEnabled(enabled);
-        btnImportDBAutoMon.setEnabled(enabled);
-        btnImportDBAutoTue.setEnabled(enabled);
-        btnImportDBAutoWed.setEnabled(enabled);
+        btnImportDBAuto.setEnabled(status);
+        btnImportDBAutoMon.setEnabled(status);
+        btnImportDBAutoTue.setEnabled(status);
+        btnImportDBAutoWed.setEnabled(status);
 
-        btnImportDBAutoThu.setEnabled(enabled);
-        btnImportDBAutoFri.setEnabled(enabled);
-        btnImportDBAutoSat.setEnabled(enabled);
-        btnImportDBAutoSun.setEnabled(enabled);
+        btnImportDBAutoThu.setEnabled(status);
+        btnImportDBAutoFri.setEnabled(status);
+        btnImportDBAutoSat.setEnabled(status);
+        btnImportDBAutoSun.setEnabled(status);
     }
 
     /** Called when the activity is first created. */

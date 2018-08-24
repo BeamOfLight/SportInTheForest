@@ -305,14 +305,16 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "bonus_chance float,"
                 + "bonus_multiplier float,"
                 + "name text,"
-                + "skills text" + ");");
+                + "actions text,"
+                + "pre_actions text"
+                + ");");
 
-        String base_sql = "INSERT INTO non_player_characters (npc_id, teammate, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name, skills) VALUES";
+        String base_sql = "INSERT INTO non_player_characters (npc_id, teammate, type, level, fp, max_res, multiplier, exp, resistance, bonus_chance, bonus_multiplier, name, actions, pre_actions) VALUES";
         String sql = "";
         int id, level, fp, max_res, resistance, teammate;
         long exp;
         float multiplier, bonus_chance, bonus_multiplier;
-        String type, name, skills;
+        String type, name, actions, pre_actions;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.non_player_characters);
@@ -333,10 +335,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             bonus_chance = Float.parseFloat(xpp.getAttributeValue(9));
                             bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(10));
                             name = xpp.getAttributeValue(11);
-                            skills = xpp.getAttributeValue(12);
+                            actions = xpp.getAttributeValue(12);
+                            pre_actions = xpp.getAttributeValue(13);
                             sql += ", ("+ id + ", " + teammate + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
                                     + multiplier + ", " + exp + ", " + resistance + ", " + bonus_chance + ", "
-                                    + bonus_multiplier + ", \"" + name +"\", \"" + skills + "\")";
+                                    + bonus_multiplier + ", \"" + name +"\", \"" + actions +"\", \"" + pre_actions + "\")";
                         }
                         break;
                     default:
@@ -757,8 +760,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    public void setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version)
+    public boolean setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version)
     {
+        boolean status = false;
         String[] fields = getFieldsByTableName(table_name, old_format_version);
         String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
         String sql = "";
@@ -779,7 +783,10 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             db.execSQL(base_sql + sql.substring(1));
             db.setTransactionSuccessful();
             db.endTransaction();
+            status = true;
         }
+
+        return status;
     }
 
     public ArrayList<Map<String, String>> getTableData(String table_name)
@@ -879,8 +886,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         }
     }
 
-    public void loadFromFile(String filename, boolean toastOn)
+    public boolean loadFromFile(String filename, boolean toastOn)
     {
+        boolean status = true;
         String json_string = "";
         try {
             File sd = Environment.getExternalStorageDirectory();
@@ -903,17 +911,24 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            status = false;
         }
         Record record;
         if (json_string.length() > 0) {
             record = (new Gson()).fromJson(json_string, Record.class);
             String tables[] = getTables2Save(record.format_version);
             for (String table_name : tables) {
-                setTableData(table_name, record.tables.get(table_name), record.format_version);
+                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version);
+                if (!local_status) {
+                    status = false;
+                }
             }
         } else {
+            status = false;
             Log.d("myLogs", "error");
             if (toastOn) Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
         }
+
+        return status;
     }
 }
