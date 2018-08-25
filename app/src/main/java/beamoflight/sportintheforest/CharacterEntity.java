@@ -101,7 +101,7 @@ abstract class CharacterEntity {
             if (active_skill != null) {
                 active_skill.duration -= 1;
                 if (active_skill.duration <=0) {
-                    getActiveSkills().put(idx, null);
+                    getActiveSkills().put(key, null);
                 }
             }
         }
