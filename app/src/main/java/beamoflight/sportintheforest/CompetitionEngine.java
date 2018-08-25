@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.google.gson.Gson;
-
 /**
  * CompetitionEngine
  * Created by beamoflight on 02.05.18.

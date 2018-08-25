@@ -781,7 +781,7 @@ def get_skills_active_splash_data():
 	skill_group_id = 15
 	skill_level = 1
 	value_last = 0
-	for required_level in [14, 21, 27, 32, 36, 40]:
+	for required_level in [14, 21, 27, 32, 36, 40, 42, 44, 45]:
 		skill_id = skill_group_id * 100 + skill_level
 		value_new = 0.25 + (skill_level - 1)* 0.12
 		value_diff = value_new - value_last

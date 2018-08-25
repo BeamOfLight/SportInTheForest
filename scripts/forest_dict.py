@@ -203,3 +203,17 @@ def get_extra_character_name(name, id):
 	extras.append('-лекарь');		# id = 2
 	extras.append('-спортсмен');	# id = 3
 	return '{}{}'.format(name, extras[id % 4])
+
+def get_achievements():
+	achievements = []
+	for i in xrange(7):
+		achievements.append({})
+
+	achievements[0] = ("quests_count", "Выполнить задания")
+	achievements[1] = ("total_result", "Общий результат")
+	achievements[2] = ("total_number_of_moves", "Сделать несколько подходов")
+	achievements[3] = ("max_competition_result", "Рекорд соревнования")
+	achievements[4] = ("competitions", "Поучаствовать в соревнованиях")
+	achievements[5] = ("wins", "Победить в соревнованиях")
+	achievements[6] = ("training_days", "Дни тренировок")
+	return achievements

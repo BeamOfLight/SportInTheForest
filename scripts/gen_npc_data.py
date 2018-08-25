@@ -78,9 +78,9 @@ for location_id in xrange(1, forest.get_locations_count()):
 				teammates_count = int((location_id - 1) / 3)
 				for idx in xrange(teammates_count):
 					team += '{};'.format(str(id - 4 * quest_cnt + idx))
-					pre_actions_teammate = ''
+					pre_actions_teammate = pre_action_str
 					if location_id >= 4 and idx % 4 == 2:
-						pre_actions_teammate = 1600 + int(round(location_id/2)) - 1
+						pre_actions_teammate = add_skills_str(pre_actions_teammate, 1600 + int(round(location_id/2)) - 1)
 
 					row = dict(npc_data[id - 4 * quest_cnt + idx - 1])
 					row['npc_id'] = str(extra_npc_id + 10000)
@@ -89,7 +89,7 @@ for location_id in xrange(1, forest.get_locations_count()):
 					row['exp'] = int(row['exp']) / 4
 					row['max_res'] = int(row['max_res']) / 4
 					row['name'] = forest_dict.get_extra_character_name(row['name'], idx)
-					row['actions'] = action_str
+					row['actions'] = ""
 					row['pre_actions'] = pre_actions_teammate
 
 					npc_extra_data.append(row)
