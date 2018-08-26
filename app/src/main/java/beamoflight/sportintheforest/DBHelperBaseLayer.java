@@ -794,13 +794,16 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         String[] fields = getFieldsByTableName(table_name, formatVersion);
         ArrayList<Map<String, String>> data = new ArrayList<>();
         Map<String, String> m;
-        Cursor cursor = db.query(table_name, fields, null, null, null, null, null);
+        Cursor cursor = db.query(table_name, null, null, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
                     m = new HashMap<>();
                     for (int i = 0; i < fields.length; i++) {
-                        m.put(fields[i], cursor.getString(cursor.getColumnIndex(fields[i])));
+                        int columnIndex = cursor.getColumnIndex(fields[i]);
+                        if (columnIndex != -1) {
+                            m.put(fields[i], cursor.getString(columnIndex));
+                        }
                     }
                     data.add(m);
                 } while (cursor.moveToNext());

@@ -269,6 +269,7 @@ class DBHelper extends DBHelperBaseLayer {
                     );
 
                     int exercise_id = Integer.parseInt(m.get("exercise_id"));
+                    int total_count = getTrainingSumResult(user_id, exercise_id);
                     int user_level = (int) getFloatPlayerLevel(getUserExerciseExp(user_id, exercise_id));
                     int user_fp = getUserFitnessPoints(user_id, exercise_id);
                     int user_resistance = getUserResistance(user_id, exercise_id);
@@ -279,7 +280,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("info",
                             String.format(
                                     Locale.ROOT,
-                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.2f | Выполнено заданий: %d",
+                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.2f | Выполнено заданий: %d | Общий результат: %d",
                                     //"Уровень %d  ФО: %d | Сопротивление: %d  Множитель: %.2f  Множитель бонуса: %.2f  Шанс бонуса: %.2f  Выполнено заданий: %d",
                                     user_level,
                                     user_fp,
@@ -287,7 +288,8 @@ class DBHelper extends DBHelperBaseLayer {
                                     user_multiplier,
                                     user_bonus_multiplier,
                                     user_bonus_chance,
-                                    finished_quest_count
+                                    finished_quest_count,
+                                    total_count
                             )
                     );
 
