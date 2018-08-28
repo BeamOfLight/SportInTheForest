@@ -217,7 +217,7 @@ class CompetitionEngine {
         if (!possible_actions[0].equals("")) {
             for (String possible_action_str : possible_actions) {
                 int possible_action_id = Integer.parseInt(possible_action_str);
-                if (!current_character.alreadyUsedActiveSkills.contains(possible_action_id) && Math.random() < 0.6) {
+                if (current_character.canReuseActiveSkill(possible_action_id) && Math.random() < 0.6) {
                     current_character.move.action = dbHelper.getSkillView(possible_action_id, current_character.getName());
                 }
             }
@@ -228,7 +228,7 @@ class CompetitionEngine {
         if (!possible_pre_actions[0].equals("")) {
             for (String possible_pre_action_str : possible_pre_actions) {
                 int possible_pre_action_id = Integer.parseInt(possible_pre_action_str);
-                if (!current_character.alreadyUsedActiveSkills.contains(possible_pre_action_id) && Math.random() < 0.6) {
+                if (current_character.canReuseActiveSkill(possible_pre_action_id) && Math.random() < 0.6) {
                     current_character.move.preAction = dbHelper.getSkillView(possible_pre_action_id, current_character.getName());
                 }
             }
@@ -409,7 +409,7 @@ class CompetitionEngine {
         calculateFitnessPoints();
         // Main loop finish
 
-        proceedActiveSkillsDurationRecalculation();
+        proceedActiveSkillsDurationAndReuseRecalculation();
         saveLogMessage();
         checkWinConditions();
     }
@@ -487,16 +487,16 @@ class CompetitionEngine {
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 if (character.isActive()) {
-                    if (character.move.preAction != null && !character.alreadyUsedActiveSkills.contains(character.move.preAction.groupId)) {
-                        character.alreadyUsedActiveSkills.add(character.move.preAction.groupId);
+                    if (character.move.preAction != null && character.canReuseActiveSkill(character.move.preAction.groupId)) {
+                        character.useActiveSkill(character.move.preAction.groupId, character.move.preAction.reuse);
                         addActiveSkillFromPreActionOrAction(character, character.move.preAction);
                         addSkillUseLogMessage(character, character.move.preAction.name);
                     } else {
                         character.move.preAction = null;
                     }
 
-                    if (character.move.action != null && !character.alreadyUsedActiveSkills.contains(character.move.action.groupId)) {
-                        character.alreadyUsedActiveSkills.add(character.move.action.groupId);
+                    if (character.move.action != null && character.canReuseActiveSkill(character.move.action.groupId)) {
+                        character.useActiveSkill(character.move.action.groupId, character.move.action.reuse);
                         addActiveSkillFromPreActionOrAction(character, character.move.action);
                         addSkillUseLogMessage(character, character.move.action.name);
                     } else {
@@ -527,10 +527,11 @@ class CompetitionEngine {
         }
     }
 
-    private void proceedActiveSkillsDurationRecalculation() {
+    private void proceedActiveSkillsDurationAndReuseRecalculation() {
         for (List<CharacterEntity> teamData : teamsData) {
             for (CharacterEntity character : teamData) {
                 character.recalculateActiveSkillsDuration();
+                character.recalculateActiveSkillsReuse();
             }
         }
     }
@@ -881,10 +882,10 @@ class CompetitionEngine {
 
         if (teamsData.get(team_idx).get(idx_in_team).isPlayer()) {
             PlayerEntity player_entity = (PlayerEntity) teamsData.get(team_idx).get(idx_in_team);
-            skill_views.add(new SkillView("Нет", -1, 0, 0, SkillView.TARGET_TYPE_SELF, player_entity.getName(), 0));
+            skill_views.add(new SkillView("Нет", -1, 0, 0, 0, SkillView.TARGET_TYPE_SELF, player_entity.getName(), 0));
             ArrayList<Map<String, String>> data_pre_actions_db = dbHelper.getActiveLearntSkills(player_entity.getUserId(), player_entity.getExerciseId(), 1);
             for(Map<String, String> data : data_pre_actions_db) {
-                if (!player_entity.alreadyUsedActiveSkills.contains(Integer.parseInt(data.get("skill_group_id"))))
+                if (player_entity.canReuseActiveSkill(Integer.parseInt(data.get("skill_group_id"))))
                 {
                     skill_views.add(
                             new SkillView(
@@ -892,6 +893,7 @@ class CompetitionEngine {
                                     Integer.parseInt(data.get("skill_group_id")),
                                     Integer.parseInt(data.get("skill_level")),
                                     Integer.parseInt(data.get("duration")),
+                                    Integer.parseInt(data.get("reuse")),
                                     Integer.parseInt(data.get("target_type")),
                                     player_entity.getName(),
                                     Float.parseFloat(data.get("splash_multiplier"))
@@ -910,10 +912,10 @@ class CompetitionEngine {
 
         if (teamsData.get(team_idx).get(idx_in_team).isPlayer()) {
             PlayerEntity player_entity = (PlayerEntity) teamsData.get(team_idx).get(idx_in_team);
-            skill_views.add(new SkillView("Обычный ход", -1, 0, 0, SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM, player_entity.getName(), 0));
+            skill_views.add(new SkillView("Обычный ход", -1, 0, 0, 0, SkillView.TARGET_TYPE_SINGLE_ACTIVE_FROM_OPPOSITE_TEAM, player_entity.getName(), 0));
             ArrayList<Map<String, String>> data_actions_db = dbHelper.getActiveLearntSkills(player_entity.getUserId(), player_entity.getExerciseId(), 2);
             for(Map<String, String> data : data_actions_db) {
-                if (!player_entity.alreadyUsedActiveSkills.contains(Integer.parseInt(data.get("skill_group_id"))))
+                if (player_entity.canReuseActiveSkill(Integer.parseInt(data.get("skill_group_id"))))
                 {
                     skill_views.add(
                             new SkillView(
@@ -921,6 +923,7 @@ class CompetitionEngine {
                                     Integer.parseInt(data.get("skill_group_id")),
                                     Integer.parseInt(data.get("skill_level")),
                                     Integer.parseInt(data.get("duration")),
+                                    Integer.parseInt(data.get("reuse")),
                                     Integer.parseInt(data.get("target_type")),
                                     player_entity.getName(),
                                     Float.parseFloat(data.get("splash_multiplier"))

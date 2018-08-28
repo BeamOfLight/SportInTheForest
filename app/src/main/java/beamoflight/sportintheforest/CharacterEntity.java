@@ -1,7 +1,9 @@
 package beamoflight.sportintheforest;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +46,13 @@ abstract class CharacterEntity {
     protected boolean isActive;
 
     protected SparseArray<SkillView> activeSkills;
-    List<Integer> alreadyUsedActiveSkills;
+    protected SparseIntArray alreadyUsedActiveSkills;
 
     CharacterEntity(Context current)
     {
         move = new Move(null, null, 0, 0, false);
         activeSkills = new SparseArray<>();
-        alreadyUsedActiveSkills = new ArrayList<>();
+        alreadyUsedActiveSkills = new SparseIntArray();
         dbHelper = new DBHelper(current);
         gameHelper = new GameHelper(current);
     }
@@ -73,6 +75,32 @@ abstract class CharacterEntity {
         data.avgResult = getAvgResult();
 
         return data;
+    }
+
+    public boolean canReuseActiveSkill(int skill_group_id)
+    {
+        return alreadyUsedActiveSkills.get(skill_group_id, 0) == 0;
+    }
+
+    public void useActiveSkill(int skill_group_id, int reuse)
+    {
+        alreadyUsedActiveSkills.put(skill_group_id, reuse);
+    }
+
+    void recalculateActiveSkillsReuse()
+    {
+        for(int idx = 0; idx < alreadyUsedActiveSkills.size(); idx++) {
+            int key = alreadyUsedActiveSkills.keyAt(idx);
+            int reuse = alreadyUsedActiveSkills.get(key);
+            reuse -= 1;
+            if (reuse <= 0) {
+                alreadyUsedActiveSkills.delete(key);
+            } else {
+                alreadyUsedActiveSkills.put(key, reuse);
+            }
+        }
+
+        Log.d("APP", alreadyUsedActiveSkills.toString());
     }
 
     public SparseArray<SkillView> getActiveSkills()

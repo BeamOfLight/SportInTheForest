@@ -11,6 +11,7 @@ class SkillView {
     int groupId;
     int level;
     int duration;
+    int reuse;
     int targetType;
     String ownerName;
     int result;
@@ -26,12 +27,13 @@ class SkillView {
     static final int TARGET_TYPE_ACTIVE_OPPOSITE_TEAM = 7;
     static final int TARGET_TYPE_ACTIVE_ALL = 8;
 
-    SkillView(String name_, int group_id, int level_, int duration_, int target_type, String owner_name, float splash_multiplier)
+    SkillView(String name_, int group_id, int level_, int duration_, int reuse_, int target_type, String owner_name, float splash_multiplier)
     {
         name = name_;
         groupId = group_id;
         level = level_;
         duration = duration_;
+        reuse = reuse_;
         targetType = target_type;
         ownerName = owner_name;
         this.result = 0;
@@ -44,6 +46,7 @@ class SkillView {
         groupId = skill_view.groupId;
         level = skill_view.level;
         duration = skill_view.duration;
+        reuse = skill_view.reuse;
         targetType = skill_view.targetType;
         ownerName = skill_view.ownerName;
         result = skill_view.result;
