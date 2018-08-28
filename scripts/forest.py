@@ -339,7 +339,7 @@ def get_skills_bonus_data():
 def get_skills_multiplier_info_msg(multiplier1_current, multiplier1_new, multiplier2_current, multiplier2_new):
 	if multiplier2_current == multiplier2_new:
 		return 'Множитель +{} -> +{}'.format(multiplier1_current, multiplier1_new)
-	return 'Множитель +{} и +{}% -> +{} и +{}%'.format(multiplier1_current, (int) (100 * multiplier2_current), multiplier1_new, (int) (100 * multiplier2_new))
+	return 'Множитель (M + {}) x {} -> (M + {}) x {}'.format(multiplier1_current, (int) (10 * (1.0 + multiplier2_current)) / 10.0, multiplier1_new, (int) (10 * (1.0 + multiplier2_new)) / 10.0)
 
 def get_skills_active_multiplier_data():
 	data = []
@@ -379,7 +379,7 @@ def get_skills_active_multiplier_data():
 			'multiplier_current': multiplier1_current,
 			'multiplier_new': multiplier1_new,
 			'info': get_skills_multiplier_info_msg(multiplier1_current, multiplier1_new, multiplier2_current, multiplier2_new),
-			'label': 'Множитель +{} и +{}% на 1 ход'.format(multiplier1_new, (int) (100 * multiplier2_new)),
+			'label': 'Множитель (M + {}) x {} на 1 ход'.format(multiplier1_new, (int) (10 * (1.0 + multiplier2_new))/10.0),
 			'duration': 1,
 			'reuse': 12 - skill_level / 3,
 			'specialisation': specialisation,
