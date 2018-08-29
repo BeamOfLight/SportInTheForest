@@ -46,7 +46,7 @@ public class PageFragmentHistory extends Fragment {
 
     private void showHistoryList()
     {
-        data = dbHelper.getCurrentUserLastTrainingsData(10);
+        data = dbHelper.getCurrentUserLastTrainingsData(20);
         if (data.size() > 0) {
             lvHistory.invalidateViews();
             SimpleAdapter historyAdapter = new SimpleAdapter(

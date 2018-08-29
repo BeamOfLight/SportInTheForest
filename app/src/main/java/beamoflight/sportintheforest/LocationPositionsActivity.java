@@ -16,17 +16,17 @@ public class LocationPositionsActivity extends Activity {
     int locationId;
     DBHelper dbHelper;
     GameHelper gameHelper;
-    List<NonPlayerCharacterEntity> locationPositionData;
+    List<LocationPositionEntity> locationPositionData;
 
-    TextView tvNPCsListInfo;
-    ListView lvNPCs;
+    TextView tvLocationPositionsListInfo;
+    ListView lvLocationPositions;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.non_player_characters);
 
-        tvNPCsListInfo = (TextView) findViewById(R.id.tvNPCsListInfo);
+        tvLocationPositionsListInfo = (TextView) findViewById(R.id.tvLocationPositionsListInfo);
         dbHelper = new DBHelper( this );
         locationId = Integer.parseInt(this.getIntent().getAction());
         gameHelper = new GameHelper(this.getBaseContext());
@@ -41,11 +41,11 @@ public class LocationPositionsActivity extends Activity {
 
     private void initNPCsListView()
     {
-        lvNPCs = (ListView) findViewById(R.id.lvNPCs);
-        lvNPCs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvLocationPositions = (ListView) findViewById(R.id.lvLocationPositions);
+        lvLocationPositions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(LocationPositionsActivity.this, CompetitionActivity.class);
-                intent.setAction(Integer.toString(locationPositionData.get(position).getId()));
+                intent.setAction(Integer.toString(locationPositionData.get(position).getLocationLevelPositionId()));
                 startActivity(intent);
             }
         });
@@ -57,11 +57,11 @@ public class LocationPositionsActivity extends Activity {
 
     private void showList()
     {
-        lvNPCs.invalidateViews();
-        NonPlayerCharacterItemArrayAdapter adapter = new NonPlayerCharacterItemArrayAdapter(this, locationPositionData);
+        lvLocationPositions.invalidateViews();
+        LocationPositionItemArrayAdapter adapter = new LocationPositionItemArrayAdapter(this, locationPositionData);
 
-        lvNPCs.setAdapter(adapter);
-        lvNPCs.setFooterDividersEnabled(true);
+        lvLocationPositions.setAdapter(adapter);
+        lvLocationPositions.setFooterDividersEnabled(true);
     }
 
     private void showLocationName()
@@ -77,11 +77,11 @@ public class LocationPositionsActivity extends Activity {
 
     private void refreshData()
     {
-        locationPositionData = dbHelper.getNonPlayerCharactersData(locationId);
+        locationPositionData = dbHelper.getLocationPositionsData(locationId);
         if (locationPositionData.size() > 0) {
-            tvNPCsListInfo.setText("");
+            tvLocationPositionsListInfo.setText("");
         } else {
-            tvNPCsListInfo.setText(getResources().getString(R.string.npcs_list_info_msg));
+            tvLocationPositionsListInfo.setText(getResources().getString(R.string.npcs_list_info_msg));
         }
     }
 }

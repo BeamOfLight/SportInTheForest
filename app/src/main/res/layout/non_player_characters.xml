@@ -29,13 +29,13 @@
     </LinearLayout>
 
     <ListView
-        android:id="@+id/lvNPCs"
+        android:id="@+id/lvLocationPositions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
 
     <TextView
-        android:id= "@+id/tvNPCsListInfo"
+        android:id= "@+id/tvLocationPositionsListInfo"
         android:layout_width= "wrap_content"
         android:layout_height= "wrap_content"
         android:text= ""

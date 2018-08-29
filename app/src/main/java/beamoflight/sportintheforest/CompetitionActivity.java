@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -14,23 +13,19 @@ import android.widget.ArrayAdapter;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class CompetitionActivity extends CompetitionBaseActivity {
-    int npcId;
-    NonPlayerCharacterEntity npc_entity;
-    List<Integer> already_used_active_skills;
+    LocationPositionEntity locationPositionEntity;
     CompetitionEngine competitionEngine;
     AlertDialog dialogCompetitionMove;
 
@@ -45,7 +40,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
             btInvite.setVisibility(View.VISIBLE);
         }
 
-        btNextLocation.setVisibility(View.INVISIBLE);
+        btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.INVISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
     }
@@ -55,7 +50,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btCompetitionStart.setVisibility(View.INVISIBLE);
         btCompetitionRestart.setVisibility(View.INVISIBLE);
         btInvite.setVisibility(View.INVISIBLE);
-        btNextLocation.setVisibility(View.INVISIBLE);
+        btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.INVISIBLE);
         btAddResult.setVisibility(View.VISIBLE);
     }
@@ -65,7 +60,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btCompetitionStart.setVisibility(View.INVISIBLE);
         btCompetitionRestart.setVisibility(View.VISIBLE);
         btInvite.setVisibility(View.INVISIBLE);
-        btNextLocation.setVisibility(View.INVISIBLE);
+        btNext.setVisibility(View.VISIBLE);
         btFinish.setVisibility(View.VISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
     }
@@ -76,7 +71,6 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
         exitMessage = "Вы уверены, что хотите сдаться?";
         competitionEngine = new CompetitionEngine(getBaseContext(), dbHelper.getExerciseName(gameHelper.getExerciseId()));
-        already_used_active_skills = new ArrayList<>();
 
         initCompetitionTeamLeft();
         initCompetitionTeamRight();
@@ -84,17 +78,58 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
         btCompetitionRestart.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int next_npc_id = Integer.parseInt(getIntent().getAction());
-                if (npc_entity.getCurrentWins() + 1 < npc_entity.getExpectedWins()) {
-                    next_npc_id++;
+                LocationPositionEntity nextLocationPosition = null;
+                if (locationPositionEntity.getWins() + 1 < locationPositionEntity.getQuestCnt()) {
+                    nextLocationPosition = dbHelper.getLocationPositionByIds(
+                            locationPositionEntity.getLocationId(),
+                            locationPositionEntity.getLevel() + 1,
+                            locationPositionEntity.getPosition()
+                    );
+                } else {
+                    nextLocationPosition = locationPositionEntity;
                 }
 
-                Intent intent = new Intent(getBaseContext(), CompetitionActivity.class);
-                intent.setAction(Integer.toString(next_npc_id));
-                startActivity(intent);
-                finish();
+                if (nextLocationPosition != null) {
+                    Intent intent = new Intent(getBaseContext(), CompetitionActivity.class);
+                    intent.setAction(Integer.toString(nextLocationPosition.getLocationLevelPositionId()));
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
+
+        btNext.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                LocationPositionEntity nextLocationPosition = null;
+                if (locationPositionEntity.getWins() + 1 < locationPositionEntity.getQuestCnt()) {
+                    nextLocationPosition = dbHelper.getLocationPositionByIds(
+                            locationPositionEntity.getLocationId(),
+                            locationPositionEntity.getLevel() + 1,
+                            locationPositionEntity.getPosition()
+                    );
+                } else if (locationPositionEntity.getWins() + 1 == locationPositionEntity.getQuestCnt()) {
+                    nextLocationPosition = dbHelper.getLocationPositionByIds(locationPositionEntity.getLocationId() + 1, 1, 1);
+                } else {
+                    int location_id = locationPositionEntity.getLocationId();
+                    int position = locationPositionEntity.getPosition();
+                    if (position == 5) {
+                        location_id++;
+                        position = 1;
+                    } else {
+                        position++;
+                    }
+                    nextLocationPosition = dbHelper.getLocationPositionByIds(location_id, 1, position);
+                }
+
+                if (nextLocationPosition != null) {
+                    Intent intent = new Intent(getBaseContext(), CompetitionActivity.class);
+                    intent.setAction(Integer.toString(nextLocationPosition.getLocationLevelPositionId()));
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+
 
         btInvite.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -390,22 +425,22 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
     private void initCompetitionTeamRight()
     {
-        // TODO fix npc_id logic to location_position logic
-        npcId = Integer.parseInt(getIntent().getAction());
-        npc_entity = dbHelper.getNonPlayerCharacterById4CurrentUser(npcId);
+        locationPositionEntity = dbHelper.getLocationPosition(Integer.parseInt(getIntent().getAction()));
 
-        ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPosition4CurrentUser(npc_entity.getLocationId(), npc_entity.getPosition());
+        ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPositionLevel(
+                locationPositionEntity.getLocationId(),
+                locationPositionEntity.getPosition(),
+                locationPositionEntity.getLevel()
+        );
+
         for (NonPlayerCharacterEntity entity: entities) {
-            if (npc_entity.getId() == entity.getId()) {
-                entity.setCurrentWins(npc_entity.getCurrentWins());
-                competitionEngine.setMainCharacter(entity);
-            }
             competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, entity);
         }
+        competitionEngine.setLocationPosition(locationPositionEntity);
     }
 
     protected void leaveCompetition()
     {
-        competitionEngine.leave(npcId, npc_entity.getLocationId(), npc_entity.getPosition());
+        competitionEngine.leave(locationPositionEntity.getLocationId(), locationPositionEntity.getPosition(), locationPositionEntity.getLevel());
     }
 }

@@ -29,6 +29,8 @@ public class MainActivity extends Activity {
     TextView tvVersion;
     Button btMenuStart, btMenuSettings, btMenuKnowledge;
     String app_version;
+    Handler errorHandler;
+    Thread thread;
 
     boolean updateStarted = false;
 
@@ -42,6 +44,15 @@ public class MainActivity extends Activity {
 
         app_version = dbHelper.getAppVersion();
         tvVersion = (TextView) findViewById(R.id.tvVersion);
+
+        errorHandler = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                btMenuSettings.setEnabled(true);
+                Toast.makeText(getBaseContext(), "Не удалось загрузить автосохранение", Toast.LENGTH_LONG).show();
+                Log.d("APP", "errorHandler");
+
+            }
+        };
 
         initMenuButtons();
         checkVersion();
@@ -64,6 +75,7 @@ public class MainActivity extends Activity {
         } catch (Exception e){
             // Toast.makeText(getBaseContext(), "Не удалось загрузить автосохранение", Toast.LENGTH_LONG).show();
             Log.d("APP", "Не удалось загрузить автосохранение: " + e.toString());
+            errorHandler.sendEmptyMessage(0);
         }
     }
 
@@ -81,7 +93,7 @@ public class MainActivity extends Activity {
         String app_version = dbHelper.getAppVersion();
         if (app_version == null || !app_version.equals(getResources().getString(R.string.app_version))) {
             updateStarted = true;
-            Thread thread = new Thread(new Runnable() {
+            thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     autoUpdate();
@@ -106,6 +118,7 @@ public class MainActivity extends Activity {
             );
 
             thread.start();
+
         } else {
             showVersion();
             turnOnOffButtons(true);

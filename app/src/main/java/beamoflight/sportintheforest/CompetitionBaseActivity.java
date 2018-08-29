@@ -32,7 +32,7 @@ abstract public class CompetitionBaseActivity extends Activity {
     TextView tvExerciseName;
     ListView lvCompetitionTeamLeft, lvCompetitionTeamRight;
     ListView lvCompetitionLog;
-    Button btCompetitionStart, btCompetitionRestart, btFinish, btAddResult, btInvite, btNextLocation;
+    Button btCompetitionStart, btCompetitionRestart, btFinish, btAddResult, btInvite, btNext;
     Button btTranslation;
     CompetitionView competitionView;
     String exitMessage;
@@ -46,7 +46,7 @@ abstract public class CompetitionBaseActivity extends Activity {
         btCompetitionStart.setVisibility(View.VISIBLE);
         btCompetitionRestart.setVisibility(View.INVISIBLE);
         btInvite.setVisibility(View.INVISIBLE);
-        btNextLocation.setVisibility(View.INVISIBLE);
+        btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.INVISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
     }
@@ -64,7 +64,7 @@ abstract public class CompetitionBaseActivity extends Activity {
         btCompetitionStart = (Button) findViewById(R.id.btCompetitionStart);
         btCompetitionRestart = (Button) findViewById(R.id.btCompetitionRestart);
         btInvite = (Button) findViewById(R.id.btInvite);
-        btNextLocation = (Button) findViewById(R.id.btNextLocation);
+        btNext = (Button) findViewById(R.id.btNextLocation);
         btFinish = (Button) findViewById(R.id.btFinish);
         btAddResult = (Button) findViewById(R.id.btAddResult);
         btTranslation = (Button) findViewById(R.id.btTranslation);

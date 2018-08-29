@@ -34,7 +34,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected int formatVersion = 3;
+    protected int formatVersion = 4;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -181,20 +181,19 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS location_positions;");
         db.execSQL("CREATE TABLE IF NOT EXISTS location_positions ("
                 + "location_level_position_id integer primary key autoincrement,"
+                + "name text,"
                 + "location_id integer,"
                 + "position integer,"
                 + "level integer,"
-                + "npc_id integer,"
                 + "quest_cnt integer,"
                 + "quest_exp integer,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
-                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
 
-        String base_sql = "INSERT INTO location_positions (location_level_position_id, location_id, position, level, npc_id, quest_cnt, quest_exp) VALUES";
+        String base_sql = "INSERT INTO location_positions (location_level_position_id, name, location_id, position, level, quest_cnt, quest_exp) VALUES";
         String sql = "";
-        int location_level_position_id, location_id, position, level, npc_id, quest_cnt;
-        int quest_exp;
+        int location_level_position_id, location_id, position, level, quest_cnt, quest_exp;
+        String name;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.location_positions);
@@ -204,13 +203,56 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("location_position")) {
                             location_level_position_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            location_id = Integer.parseInt(xpp.getAttributeValue(1));
-                            position = Integer.parseInt(xpp.getAttributeValue(2));
-                            level = Integer.parseInt(xpp.getAttributeValue(3));
-                            npc_id = Integer.parseInt(xpp.getAttributeValue(4));
+                            name = xpp.getAttributeValue(1);
+                            location_id = Integer.parseInt(xpp.getAttributeValue(2));
+                            position = Integer.parseInt(xpp.getAttributeValue(3));
+                            level = Integer.parseInt(xpp.getAttributeValue(4));
                             quest_cnt = Integer.parseInt(xpp.getAttributeValue(5));
                             quest_exp = Integer.parseInt(xpp.getAttributeValue(6));
-                            sql += ", (" + location_level_position_id + ", " + location_id + ", " + position + ", " + level + ", " + npc_id + ", " + quest_cnt + ", " + quest_exp + ")";
+                            sql += ", (" + location_level_position_id + ", \"" + name + "\", " + location_id + ", " + position + ", " + level + ", " + quest_cnt + ", " + quest_exp + ")";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                // следующий элемент
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sql += ";";
+        db.execSQL(base_sql + sql.substring(1));
+    }
+
+    protected void createTableNpcInLocationPositions()
+    {
+        // создаем таблицу locations
+        db.execSQL("DROP TABLE IF EXISTS npc_in_location_positions;");
+        db.execSQL("CREATE TABLE IF NOT EXISTS npc_in_location_positions ("
+                + "location_level_position_id integer,"
+                + "npc_id integer,"
+                + "FOREIGN KEY(location_level_position_id) REFERENCES location_positions(location_level_position_id)"
+                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
+                + ");");
+
+        String base_sql = "INSERT INTO npc_in_location_positions (location_level_position_id, npc_id) VALUES";
+        String sql = "";
+        int location_level_position_id, npc_id;
+
+        try {
+            XmlPullParser xpp = context.getResources().getXml(R.xml.npc_in_location_positions);
+
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                switch (xpp.getEventType()) {
+                    case XmlPullParser.START_TAG:
+                        if (xpp.getName().equals("npc_in_location_position")) {
+                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(0));
+                            npc_id = Integer.parseInt(xpp.getAttributeValue(1));
+                            sql += ", (" + location_level_position_id + ", " + npc_id + ")";
                         }
                         break;
                     default:
@@ -591,11 +633,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         // создаем таблицу user_exercise_quests
         db.execSQL("DROP TABLE IF EXISTS user_exercise_quests;");
         db.execSQL("CREATE TABLE IF NOT EXISTS user_exercise_quests ("
-                + "npc_location_id smallint,"
-                + "npc_position smallint,"
+                + "location_id smallint,"
+                + "position smallint,"
                 + "user_id integer,"
                 + "exercise_id integer,"
-                + "FOREIGN KEY(npc_location_id) REFERENCES locations(location_id)"
+                + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
@@ -610,8 +652,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "user_id integer,"
                 + "exercise_id integer,"
                 + "npc_id integer,"
-                + "npc_location_id smallint,"
-                + "npc_position smallint,"
+                + "level integer,"
+                + "location_id smallint,"
+                + "position smallint,"
                 + "event_timestamp DATETIME,"
                 + "sum_result smallint,"
                 + "max_result smallint,"
@@ -622,9 +665,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exp integer,"
                 + "result_state smallint,"
                 + "quest_owner boolean,"
+                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
-                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
     }
 
@@ -635,6 +678,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         createTableLocations();
         createTableNonPlayerCharacters();
         createTableLocationPositions();
+        createTableNpcInLocationPositions();
         createTableSkills();
         createTableSkillGroups();
         createTableAchievements();
@@ -763,15 +807,22 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     public boolean setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version)
     {
         boolean status = false;
-        String[] fields = getFieldsByTableName(table_name, old_format_version);
-        String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", fields) + ") VALUES";
+        String[] old_fields = getFieldsByTableName(table_name, old_format_version);
+        String[] new_fields = getFieldsByTableName(table_name, formatVersion);
+        String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", new_fields) + ") VALUES";
         String sql = "";
         int cnt = 0;
         for (Map<String, String> row : data) {
             cnt++;
             sql += ", (";
-            for (int i = 0; i < fields.length; i++) {
-                sql += "\"" + row.get(fields[i]) + "\", ";
+            for (int i = 0; i < new_fields.length; i++) {
+                if (i < old_fields.length) {
+                    if (!old_fields[i].equals("")) {
+                        sql += "\"" + row.get(old_fields[i]) + "\", ";
+                    }
+                } else {
+                    sql += "\"\", ";
+                }
             }
             sql = sql.substring(0, sql.length() - 2);
             sql += ")";
@@ -822,9 +873,15 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name"});
         m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
-        m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
+        if (format_version >= 4) {
+            m.put("user_exercise_quests", new String[] {"location_id", "position", "user_id", "exercise_id"});
+        } else {
+            m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
+        }
         m.put("parameters", new String[] {"app_version"});
-        if (format_version >= 2) {
+        if (format_version >= 4) {
+            m.put("user_exercise_trainings", new String[]{"training_id", "user_id", "exercise_id", "npc_id", "location_id", "position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp", "level"});
+        } else if (format_version >= 2) {
             m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp"});
         } else if (format_version == 1) {
             m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner"});
@@ -925,6 +982,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 if (!local_status) {
                     status = false;
                 }
+            }
+            if (record.format_version < 4 && formatVersion >= 4) {
+                db.execSQL("UPDATE user_exercise_trainings uet SET level=(SELECT npcs.level FROM non_player_characters npcs WHERE npcs.npc_id = uet.npc_id) WHERE uet.npc_id IS NOT NULL");
             }
         } else {
             status = false;
