@@ -17,7 +17,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public int questExpectedWins;
     public int questCurrentWins;
     public int questExp;
-    public int level;
     public boolean questOwner;
     protected String actions;
     protected String preActions;
@@ -96,12 +95,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
         return this;
     }
 
-    public NonPlayerCharacterEntity setLevel(int level_)
-    {
-        level = level_;
-        return this;
-    }
-
     public NonPlayerCharacterEntity setQuestExp(int quest_exp)
     {
         questExp = quest_exp;
@@ -149,10 +142,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public int getPosition()
     {
         return position;
-    }
-    public int getLevel()
-    {
-        return level;
     }
     public int getQuestExp()
     {

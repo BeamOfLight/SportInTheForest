@@ -194,7 +194,7 @@ abstract public class CompetitionBaseActivity extends Activity {
         //tvExerciseName.setText(competitionView.exerciseName);
     }
 
-    private void initDialogShowUserInfo(CharacterView character_entity)
+    private void initDialogShowUserInfo(CharacterView character_view)
     {
         LayoutInflater li = LayoutInflater.from(this);
         View prompts_view = li.inflate(R.layout.prompt_character_info, null);
@@ -203,15 +203,21 @@ abstract public class CompetitionBaseActivity extends Activity {
         alert_dialog_builder.setView(prompts_view);
 
         TextView tvCharacterName = (TextView) prompts_view.findViewById(R.id.tvCharacterName);
-        tvCharacterName.setText(character_entity.getName());
+        tvCharacterName.setText(character_view.getName());
+
+        TextView tvCharacterSpecialisation = (TextView) prompts_view.findViewById(R.id.tvCharacterSpecialisation);
+        tvCharacterSpecialisation.setText(gameHelper.getSpecialisationName(character_view.getSpecialisationId()));
+
+        TextView tvCharacterLevel = (TextView) prompts_view.findViewById(R.id.tvCharacterLevel);
+        tvCharacterLevel.setText(String.format(Locale.ROOT, "%d", character_view.getLevel()));
 
         TextView tvCharacterFitnessPoints = (TextView) prompts_view.findViewById(R.id.tvCharacterFitnessPoints);
         tvCharacterFitnessPoints.setText(
                 String.format(
                         Locale.ROOT,
                         "%d / %d",
-                        character_entity.getCurrentFitnessPoints(),
-                        character_entity.getInitialFitnessPoints()
+                        character_view.getCurrentFitnessPoints(),
+                        character_view.getInitialFitnessPoints()
                 )
         );
 
@@ -220,25 +226,25 @@ abstract public class CompetitionBaseActivity extends Activity {
                 String.format(
                         Locale.ROOT,
                         "%d ( %.1f%% )",
-                        character_entity.getResistance(),
-                        character_entity.getResistanceInPercents()
+                        character_view.getResistance(),
+                        character_view.getResistanceInPercents()
                 )
         );
 
         TextView tvCharacterBonusChance = (TextView) prompts_view.findViewById(R.id.tvCharacterBonusChance);
-        tvCharacterBonusChance.setText(String.format(Locale.ROOT, "%.1f%%", 100.0 * character_entity.getBonusChance()));
+        tvCharacterBonusChance.setText(String.format(Locale.ROOT, "%.1f%%", 100.0 * character_view.getBonusChance()));
 
         TextView tvCharacterBonusMultiplier = (TextView) prompts_view.findViewById(R.id.tvCharacterBonusMultiplier);
-        tvCharacterBonusMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_entity.getBonusMultiplier()));
+        tvCharacterBonusMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_view.getBonusMultiplier()));
 
         TextView tvCharacterMultiplier = (TextView) prompts_view.findViewById(R.id.tvCharacterMultiplier);
-        tvCharacterMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_entity.getMultiplier()));
+        tvCharacterMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_view.getMultiplier()));
 
         TextView tvCharacterAvgResult = (TextView) prompts_view.findViewById(R.id.tvCharacterAvgResult);
-        tvCharacterAvgResult.setText(String.format(Locale.ROOT, "%.0f", character_entity.getAvgResult()));
+        tvCharacterAvgResult.setText(String.format(Locale.ROOT, "%.0f", character_view.getAvgResult()));
 
         ListView lvActiveSkills = (ListView) prompts_view.findViewById(R.id.lvActiveSkills);
-        List<SkillView> active_skills = character_entity.getActiveSkills();
+        List<SkillView> active_skills = character_view.getActiveSkills();
         lvActiveSkills.setAdapter(new SkillArrayAdapter(getBaseContext(), active_skills));
 
         TextView tvActiveSkillsStatus = (TextView) prompts_view.findViewById(R.id.tvActiveSkillsStatus);

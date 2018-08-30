@@ -16,6 +16,14 @@ public class CharacterView {
     @Expose
     protected String name;
 
+    @SerializedName("specialisation_id")
+    @Expose
+    protected int specialisationId;
+
+    @SerializedName("level")
+    @Expose
+    protected int level;
+
     @SerializedName("current_fitness_points")
     @Expose
     protected int currentFitnessPoints;
@@ -97,4 +105,6 @@ public class CharacterView {
         return bonusMultiplier;
     }
     float getResistanceInPercents() { return resistanceInPercents; }
+    public int getSpecialisationId() { return specialisationId; }
+    public int getLevel() { return level; }
 }

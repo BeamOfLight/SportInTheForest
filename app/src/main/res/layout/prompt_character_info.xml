@@ -50,6 +50,22 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5dp"
                                 android:layout_marginRight="5dp"
+                                android:text="@string/txt_main_user_specialisation"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:text="@string/txt_main_user_level"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
                                 android:text="@string/txt_main_user_fitness_points"
                                 android:textAlignment="center"
                                 android:textSize="16sp"/>
@@ -102,6 +118,20 @@
                             android:layout_marginLeft="10sp"
                             android:orientation="vertical">
 
+                            <TextView
+                                android:id="@+id/tvCharacterSpecialisation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
+                            <TextView
+                                android:id="@+id/tvCharacterLevel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
                             <TextView
                                 android:id="@+id/tvCharacterFitnessPoints"
                                 android:layout_width="wrap_content"

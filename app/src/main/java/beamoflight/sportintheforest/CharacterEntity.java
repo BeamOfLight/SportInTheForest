@@ -44,6 +44,8 @@ abstract class CharacterEntity {
     protected int idxInTeam;
     protected int teamIdx;
     protected boolean isActive;
+    protected int level;
+    protected int specialisationId;
 
     protected SparseArray<SkillView> activeSkills;
     protected SparseIntArray alreadyUsedActiveSkills;
@@ -73,6 +75,8 @@ abstract class CharacterEntity {
         data.isPlayer = isPlayer();
         data.activeSkills = getActiveSkillsList();
         data.avgResult = getAvgResult();
+        data.level = getLevel();
+        data.specialisationId = getSpecialisationId();
 
         return data;
     }
@@ -214,6 +218,18 @@ abstract class CharacterEntity {
         return this;
     }
 
+    CharacterEntity setSpecialisationId(int specialisation_id)
+    {
+        specialisationId = specialisation_id;
+        return this;
+    }
+
+    CharacterEntity setLevel(int level_)
+    {
+        level = level_;
+        return this;
+    }
+
     boolean isActive()
     {
         return isActive;
@@ -227,6 +243,8 @@ abstract class CharacterEntity {
     abstract boolean isPlayer();
     abstract int getExp();
     abstract float getAvgResult();
+    int getSpecialisationId() { return specialisationId; }
+    int getLevel() { return level; }
 
     int getIdxInTeam()
     {

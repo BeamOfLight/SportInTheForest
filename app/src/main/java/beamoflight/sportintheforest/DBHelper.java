@@ -633,12 +633,13 @@ class DBHelper extends DBHelperBaseLayer {
                             .setMultiplier(cursor.getFloat(cursor.getColumnIndex("multiplier")))
                             .setResistance(cursor.getInt(cursor.getColumnIndex("resistance")))
                             .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
+                            .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
+                            .setSpecialisationId(0)
                             .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")));
                     npc_entity.setExp(cursor.getInt(cursor.getColumnIndex("exp")))
                             .setMaxResult(cursor.getInt(cursor.getColumnIndex("max_res")))
                             .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
                             .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
-                            .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
                             .setType(cursor.getString(cursor.getColumnIndex("type")))
                             .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
                             .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
@@ -1828,8 +1829,11 @@ class DBHelper extends DBHelperBaseLayer {
 
     public PlayerEntity getPlayerEntity(int user_id, int exercise_id)
     {
+        Map<String, String> user_exercise_data = getUserExerciseData(user_id, exercise_id);
         PlayerEntity player_entity = new PlayerEntity(context, user_id, exercise_id);
         player_entity.setName(getUserNameById(user_id))
+                .setSpecialisationId(Integer.parseInt(user_exercise_data.get("specialisation")))
+                .setLevel(getUserLevel(user_id, exercise_id))
                 .setInitialFitnessPoints(getUserFitnessPoints(user_id, exercise_id))
                 .setCurrentFitnessPoints(getUserFitnessPoints(user_id, exercise_id))
                 .setMultiplier(getUserMultiplier(user_id, exercise_id))
