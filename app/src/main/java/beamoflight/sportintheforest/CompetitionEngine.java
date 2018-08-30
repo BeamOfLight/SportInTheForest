@@ -263,15 +263,6 @@ class CompetitionEngine {
         float final_result = current_character.getResult() * final_rate;
         int int_final_result = Math.round(final_result);
 
-        if (current_character.isPlayer()) {
-            PlayerEntity current_player = (PlayerEntity) current_character;
-            if (current_player.getResult() > current_player.getMaxResult()) {
-                current_player.setMaxResult(current_character.getResult());
-            }
-            current_player.setSumResult(current_player.getSumResult() + current_character.getResult());
-            gameHelper.saveLastSelection2Preferences(current_player.getUserId(), current_player.getExerciseId(), current_player.getResult());
-        }
-
         int targetFPDiff = gameHelper.getTargetFitnessPointsDifference(target_character.getCurrentFitnessPoints(), target_character.getResistance(), final_result);
         target_character.setCurrentFitnessPoints(target_character.getCurrentFitnessPoints() - targetFPDiff);
 
@@ -291,7 +282,21 @@ class CompetitionEngine {
         );
     }
 
+    private void calculatePlayerStat(CharacterEntity current_character)
+    {
+        if (current_character.isPlayer()) {
+            PlayerEntity current_player = (PlayerEntity) current_character;
+            if (current_player.getResult() > current_player.getMaxResult()) {
+                current_player.setMaxResult(current_character.getResult());
+            }
+            current_player.addSumResult(current_character.getResult());
+            gameHelper.saveLastSelection2Preferences(current_player.getUserId(), current_player.getExerciseId(), current_player.getResult());
+        }
+    }
+
     private void calculateMove(CharacterEntity current_character) {
+        calculatePlayerStat(current_character);
+
         if (current_character.move.action == null) {
             CharacterEntity target_character = teamsData.get(getOppositeTeamIdx(current_character.teamIdx)).get(current_character.move.targetId);
             calculateMove4Target(current_character, target_character, 1);

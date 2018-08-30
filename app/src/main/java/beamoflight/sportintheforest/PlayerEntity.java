@@ -78,6 +78,11 @@ public class PlayerEntity extends CharacterEntity {
         return this;
     }
 
+    public void addSumResult(int extra)
+    {
+        sumResult += extra;
+    }
+
     public PlayerEntity setMaxResult(int max_result)
     {
         maxResult = max_result;
