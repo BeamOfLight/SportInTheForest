@@ -4,12 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -718,7 +716,7 @@ class DBHelper extends DBHelperBaseLayer {
         return skills_data;
     }
 
-    public int[] getNPClevelsForLocation(int location_id)
+    public int[] getLevelsForLocation(int location_id)
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
@@ -1242,16 +1240,16 @@ class DBHelper extends DBHelperBaseLayer {
 
     protected List<LocationPositionEntity> getLocationPositionsData(int location_id)
     {
-        int[] npc_levels = getNPClevelsForLocation(location_id);
+        int[] levels = getLevelsForLocation(location_id);
 
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
         List<LocationPositionEntity> location_positions_data = new ArrayList<>();
         Cursor cursor = db.query(
-                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.level = uet.level AND lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
+                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
                 new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_id = ? AND (lp.position = 1 AND lp.level = ? OR lp.position = 2 AND lp.level = ? OR lp.position = 3 AND lp.level = ? OR lp.position = 4 AND lp.level = ? OR lp.position = 5 AND lp.level = ?)",
-                new String[]{Integer.toString(location_id), Integer.toString(npc_levels[0]), Integer.toString(npc_levels[1]), Integer.toString(npc_levels[2]), Integer.toString(npc_levels[3]), Integer.toString(npc_levels[4])},
+                new String[]{Integer.toString(location_id), Integer.toString(levels[0]), Integer.toString(levels[1]), Integer.toString(levels[2]), Integer.toString(levels[3]), Integer.toString(levels[4])},
                 "lp.position",
                 null,
                 "lp.position ASC"
