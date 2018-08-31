@@ -319,11 +319,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "location_id integer,"
                 + "user_id integer,"
                 + "exercise_id integer,"
-                + "npc_1_level integer,"
-                + "npc_2_level integer,"
-                + "npc_3_level integer,"
-                + "npc_4_level integer,"
-                + "npc_5_level integer,"
+                + "loc_pos_1_level integer,"
+                + "loc_pos_2_level integer,"
+                + "loc_pos_3_level integer,"
+                + "loc_pos_4_level integer,"
+                + "loc_pos_5_level integer,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
@@ -871,11 +871,13 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
         m.put("user_exercises", new String[] {"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation"});
         m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name"});
-        m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
+
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
         if (format_version >= 4) {
+            m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "loc_pos_1_level", "loc_pos_2_level", "loc_pos_3_level", "loc_pos_4_level", "loc_pos_5_level"});
             m.put("user_exercise_quests", new String[] {"location_id", "position", "user_id", "exercise_id"});
         } else {
+            m.put("user_exercise_locations", new String[] {"location_id", "user_id", "exercise_id", "npc_1_level", "npc_2_level", "npc_3_level", "npc_4_level", "npc_5_level"});
             m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
         }
         m.put("parameters", new String[] {"app_version"});
@@ -984,7 +986,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 }
             }
             if (record.format_version < 4 && formatVersion >= 4) {
-                db.execSQL("UPDATE user_exercise_trainings uet SET level=(SELECT npcs.level FROM non_player_characters npcs WHERE npcs.npc_id = uet.npc_id) WHERE uet.npc_id IS NOT NULL");
+                db.execSQL("UPDATE user_exercise_trainings SET level=(SELECT non_player_characters.level FROM non_player_characters WHERE non_player_characters.npc_id = user_exercise_trainings.npc_id) WHERE user_exercise_trainings.npc_id IS NOT NULL");
             }
         } else {
             status = false;

@@ -726,7 +726,7 @@ class DBHelper extends DBHelperBaseLayer {
         int[] data = {1, 1, 1, 1, 1};
         Cursor cursor = db.query(
                 "user_exercise_locations AS uel",
-                new String[]{"uel.npc_1_level", "uel.npc_2_level", "uel.npc_3_level", "uel.npc_4_level", "uel.npc_5_level"},
+                new String[]{"uel.loc_pos_1_level", "uel.loc_pos_2_level", "uel.loc_pos_3_level", "uel.loc_pos_4_level", "uel.loc_pos_5_level"},
                 "uel.location_id = ? AND uel.user_id = ? AND uel.exercise_id = ?",
                 new String[]{Integer.toString(location_id), Integer.toString(user_id), Integer.toString(exercise_id)},
                 null,
@@ -737,11 +737,11 @@ class DBHelper extends DBHelperBaseLayer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    data[0] = cursor.getInt(cursor.getColumnIndex("npc_1_level"));
-                    data[1] = cursor.getInt(cursor.getColumnIndex("npc_2_level"));
-                    data[2] = cursor.getInt(cursor.getColumnIndex("npc_3_level"));
-                    data[3] = cursor.getInt(cursor.getColumnIndex("npc_4_level"));
-                    data[4] = cursor.getInt(cursor.getColumnIndex("npc_5_level"));
+                    data[0] = cursor.getInt(cursor.getColumnIndex("loc_pos_1_level"));
+                    data[1] = cursor.getInt(cursor.getColumnIndex("loc_pos_2_level"));
+                    data[2] = cursor.getInt(cursor.getColumnIndex("loc_pos_3_level"));
+                    data[3] = cursor.getInt(cursor.getColumnIndex("loc_pos_4_level"));
+                    data[4] = cursor.getInt(cursor.getColumnIndex("loc_pos_5_level"));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -786,7 +786,7 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         if (!has_record) {
-            db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id, npc_1_level, npc_2_level, npc_3_level, npc_4_level, npc_5_level) VALUES ("
+            db.execSQL("INSERT INTO user_exercise_locations (location_id, user_id, exercise_id, loc_pos_1_level, loc_pos_2_level, loc_pos_3_level, loc_pos_4_level, loc_pos_5_level) VALUES ("
                     + Integer.toString(location_id) + ", " + Integer.toString(user_id) + ", " + Integer.toString(exercise_id) + ", 1, 1, 1, 1, 1);");
             return true;
         }
@@ -796,7 +796,7 @@ class DBHelper extends DBHelperBaseLayer {
 
     public void levelUpForNPC(int user_id, int exercise_id, int location_id, int position)
     {
-        String field = "npc_" + Integer.toString(position) + "_level";
+        String field = "loc_pos_" + Integer.toString(position) + "_level";
         db.execSQL("UPDATE user_exercise_locations SET " + field + " = " + field + " + 1 WHERE user_id = " +  Integer.toString(user_id) + " AND exercise_id = " +  Integer.toString(exercise_id) + " AND location_id = " +  Integer.toString(location_id));
     }
 
