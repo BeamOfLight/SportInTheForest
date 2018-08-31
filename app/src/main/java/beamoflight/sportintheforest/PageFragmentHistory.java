@@ -9,9 +9,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /* Fragment used as page 6 */
@@ -46,7 +44,8 @@ public class PageFragmentHistory extends Fragment {
 
     private void showHistoryList()
     {
-        data = dbHelper.getCurrentUserLastTrainingsData(20);
+        int historySize = mContainer.getContext().getResources().getInteger(R.integer.competition_history_size);
+        data = dbHelper.getCurrentUserLastTrainingsData(historySize);
         if (data.size() > 0) {
             lvHistory.invalidateViews();
             SimpleAdapter historyAdapter = new SimpleAdapter(

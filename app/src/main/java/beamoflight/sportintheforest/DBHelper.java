@@ -1526,7 +1526,7 @@ class DBHelper extends DBHelperBaseLayer {
         Map<String, String> m;
 
         Cursor cursor = db.query(
-                "user_exercise_trainings AS uet LEFT JOIN npc_in_location_positions AS nlp ON n.npc_id = nlp.npc_id LEFT JOIN location_positions AS lp ON nlp.location_level_position_id = lp.location_level_position_id LEFT JOIN locations AS l ON lp.location_id = l.location_id LEFT JOIN non_player_characters AS n ON n.npc_id = nlp.npc_id",
+                "user_exercise_trainings AS uet LEFT JOIN location_positions AS lp ON uet.level = lp.level AND uet.location_id = lp.location_id AND uet.position = lp.position LEFT JOIN locations AS l ON lp.location_id = l.location_id",
                 new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "lp.name AS location_position_name", "lp.level AS level", "l.name AS location_name", "uet.duration", "uet.my_team_fp", "uet.op_team_fp" },
                 "uet.user_id = ? AND uet.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},

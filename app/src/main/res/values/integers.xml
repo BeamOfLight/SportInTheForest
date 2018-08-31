@@ -16,4 +16,5 @@
     <integer name="group_name_max_length">15</integer>
     <integer name="skill_name_max_length">40</integer>
     <integer name="specialisation_level">14</integer>
+    <integer name="competition_history_size">30</integer>
 </resources>
