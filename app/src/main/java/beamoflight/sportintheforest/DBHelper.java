@@ -611,7 +611,7 @@ class DBHelper extends DBHelperBaseLayer {
         ArrayList<NonPlayerCharacterEntity> entities = new ArrayList<>();
         Cursor cursor = db.query(
                 "non_player_characters AS n LEFT JOIN npc_in_location_positions AS nlp ON n.npc_id = nlp.npc_id LEFT JOIN location_positions AS lp ON nlp.location_level_position_id = lp.location_level_position_id",
-                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "lp.quest_cnt", "lp.quest_exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.resistance", "n.actions", "n.pre_actions"},
+                new String[]{"lp.location_id", "n.level", "lp.position", "n.type", "n.npc_id", "n.fp", "n.max_res", "n.multiplier", "n.exp", "n.bonus_chance", "n.bonus_multiplier", "n.name", "n.resistance", "n.actions", "n.pre_actions"},
                 "lp.location_id = ? AND lp.position = ? AND lp.level = ?",
                 new String[]{Integer.toString(location_id), Integer.toString(position), Integer.toString(level)},
                 null,
@@ -639,8 +639,6 @@ class DBHelper extends DBHelperBaseLayer {
                             .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
                             .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
                             .setType(cursor.getString(cursor.getColumnIndex("type")))
-                            .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
-                            .setExpectedWins(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
                             .setActions(cursor.getString(cursor.getColumnIndex("actions")))
                             .setPreActions(cursor.getString(cursor.getColumnIndex("pre_actions")));
                     entities.add(npc_entity);
@@ -1175,7 +1173,7 @@ class DBHelper extends DBHelperBaseLayer {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
         Cursor cursor = db.query(
-                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.level = uet.level AND lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
+                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
                 new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_id = ? AND lp.level = ? AND lp.position = ?",
                 new String[]{Integer.toString(location_id), Integer.toString(level), Integer.toString(position)},
@@ -1209,7 +1207,7 @@ class DBHelper extends DBHelperBaseLayer {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
         Cursor cursor = db.query(
-                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.level = uet.level AND lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
+                "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
                 new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_level_position_id = ?",
                 new String[]{Integer.toString(location_level_position_id)},

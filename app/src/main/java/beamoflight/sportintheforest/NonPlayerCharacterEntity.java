@@ -14,9 +14,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public String type;
     public int exp;
     public int maxRes;
-    public int questExpectedWins;
-    public int questCurrentWins;
-    public int questExp;
     public boolean questOwner;
     protected String actions;
     protected String preActions;
@@ -95,24 +92,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
         return this;
     }
 
-    public NonPlayerCharacterEntity setQuestExp(int quest_exp)
-    {
-        questExp = quest_exp;
-        return this;
-    }
-
-    public NonPlayerCharacterEntity setCurrentWins(int current_wins)
-    {
-        questCurrentWins = current_wins;
-        return this;
-    }
-
-    public NonPlayerCharacterEntity setExpectedWins(int expected_wins)
-    {
-        questExpectedWins = expected_wins;
-        return this;
-    }
-
     public NonPlayerCharacterEntity setType(String type_)
     {
         type = type_;
@@ -142,18 +121,6 @@ public class NonPlayerCharacterEntity extends CharacterEntity {
     public int getPosition()
     {
         return position;
-    }
-    public int getQuestExp()
-    {
-        return questExp;
-    }
-    public int getCurrentWins()
-    {
-        return questCurrentWins;
-    }
-    public int getExpectedWins()
-    {
-        return questExpectedWins;
     }
     public int getId()
     {

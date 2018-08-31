@@ -60,7 +60,13 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btCompetitionStart.setVisibility(View.INVISIBLE);
         btCompetitionRestart.setVisibility(View.VISIBLE);
         btInvite.setVisibility(View.INVISIBLE);
-        btNext.setVisibility(View.VISIBLE);
+
+        if (locationPositionEntity.getWins() + 1 == locationPositionEntity.getQuestCnt() && locationPositionEntity.getPosition() == 5) {
+            btNext.setVisibility(View.VISIBLE);
+        } else {
+            btNext.setVisibility(View.INVISIBLE);
+        }
+
         btFinish.setVisibility(View.VISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
     }
@@ -101,24 +107,10 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btNext.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 LocationPositionEntity nextLocationPosition = null;
-                if (locationPositionEntity.getWins() + 1 < locationPositionEntity.getQuestCnt()) {
+                if (locationPositionEntity.getWins() + 1 == locationPositionEntity.getQuestCnt() && locationPositionEntity.getPosition() == 5) {
                     nextLocationPosition = dbHelper.getLocationPositionByIds(
-                            locationPositionEntity.getLocationId(),
-                            locationPositionEntity.getLevel() + 1,
-                            locationPositionEntity.getPosition()
+                        locationPositionEntity.getLocationId() + 1, 1, 1
                     );
-                } else if (locationPositionEntity.getWins() + 1 == locationPositionEntity.getQuestCnt()) {
-                    nextLocationPosition = dbHelper.getLocationPositionByIds(locationPositionEntity.getLocationId() + 1, 1, 1);
-                } else {
-                    int location_id = locationPositionEntity.getLocationId();
-                    int position = locationPositionEntity.getPosition();
-                    if (position == 5) {
-                        location_id++;
-                        position = 1;
-                    } else {
-                        position++;
-                    }
-                    nextLocationPosition = dbHelper.getLocationPositionByIds(location_id, 1, position);
                 }
 
                 if (nextLocationPosition != null) {
