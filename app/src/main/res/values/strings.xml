@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
-    <string name="app_version">0.2.19</string>
+    <string name="app_version">0.2.20</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -121,7 +121,7 @@
     <string name="select_user_exercise">Выберите упражнение</string>
     <string name="users_list_info_msg">В списке пока нет пользователей</string>
 
-    <string name="main_menu_start">Начать тренировку</string>
+    <string name="main_menu_start">Старт</string>
     <string name="main_menu_settings">Настройки</string>
     <string name="main_menu_knowledge">База знаний</string>
 
