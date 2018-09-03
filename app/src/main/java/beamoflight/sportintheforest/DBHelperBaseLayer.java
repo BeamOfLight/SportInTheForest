@@ -187,13 +187,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "level integer,"
                 + "quest_cnt integer,"
                 + "quest_exp integer,"
+                + "info text,"
                 + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
                 + ");");
 
-        String base_sql = "INSERT INTO location_positions (location_level_position_id, name, location_id, position, level, quest_cnt, quest_exp) VALUES";
+        String base_sql = "INSERT INTO location_positions (location_level_position_id, name, location_id, position, level, quest_cnt, quest_exp, info) VALUES";
         String sql = "";
         int location_level_position_id, location_id, position, level, quest_cnt, quest_exp;
-        String name;
+        String name, info;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.location_positions);
@@ -209,7 +210,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             level = Integer.parseInt(xpp.getAttributeValue(4));
                             quest_cnt = Integer.parseInt(xpp.getAttributeValue(5));
                             quest_exp = Integer.parseInt(xpp.getAttributeValue(6));
-                            sql += ", (" + location_level_position_id + ", \"" + name + "\", " + location_id + ", " + position + ", " + level + ", " + quest_cnt + ", " + quest_exp + ")";
+                            info = xpp.getAttributeValue(7);
+                            sql += ", (" + location_level_position_id + ", \"" + name + "\", " + location_id + ", " + position + ", " + level + ", " + quest_cnt + ", " + quest_exp + ", \"" + info + "\")";
                         }
                         break;
                     default:

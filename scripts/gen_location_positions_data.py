@@ -4,12 +4,20 @@
 import forest
 import forest_dict
 
+def get_info_key(location_id, position, level):
+	return '{}_{}_{}'.format(location_id, position, level)
+
 main_data = []
 extra_data = []
 location_level_position_id = 0
 npc_id = 1
 exp_ratio = forest.get_exp_ratio()
 current_exp_ratio = exp_ratio
+
+prepared_npc_info = {}
+npc_data, npc_extra_data = forest.get_npc_data()
+for row in npc_data:
+	prepared_npc_info[get_info_key(row['location_id'], row['position'], row['level'])] = row['info']
 
 names = forest_dict.get_characters()
 forest.print_xml_header()
@@ -40,9 +48,9 @@ for location_id in xrange(1, forest.get_locations_count()):
 
 			rb_comment = ''
 			if position == 5:
-				rb_comment = 'и компания'
+				rb_comment = ' и компания'
 
-			location_level_position_name = '{} Ур.{} {}'.format(names[location_id - 1][position - 1], level, rb_comment)
+			location_level_position_name = '{}{}'.format(names[location_id - 1][position - 1], rb_comment)
 			main_data.append({
 				'location_level_position_id': str(location_level_position_id),
 				'name': location_level_position_name,
@@ -51,11 +59,12 @@ for location_id in xrange(1, forest.get_locations_count()):
 				'level': str(level),
 				'quest_cnt': str(quest_cnt),
 				'quest_exp': str(quest_exp),
+				'info': prepared_npc_info[get_info_key(location_id, position, level)]
 			})
 
 			npc_id += 1
 
 for row in main_data:
-	print '    <location_position location_level_position_id="{}" name="{}" location_id="{}" position="{}" level="{}" quest_cnt="{}" quest_exp="{}"/>'.format(row['location_level_position_id'], row['name'], row['location_id'], row['position'], row['level'], row['quest_cnt'], row['quest_exp'])
+	print '    <location_position location_level_position_id="{}" name="{}" location_id="{}" position="{}" level="{}" quest_cnt="{}" quest_exp="{}" info="{}"/>'.format(row['location_level_position_id'], row['name'], row['location_id'], row['position'], row['level'], row['quest_cnt'], row['quest_exp'], row['info'])
 	
 forest.print_xml_footer()

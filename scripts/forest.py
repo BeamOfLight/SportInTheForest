@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import math
+import forest_dict
 
 SPECIALISATION_NO = 0
 SPECIALISATION_RESULT = 1
@@ -582,18 +583,18 @@ def get_skills_gain_team_resistance_data():
 			'reuse': 10,
 			'specialisation': SPECIALISATION_RESISTANCE,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': value_diff,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': 0,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': 0
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': value_diff,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': 0,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': 0
 		})
 		value_last = value_new
 		skill_level+=1
@@ -626,18 +627,18 @@ def get_skills_gain_team_multiplier_data():
 			'reuse': 10,
 			'specialisation': SPECIALISATION_RESULT,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': value_diff,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': 0,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': 0
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': value_diff,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': 0,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': 0
 		})
 		value_last = value_new
 		skill_level+=1
@@ -670,18 +671,18 @@ def get_skills_passive_regeneration_data():
 			'reuse': 50,
 			'specialisation': SPECIALISATION_REGENERATION,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': value_diff,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': 0
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': value_diff,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': 0
 		})
 		value_last = value_new
 		skill_level+=1
@@ -714,18 +715,18 @@ def get_skills_passive_multiplier_data():
 			'reuse': 50,
 			'specialisation': SPECIALISATION_RESULT,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': value_diff,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': 0,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': 0
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': value_diff,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': 0,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': 0
 		})
 		value_last = value_new
 		skill_level+=1
@@ -758,18 +759,18 @@ def get_skills_passive_resistance_data():
 			'reuse': 50,
 			'specialisation': SPECIALISATION_RESISTANCE,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': value_diff,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': 0,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': 0
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': value_diff,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': 0,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': 0
 		})
 		value_last = value_new
 		skill_level+=1
@@ -805,18 +806,18 @@ def get_skills_active_splash_data():
 			'reuse': 9 - skill_level,
 			'specialisation': SPECIALISATION_REGENERATION,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': 0,
-		  	'extra_regeneration_ratio': 0,
-		  	'splash_multiplier': value_new
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': 0,
+			'extra_regeneration_ratio': 0,
+			'splash_multiplier': value_new
 		})
 		value_last = value_new
 		skill_level+=1
@@ -856,16 +857,16 @@ def get_skills_active_my_team_restoration_data():
 			'reuse': 8 - required_level / 2,
 			'specialisation': SPECIALISATION_REGENERATION,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': value1_diff,
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': value1_diff,
 			'extra_regeneration_ratio': value2_diff,
 			'splash_multiplier': 0
 		})
@@ -909,16 +910,16 @@ def get_skills_active_teammate_restoration_data():
 			'reuse': 7 - required_level / 2,
 			'specialisation': SPECIALISATION_REGENERATION,
 			'extra_fitness_points_ratio1': 0,
-		  	'extra_fitness_points_ratio2': 0,
-		  	'extra_resistance_ratio1': 0,
-		  	'extra_resistance_ratio2': 0,
-		  	'extra_multiplier_ratio1': 0,
-		  	'extra_multiplier_ratio2': 0,
-		  	'extra_bonus_chance_ratio1': 0,
-		  	'extra_bonus_chance_ratio2': 0,
-		  	'extra_bonus_multiplier_ratio1': 0,
-		  	'extra_bonus_multiplier_ratio2': 0,
-		  	'extra_regeneration_base': value1_diff,
+			'extra_fitness_points_ratio2': 0,
+			'extra_resistance_ratio1': 0,
+			'extra_resistance_ratio2': 0,
+			'extra_multiplier_ratio1': 0,
+			'extra_multiplier_ratio2': 0,
+			'extra_bonus_chance_ratio1': 0,
+			'extra_bonus_chance_ratio2': 0,
+			'extra_bonus_multiplier_ratio1': 0,
+			'extra_bonus_multiplier_ratio2': 0,
+			'extra_regeneration_base': value1_diff,
 			'extra_regeneration_ratio': value2_diff,
 			'splash_multiplier': 0
 		})
@@ -1015,7 +1016,7 @@ def get_skills_active_teammate_restoration_data():
 #	})
 
 
-	return data
+#	return data
 
 def get_levels_diff_exp():
 	id = 1
@@ -1213,4 +1214,132 @@ def get_player_prev_fp(location_id):
 		player_prev_fp = get_expected_player_fitness_points(location_id - 1)
 	return player_prev_fp
 
-#debug_player_params()
+def add_skills_str(current_skills_str, new_skill):
+	if len(current_skills_str) > 0:
+		current_skills_str += ';' + str(new_skill)
+	else:
+		current_skills_str += str(new_skill)
+	return current_skills_str
+
+def get_npc_data():
+	id = 1
+	extra_npc_id = 1
+	exp_ratio = get_exp_ratio()
+	current_exp_ratio = exp_ratio
+
+	names = forest_dict.get_characters()
+	npc_data = []
+	npc_extra_data = []
+	
+	for location_id in xrange(1, get_locations_count()):
+	#for location_id in xrange(1, 4):
+		#print 'location_id = ' + str(location_id)
+		level_interval_id = location_id
+		level_interval_exp = 0
+		quest_exp_ratio = 0.7 + level_interval_id * 0.1
+		level_interval_exp_ratio = 1.0 + level_interval_id * 0.1
+
+		player_prev_fp = get_player_prev_fp(location_id)
+		player_fp = get_expected_player_fitness_points(location_id)
+		player_resistance = get_expected_player_resistance(location_id)
+		player_bonus_multiplier = get_expected_player_bonus_multiplier(location_id)
+		player_bonus_chance = get_expected_player_bonus_chance(location_id)
+		player_multiplier = get_expected_player_multiplier(location_id)
+		player_efficient_bonus_ratio = get_efficient_bonus_ratio(player_bonus_chance, player_bonus_multiplier)
+		quest_cnt = int(round((float(location_id) + 1) / 2))
+		for position in xrange(1, len(names[location_id]) + 1):
+			
+			rb_state = ""
+			if position == 5:
+				rb_state = "rb"
+
+			action_str = ''
+			pre_action_str = ''
+			if location_id >= 2:
+				pre_action_str = add_skills_str(pre_action_str, 600 + int(round(location_id/2)))
+			if location_id >= 4:
+				pre_action_str = add_skills_str(pre_action_str, 500 + int(round(location_id/2)) - 1)
+			if position == 5:
+				if location_id >= 5:
+					action_str = add_skills_str(action_str, 700 + int(round(location_id/2)) - 2)
+				if location_id >= 6:
+					action_str = add_skills_str(action_str, 1500 + int(round(location_id/2)) - 2)
+
+			for level in xrange(1, quest_cnt + 1):
+				expected_result = id
+				#print id, "\t", location_id, "\t", position, "\t", level, "\t", quest_cnt, "\t", exp, "\t", names[location_id - 1][position - 1], "\t", quest_exp, "\t", rb_state
+
+				#fitness_points = expected_result * 5
+				resistance = get_char_resistance(expected_result)
+				fitness_points = get_char_fitness_points(expected_result, resistance, player_multiplier, player_efficient_bonus_ratio)
+				exp = int(round(fitness_points * current_exp_ratio))
+				quest_exp = 0
+				if level == quest_cnt:
+					quest_exp = int(round(exp * quest_exp_ratio * quest_cnt))
+
+				
+				team = ""
+				if rb_state == "rb":
+					fitness_points = int(round(fitness_points * 1.2))
+					resistance = int(round(resistance * 1.3))
+					exp = int(round(exp * 1.34))
+
+					#======================================================
+					team = ''
+					teammates_count = int((location_id - 1) / 3)
+					for idx in xrange(teammates_count):
+						team += '{};'.format(str(id - 4 * quest_cnt + idx))
+						pre_actions_teammate = pre_action_str
+						if location_id >= 4 and idx % 4 == 2:
+							pre_actions_teammate = add_skills_str(pre_actions_teammate, 1600 + int(round(location_id/2)) - 1)
+
+						row = dict(npc_data[id - 4 * quest_cnt + idx - 1])
+						row['npc_id'] = str(extra_npc_id + 10000)
+						row['level'] = str(level)
+						row['fp'] = int(row['fp']) / 4 
+						row['exp'] = int(row['exp']) / 4
+						row['max_res'] = int(row['max_res']) / 4
+						row['name'] = forest_dict.get_extra_character_name(row['name'], idx)
+						row['actions'] = ""
+						row['pre_actions'] = pre_actions_teammate
+
+						npc_extra_data.append(row)
+						extra_npc_id += 1
+					if len(team) > 0:
+						team = team[:-1]
+				#======================================================
+				#max_result = int(round(expected_result / 5)) + 1
+				character_bonus_chance = location_id * 0.008
+				character_bonus_multiplier = round(120 + expected_result * 0.189) / 100
+				char_efficient_bonus_ratio = get_efficient_bonus_ratio(character_bonus_chance, character_bonus_multiplier)
+				steps = get_steps(location_id, expected_result)
+				init_max_result = get_char_max_res(location_id, player_prev_fp, player_fp, player_resistance, char_efficient_bonus_ratio, steps, position)
+				multiplier = 1.0 + 0.01 * (expected_result - 1)
+				max_result = int(round(init_max_result / multiplier))
+
+				npc_data.append({
+					'npc_id': str(id),
+					'type': rb_state,
+					'level': str(level),
+					'fp': str(fitness_points),
+					'max_res': str(max_result),
+					'multiplier': str(multiplier),
+					'exp': str(exp),
+					'resistance': str(resistance),
+					#'quest_cnt': str(quest_cnt),
+					#'quest_exp': str(quest_exp),
+					'bonus_chance': str(character_bonus_chance),
+					'bonus_multiplier': str(character_bonus_multiplier),
+					'name': names[location_id - 1][position - 1],
+					'actions': action_str,
+					'pre_actions': pre_action_str,
+					'info': 'Уровень: {} | Фитнес-очки: {} | Результат: {} | Множитель: {} | Сопротивление: {} | Опыт: {}'.format(level, fitness_points, max_result, multiplier, resistance, exp),
+					'position': str(position),
+					'location_id': str(location_id)
+				})
+
+	#			print '    <npc id="{}" type="{}" level="{}" fp="{}" max_res="{}" multiplier="{}" exp="{}" resistance="{}" quest_cnt="{}" quest_exp="{}" bonus_chance="{}" bonus_multiplier="{}" name="{}" />'.format(str(id), rb_state, str(level), str(fitness_points), str(max_result), str(multiplier), str(exp), str(resistance), str(quest_cnt), str(quest_exp), str(character_bonus_chance), str(character_bonus_multiplier), names[location_id - 1][position - 1])
+				level_interval_exp += exp + quest_exp
+				id += 1
+				current_exp_ratio *= exp_ratio
+	return npc_data, npc_extra_data

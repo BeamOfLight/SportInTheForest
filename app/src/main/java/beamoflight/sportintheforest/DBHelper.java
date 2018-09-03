@@ -1174,7 +1174,7 @@ class DBHelper extends DBHelperBaseLayer {
         int exercise_id = gameHelper.getExerciseId();
         Cursor cursor = db.query(
                 "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
+                new String[]{"lp.location_level_position_id", "lp.info", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_id = ? AND lp.level = ? AND lp.position = ?",
                 new String[]{Integer.toString(location_id), Integer.toString(level), Integer.toString(position)},
                 null,
@@ -1195,7 +1195,7 @@ class DBHelper extends DBHelperBaseLayer {
                         .setWins(cursor.getInt(cursor.getColumnIndex("wins")))
                         .setQuestCnt(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
                         .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
-                        .setInfo("");
+                        .setInfo(cursor.getString(cursor.getColumnIndex("info")));
             }
         }
 
@@ -1208,7 +1208,7 @@ class DBHelper extends DBHelperBaseLayer {
         int exercise_id = gameHelper.getExerciseId();
         Cursor cursor = db.query(
                 "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
+                new String[]{"lp.location_level_position_id", "lp.info", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_level_position_id = ?",
                 new String[]{Integer.toString(location_level_position_id)},
                 null,
@@ -1229,7 +1229,7 @@ class DBHelper extends DBHelperBaseLayer {
                         .setWins(cursor.getInt(cursor.getColumnIndex("wins")))
                         .setQuestCnt(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
                         .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
-                        .setInfo("");
+                        .setInfo(cursor.getString(cursor.getColumnIndex("info")));
             }
         }
 
@@ -1245,7 +1245,7 @@ class DBHelper extends DBHelperBaseLayer {
         List<LocationPositionEntity> location_positions_data = new ArrayList<>();
         Cursor cursor = db.query(
                 "location_positions AS lp LEFT JOIN user_exercise_trainings AS uet ON lp.position = uet.position AND lp.location_id = uet.location_id AND uet.result_state = 2 AND uet.user_id = " + Integer.toString(user_id) + " AND uet.exercise_id = " + Integer.toString(exercise_id),
-                new String[]{"lp.location_level_position_id", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
+                new String[]{"lp.location_level_position_id", "lp.info", "lp.location_id", "lp.quest_cnt", "lp.quest_exp", "lp.name", "lp.position", "lp.level", "sum(uet.quest_owner) AS wins"},
                 "lp.location_id = ? AND (lp.position = 1 AND lp.level = ? OR lp.position = 2 AND lp.level = ? OR lp.position = 3 AND lp.level = ? OR lp.position = 4 AND lp.level = ? OR lp.position = 5 AND lp.level = ?)",
                 new String[]{Integer.toString(location_id), Integer.toString(levels[0]), Integer.toString(levels[1]), Integer.toString(levels[2]), Integer.toString(levels[3]), Integer.toString(levels[4])},
                 "lp.position",
@@ -1266,7 +1266,7 @@ class DBHelper extends DBHelperBaseLayer {
                             .setWins(cursor.getInt(cursor.getColumnIndex("wins")))
                             .setQuestCnt(cursor.getInt(cursor.getColumnIndex("quest_cnt")))
                             .setQuestExp(cursor.getInt(cursor.getColumnIndex("quest_exp")))
-                            .setInfo("");
+                            .setInfo(cursor.getString(cursor.getColumnIndex("info")));
 
                     location_positions_data.add(location_position_entity);
                 } while (cursor.moveToNext());
