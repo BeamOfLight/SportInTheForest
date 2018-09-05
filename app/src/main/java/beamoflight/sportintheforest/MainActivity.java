@@ -74,7 +74,13 @@ public class MainActivity extends Activity {
             updateStarted = false;
         } catch (Exception e){
             // Toast.makeText(getBaseContext(), "Не удалось загрузить автосохранение", Toast.LENGTH_LONG).show();
-            Log.d("APP", "Не удалось загрузить автосохранение: " + e.toString());
+            String st = "";
+            if (e.getStackTrace().length > 0) {
+                for (StackTraceElement ste: e.getStackTrace()) {
+                    st += ste.toString() + "\n";
+                }
+            }
+            Log.d("APP", "Не удалось загрузить автосохранение: " + e.toString() + "\n" + st);
             errorHandler.sendEmptyMessage(0);
         }
     }

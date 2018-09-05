@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +42,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         super (current, "SportInTheForestDB", null, 5);
         context = current;
         db = getWritableDatabase();
+    }
+
+    protected String convertLong2Decimal(String value)
+    {
+        BigDecimal bd = new BigDecimal(value);
+        return bd.toPlainString();
     }
 
     protected void createTablePlayerExp()
@@ -69,14 +76,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("level")) {
-                            current_level = Integer.parseInt(xpp.getAttributeValue(0));
-                            diff_exp = Long.parseLong(xpp.getAttributeValue(1));
-                            min_exp = Long.parseLong(xpp.getAttributeValue(2));
-                            base_fp = Integer.parseInt(xpp.getAttributeValue(3));
-                            base_resistance = Integer.parseInt(xpp.getAttributeValue(4));
-                            base_multiplier = Float.parseFloat(xpp.getAttributeValue(5));
-                            base_bonus_chance = Float.parseFloat(xpp.getAttributeValue(6));
-                            base_bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(7));
+                            current_level = Integer.parseInt(xpp.getAttributeValue(null, "id"));
+                            diff_exp = Long.parseLong(convertLong2Decimal(xpp.getAttributeValue(null, "diff_exp")));
+                            min_exp = Long.parseLong(convertLong2Decimal(xpp.getAttributeValue(null, "min_exp")));
+                            base_fp = Integer.parseInt(xpp.getAttributeValue(null, "base_fp"));
+                            base_resistance = Integer.parseInt(xpp.getAttributeValue(null, "base_resistance"));
+                            base_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "base_multiplier"));
+                            base_bonus_chance = Float.parseFloat(xpp.getAttributeValue(null, "base_bonus_chance"));
+                            base_bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "base_bonus_multiplier"));
                             sql += ", ("+ current_level +", " + min_exp + ", " + diff_exp + ", " + base_fp
                                     + ", " + base_resistance + ", " + base_multiplier + ", " + base_bonus_chance + ", " + base_bonus_multiplier +")";
                         }
@@ -118,7 +125,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "competitions integer,"
                 + "draws integer,"
                 + "specialisation integer,"
-                + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
+                + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
@@ -154,8 +161,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("exercise")) {
-                            id = Integer.parseInt(xpp.getAttributeValue(0));
-                            name = xpp.getAttributeValue(1);
+                            id = Integer.parseInt(xpp.getAttributeValue(null, "exercise_id"));
+                            name = xpp.getAttributeValue(null, "name");
                             sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\")";
                         }
                         break;
@@ -203,14 +210,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("location_position")) {
-                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            name = xpp.getAttributeValue(1);
-                            location_id = Integer.parseInt(xpp.getAttributeValue(2));
-                            position = Integer.parseInt(xpp.getAttributeValue(3));
-                            level = Integer.parseInt(xpp.getAttributeValue(4));
-                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(5));
-                            quest_exp = Integer.parseInt(xpp.getAttributeValue(6));
-                            info = xpp.getAttributeValue(7);
+                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(null, "location_level_position_id"));
+                            name = xpp.getAttributeValue(null, "name");
+                            location_id = Integer.parseInt(xpp.getAttributeValue(null, "location_id"));
+                            position = Integer.parseInt(xpp.getAttributeValue(null, "position"));
+                            level = Integer.parseInt(xpp.getAttributeValue(null, "level"));
+                            quest_cnt = Integer.parseInt(xpp.getAttributeValue(null, "quest_cnt"));
+                            quest_exp = Integer.parseInt(xpp.getAttributeValue(null, "quest_exp"));
+                            info = xpp.getAttributeValue(null, "info");
                             sql += ", (" + location_level_position_id + ", \"" + name + "\", " + location_id + ", " + position + ", " + level + ", " + quest_cnt + ", " + quest_exp + ", \"" + info + "\")";
                         }
                         break;
@@ -237,7 +244,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS npc_in_location_positions ("
                 + "location_level_position_id integer,"
                 + "npc_id integer,"
-                + "FOREIGN KEY(location_level_position_id) REFERENCES location_positions(location_level_position_id)"
+                + "FOREIGN KEY(location_level_position_id) REFERENCES location_positions(location_level_position_id),"
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
                 + ");");
 
@@ -252,8 +259,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("npc_in_location_position")) {
-                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            npc_id = Integer.parseInt(xpp.getAttributeValue(1));
+                            location_level_position_id = Integer.parseInt(xpp.getAttributeValue(null, "location_level_position_id"));
+                            npc_id = Integer.parseInt(xpp.getAttributeValue(null, "npc_id"));
                             sql += ", (" + location_level_position_id + ", " + npc_id + ")";
                         }
                         break;
@@ -293,8 +300,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("location")) {
-                            id = Integer.parseInt(xpp.getAttributeValue(0));
-                            name = xpp.getAttributeValue(1);
+                            id = Integer.parseInt(xpp.getAttributeValue(null, "location_id"));
+                            name = xpp.getAttributeValue(null, "name");
                             sql += ", ("+ id +", \"" + name +"\")";
                         }
                         break;
@@ -326,8 +333,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "loc_pos_3_level integer,"
                 + "loc_pos_4_level integer,"
                 + "loc_pos_5_level integer,"
-                + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
-                + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
+                + "FOREIGN KEY(location_id) REFERENCES locations(location_id),"
+                + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
@@ -367,20 +374,20 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("npc")) {
-                            id = Integer.parseInt(xpp.getAttributeValue(0));
-                            teammate = Integer.parseInt(xpp.getAttributeValue(1));
-                            type = xpp.getAttributeValue(2);
-                            level = Integer.parseInt(xpp.getAttributeValue(3));
-                            fp = Integer.parseInt(xpp.getAttributeValue(4));
-                            max_res = Integer.parseInt(xpp.getAttributeValue(5));
-                            multiplier = Float.parseFloat(xpp.getAttributeValue(6));
-                            exp = Long.parseLong(xpp.getAttributeValue(7));
-                            resistance = Integer.parseInt(xpp.getAttributeValue(8));
-                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(9));
-                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(10));
-                            name = xpp.getAttributeValue(11);
-                            actions = xpp.getAttributeValue(12);
-                            pre_actions = xpp.getAttributeValue(13);
+                            id = Integer.parseInt(xpp.getAttributeValue(null, "id"));
+                            teammate = Integer.parseInt(xpp.getAttributeValue(null, "teammate"));
+                            type = xpp.getAttributeValue(null, "type");
+                            level = Integer.parseInt(xpp.getAttributeValue(null, "level"));
+                            fp = Integer.parseInt(xpp.getAttributeValue(null, "fp"));
+                            max_res = Integer.parseInt(xpp.getAttributeValue(null, "max_res"));
+                            multiplier = Float.parseFloat(xpp.getAttributeValue(null, "multiplier"));
+                            exp = Long.parseLong(convertLong2Decimal(xpp.getAttributeValue(null, "exp")));
+                            resistance = Integer.parseInt(xpp.getAttributeValue(null, "resistance"));
+                            bonus_chance = Float.parseFloat(xpp.getAttributeValue(null, "bonus_chance"));
+                            bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "bonus_multiplier"));
+                            name = xpp.getAttributeValue(null, "name");
+                            actions = xpp.getAttributeValue(null, "actions");
+                            pre_actions = xpp.getAttributeValue(null, "pre_actions");
                             sql += ", ("+ id + ", " + teammate + ", \"" + type + "\", " + level + ", " + fp + ", " + max_res + ", "
                                     + multiplier + ", " + exp + ", " + resistance + ", " + bonus_chance + ", "
                                     + bonus_multiplier + ", \"" + name +"\", \"" + actions +"\", \"" + pre_actions + "\")";
@@ -458,34 +465,34 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("skill")) {
-                            skill_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            skill_group_id = Integer.parseInt(xpp.getAttributeValue(1));
-                            skill_level = Integer.parseInt(xpp.getAttributeValue(2));
-                            required_level = Integer.parseInt(xpp.getAttributeValue(3));
-                            skill_points = Integer.parseInt(xpp.getAttributeValue(4));
-                            extra_fitness_points = Integer.parseInt(xpp.getAttributeValue(5));
-                            extra_resistance = Integer.parseInt(xpp.getAttributeValue(6));
-                            extra_multiplier = Float.parseFloat(xpp.getAttributeValue(7));
-                            extra_bonus_chance = Float.parseFloat(xpp.getAttributeValue(8));
-                            extra_bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(9));
-                            info = xpp.getAttributeValue(10);
-                            label = xpp.getAttributeValue(11);
-                            duration = Integer.parseInt(xpp.getAttributeValue(12));
-                            reuse = Integer.parseInt(xpp.getAttributeValue(13));
-                            specialisation = Integer.parseInt(xpp.getAttributeValue(14));
-                            extra_fitness_points_ratio1 = Float.parseFloat(xpp.getAttributeValue(15));
-                            extra_fitness_points_ratio2 = Float.parseFloat(xpp.getAttributeValue(16));
-                            extra_resistance_ratio1 = Float.parseFloat(xpp.getAttributeValue(17));
-                            extra_resistance_ratio2 = Float.parseFloat(xpp.getAttributeValue(18));
-                            extra_multiplier_ratio1 = Float.parseFloat(xpp.getAttributeValue(19));
-                            extra_multiplier_ratio2 = Float.parseFloat(xpp.getAttributeValue(20));
-                            extra_bonus_chance_ratio1 = Float.parseFloat(xpp.getAttributeValue(21));
-                            extra_bonus_chance_ratio2 = Float.parseFloat(xpp.getAttributeValue(22));
-                            extra_bonus_multiplier_ratio1 = Float.parseFloat(xpp.getAttributeValue(23));
-                            extra_bonus_multiplier_ratio2 = Float.parseFloat(xpp.getAttributeValue(24));
-                            extra_regeneration_base = Integer.parseInt(xpp.getAttributeValue(25));
-                            extra_regeneration_ratio = Float.parseFloat(xpp.getAttributeValue(26));
-                            splash_multiplier = Float.parseFloat(xpp.getAttributeValue(27));
+                            skill_id = Integer.parseInt(xpp.getAttributeValue(null, "skill_id"));
+                            skill_group_id = Integer.parseInt(xpp.getAttributeValue(null, "skill_group_id"));
+                            skill_level = Integer.parseInt(xpp.getAttributeValue(null, "skill_level"));
+                            required_level = Integer.parseInt(xpp.getAttributeValue(null, "required_level"));
+                            skill_points = Integer.parseInt(xpp.getAttributeValue(null, "skill_points"));
+                            extra_fitness_points = Integer.parseInt(xpp.getAttributeValue(null, "extra_fitness_points"));
+                            extra_resistance = Integer.parseInt(xpp.getAttributeValue(null, "extra_resistance"));
+                            extra_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "extra_multiplier"));
+                            extra_bonus_chance = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_chance"));
+                            extra_bonus_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_multiplier"));
+                            info = xpp.getAttributeValue(null, "info");
+                            label = xpp.getAttributeValue(null, "label");
+                            duration = Integer.parseInt(xpp.getAttributeValue(null, "duration"));
+                            reuse = Integer.parseInt(xpp.getAttributeValue(null, "reuse"));
+                            specialisation = Integer.parseInt(xpp.getAttributeValue(null, "specialisation"));
+                            extra_fitness_points_ratio1 = Float.parseFloat(xpp.getAttributeValue(null, "extra_fitness_points_ratio1"));
+                            extra_fitness_points_ratio2 = Float.parseFloat(xpp.getAttributeValue(null, "extra_fitness_points_ratio2"));
+                            extra_resistance_ratio1 = Float.parseFloat(xpp.getAttributeValue(null, "extra_resistance_ratio1"));
+                            extra_resistance_ratio2 = Float.parseFloat(xpp.getAttributeValue(null, "extra_resistance_ratio2"));
+                            extra_multiplier_ratio1 = Float.parseFloat(xpp.getAttributeValue(null, "extra_multiplier_ratio1"));
+                            extra_multiplier_ratio2 = Float.parseFloat(xpp.getAttributeValue(null, "extra_multiplier_ratio2"));
+                            extra_bonus_chance_ratio1 = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_chance_ratio1"));
+                            extra_bonus_chance_ratio2 = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_chance_ratio2"));
+                            extra_bonus_multiplier_ratio1 = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_multiplier_ratio1"));
+                            extra_bonus_multiplier_ratio2 = Float.parseFloat(xpp.getAttributeValue(null, "extra_bonus_multiplier_ratio2"));
+                            extra_regeneration_base = Integer.parseInt(xpp.getAttributeValue(null, "extra_regeneration_base"));
+                            extra_regeneration_ratio = Float.parseFloat(xpp.getAttributeValue(null, "extra_regeneration_ratio"));
+                            splash_multiplier = Float.parseFloat(xpp.getAttributeValue(null, "splash_multiplier"));
 
                             sql += ", (" + skill_id + ", " + skill_group_id + ", " + skill_level + ", " + required_level + ", " + skill_points
                                     + ", " + extra_fitness_points + ", " + extra_resistance + ", " + extra_multiplier + ", " + extra_bonus_chance
@@ -542,11 +549,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("achievement")) {
-                            achievement_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            required_parameter_name = xpp.getAttributeValue(1);
-                            required_parameter_values = xpp.getAttributeValue(2);
-                            skill_points_values = xpp.getAttributeValue(3);
-                            name = xpp.getAttributeValue(4);
+                            achievement_id = Integer.parseInt(xpp.getAttributeValue(null, "achievement_id"));
+                            required_parameter_name = xpp.getAttributeValue(null, "required_parameter_name");
+                            required_parameter_values = xpp.getAttributeValue(null, "required_parameter_values");
+                            skill_points_values = xpp.getAttributeValue(null, "skill_points_values");
+                            name = xpp.getAttributeValue(null, "name");
 
                             sql += ", (" + achievement_id + ", \"" + required_parameter_name + "\", \"" + required_parameter_values + "\", \"" + skill_points_values + "\", \"" + name + "\")";
                         }
@@ -590,10 +597,10 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 switch (xpp.getEventType()) {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("skill_group")) {
-                            skill_group_id = Integer.parseInt(xpp.getAttributeValue(0));
-                            name = xpp.getAttributeValue(1);
-                            type = Integer.parseInt(xpp.getAttributeValue(2));
-                            target_type = Integer.parseInt(xpp.getAttributeValue(3));
+                            skill_group_id = Integer.parseInt(xpp.getAttributeValue(null, "skill_group_id"));
+                            name = xpp.getAttributeValue(null, "name");
+                            type = Integer.parseInt(xpp.getAttributeValue(null, "type"));
+                            target_type = Integer.parseInt(xpp.getAttributeValue(null, "target_type"));
 
                             sql += ", (" + skill_group_id
                                     + ", \"" + name
@@ -625,8 +632,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "skill_id integer,"
                 + "user_id integer,"
                 + "exercise_id integer,"
-                + "FOREIGN KEY(skill_id) REFERENCES skills(skill_id)"
-                + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
+                + "FOREIGN KEY(skill_id) REFERENCES skills(skill_id),"
+                + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
@@ -639,8 +646,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "position smallint,"
                 + "user_id integer,"
                 + "exercise_id integer,"
-                + "FOREIGN KEY(location_id) REFERENCES locations(location_id)"
-                + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
+                + "FOREIGN KEY(location_id) REFERENCES locations(location_id),"
+                + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
@@ -667,8 +674,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exp integer,"
                 + "result_state smallint,"
                 + "quest_owner boolean,"
-                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id)"
-                + "FOREIGN KEY(user_id) REFERENCES users(user_id)"
+                + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id),"
+                + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
@@ -720,14 +727,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     public void exportDB(String backup_filename, boolean toastOn) {
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
 
             if (sd.canWrite()) {
                 String currentDBPath = context.getDatabasePath("SportInTheForestDB").toString();
                 //String backupDBPath = "/SportInTheForest/SportInTheForestDB_" + gameHelper.getTodayString();
                 String baseBackupDBPath = "/SportInTheForest/";
                 String backupDBPath = baseBackupDBPath + backup_filename;
-
 
                 File currentDB = new File(currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
