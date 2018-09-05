@@ -1261,7 +1261,7 @@ def get_npc_data():
 				pre_action_str = add_skills_str(pre_action_str, 500 + int(round(location_id/2)) - 1)
 			if position == 5:
 				if location_id >= 5:
-					action_str = add_skills_str(action_str, 700 + int(round(location_id/2)) - 2)
+					action_str = add_skills_str(action_str, 700 + int(round(location_id/2)) - 1)
 				if location_id >= 6:
 					action_str = add_skills_str(action_str, 1500 + int(round(location_id/2)) - 2)
 
