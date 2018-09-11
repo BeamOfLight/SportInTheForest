@@ -4,42 +4,60 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@mipmap/background_portrait_main"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_marginTop="10sp"
-        android:text="@string/main_menu_knowledge"
-        android:textAlignment="center" />
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="125sp"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvKnowledgeGroupName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginTop="10sp"
-        android:text="Основная информация"
-        android:textAlignment="center" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10sp"
+            android:text="@string/main_menu_knowledge"
+            android:textColor="@color/menuItemColor"
+            android:textAlignment="center" />
 
-    <TextView
-        android:id="@+id/tvKnowledgeInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginTop="10sp"
-        android:layout_marginLeft="3sp"
-        android:layout_marginRight="3sp"
-        android:text="Фитнес-очки (ФО) - неотрицательное число, характеризующее каждого персонажа. Если ФО равны 0, то персонаж пропускает ход в текущем раунде. Если сумма ФО команды равно 0, то команда проигрывает (при условии, что у команды противника сумма ФО больше 0)." />
+        <TextView
+            android:id="@+id/tvKnowledgeGroupName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10sp"
+            android:textColor="@color/menuItemColor"
+            android:text="Основная информация"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvKnowledgeInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="3sp"
+            android:layout_marginRight="3sp"
+            android:text="Фитнес-очки (ФО) - неотрицательное число, характеризующее каждого персонажа. Если ФО равны 0, то персонаж пропускает ход в текущем раунде. Если сумма ФО команды равно 0, то команда проигрывает (при условии, что у команды противника сумма ФО больше 0)." />
+
+    </LinearLayout>
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:gravity="bottom"
         android:orientation="vertical">

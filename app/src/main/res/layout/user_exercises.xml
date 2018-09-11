@@ -4,13 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@mipmap/background_portrait_menu"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="70sp"
-        android:layout_marginTop="5sp"
+        android:minHeight="60sp"
+        android:layout_marginTop="2sp"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/tvUserName"
@@ -20,8 +21,10 @@
             android:layout_marginRight="5dp"
             android:minWidth="250sp"
             android:maxLines="1"
+            android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
+            android:textColor="@color/menuItemColor"
             android:text="@string/select_user_exercise"
             android:textSize="26sp">
         </TextView>
@@ -41,7 +44,9 @@
     <ListView
         android:id="@+id/lvExercises"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#DDDDDD"
+        >
     </ListView>
 
     <TextView
@@ -49,6 +54,7 @@
         android:layout_width= "wrap_content"
         android:layout_height= "wrap_content"
         android:text= ""
+        android:textColor="@color/menuItemColor"
         android:textSize="20sp"
         android:layout_marginLeft= "5dp"
         android:layout_marginRight= "5dp" >

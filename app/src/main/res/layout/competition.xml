@@ -4,18 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@mipmap/background_portrait_menu"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvExerciseName"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="68dp"
         android:layout_gravity="center"
         android:textSize="30sp"
         android:maxLines="2"
         android:textAlignment="center"
         android:gravity="center"
         android:layout_marginBottom="20dp"
+        android:textColor="@color/competitionTitleColor"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -107,6 +109,7 @@
             android:id="@+id/lvCompetitionLog"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
+            android:background="@color/titleColor"
             android:textSize="12sp"/>
 
         <Space

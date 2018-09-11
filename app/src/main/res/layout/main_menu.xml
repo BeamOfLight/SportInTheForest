@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@mipmap/background_portrait_main"
     android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="150sp"
+        android:layout_height="120sp"
         android:orientation="vertical">
         <TextView
             android:id="@+id/textView2"
@@ -16,7 +17,7 @@
             android:text="@string/app_name_title"
             android:textAlignment="center"
             android:textSize="40sp"
-            android:layout_marginTop="45sp"
+            android:layout_marginTop="38sp"
             android:textColor="@color/titleColor"
             android:textStyle="bold" />
 
@@ -24,16 +25,17 @@
             android:id="@+id/tvVersion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5sp"
+            android:layout_marginTop="1sp"
             android:fontFamily="monospace"
             android:text="ver. 0.0.0"
+            android:textStyle="bold"
             android:textColor="@color/versionColor"
             android:textAlignment="center" />
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="80sp"
+        android:layout_height="160sp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -41,15 +43,16 @@
             android:id="@+id/btMenuStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@mipmap/leaf_button_1"
             android:width="200sp"
             android:height="70sp"
             android:text="@string/main_menu_start"
             android:textColor="@color/menuItemColor" />
 
     </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80sp"
+        android:layout_height="135sp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -57,20 +60,22 @@
             android:id="@+id/btMenuSettings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@mipmap/leaf_button_1"
             android:width="200sp"
             android:height="70sp"
             android:textColor="@color/menuItemColor"
             android:text="@string/main_menu_settings" />
     </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80sp"
+        android:layout_height="120sp"
         android:gravity="center"
         android:orientation="vertical">
         <Button
             android:id="@+id/btMenuKnowledge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@mipmap/leaf_button_1"
             android:width="200sp"
             android:height="70sp"
             android:textColor="@color/menuItemColor"
