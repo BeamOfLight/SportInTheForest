@@ -1029,6 +1029,54 @@ class DBHelper extends DBHelperBaseLayer {
         return skill_view;
     }
 
+    public ArrayList<Map<String, String>> getCurrentUserLearntSkills()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+
+        return getLearntSkills(user_id, exercise_id);
+    }
+
+    public ArrayList<Map<String, String>> getLearntSkills(int user_id, int exercise_id)
+    {
+        ArrayList<Map<String, String>> result_data = new ArrayList<>();
+        Cursor cursor = db.query(
+                "skills AS s LEFT JOIN user_exercise_skills AS ues ON s.skill_id = ues.skill_id LEFT JOIN user_exercises AS ue ON ues.user_id = ue.user_id AND ues.exercise_id = ue.exercise_id LEFT JOIN skill_groups AS sg ON s.skill_group_id = sg.skill_group_id",
+                new String[]{"sg.name AS group_name", "sg.skill_group_id", "s.label", "s.duration", "s.reuse", "sg.target_type", "s.splash_multiplier", "MAX(s.skill_level) AS skill_level"},
+                "ues.user_id = ? AND ues.exercise_id = ? AND (s.specialisation = 0 OR s.specialisation = ue.specialisation)",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "sg.skill_group_id",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Map<String, String> m = new HashMap<>();
+                    m.put("skill_label", cursor.getString(cursor.getColumnIndex("label")));
+                    m.put("skill_group_name", cursor.getString(cursor.getColumnIndex("group_name")));
+                    m.put("skill_group_id", cursor.getString(cursor.getColumnIndex("skill_group_id")));
+                    m.put("skill_level", cursor.getString(cursor.getColumnIndex("skill_level")));
+                    m.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+                    m.put("reuse", cursor.getString(cursor.getColumnIndex("reuse")));
+                    m.put("target_type", cursor.getString(cursor.getColumnIndex("target_type")));
+                    m.put("splash_multiplier", cursor.getString(cursor.getColumnIndex("splash_multiplier")));
+                    m.put("full_info", String.format(
+                            Locale.ROOT,
+                            "Ур. %s: %s.",
+                            m.get("skill_level"),
+                            m.get("skill_label")
+                    ));
+                    result_data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return result_data;
+    }
+
     public ArrayList<Map<String, String>> getActiveLearntSkills(int user_id, int exercise_id, int type)
     {
         ArrayList<Map<String, String>> result_data = new ArrayList<>();

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="22sp"
+        android:text="@string/prompt_learn_skills_msg"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width= "wrap_content"
+            android:layout_height= "wrap_content"
+            android:text= "@string/txt_main_user_skill_points"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/fragmentTextColor"
+            android:layout_marginLeft= "5dp"
+            android:layout_marginRight= "5dp" />
+        <TextView
+            android:id="@+id/tvUserSkillPoints"
+            android:layout_width= "wrap_content"
+            android:layout_height= "wrap_content"
+            android:text= "0"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/fragmentTextColor"
+            android:layout_marginStart= "10dp"
+            android:layout_marginLeft= "10dp"
+            android:layout_marginRight= "5dp"
+            android:layout_marginEnd= "5dp">
+        </TextView>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvSkills"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/fragmentListViewColor"
+        />
+</LinearLayout>

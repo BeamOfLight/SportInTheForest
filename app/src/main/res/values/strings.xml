@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
-    <string name="app_version">0.3.2</string>
+    <string name="app_version">0.3.3</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -94,6 +94,8 @@
     <string name="fragment_page_stat_total_number_of_moves">Количество подходов:</string>
     <string name="fragment_page_stat_average_result">Средний результат:</string>
 
+    <string name="fragment_page_skills_learn_skills">Обучение</string>
+
     <string name="msg_new_specialisation">Специализация получена: %s!</string>
     <string name="prompt_character_info_active_skills_title">Усиления</string>
 
@@ -128,6 +130,7 @@
     <string name="btn_txt_locations_list">В лес</string>
     <string name="btn_txt_skills">Навыки</string>
     <string name="prompt_invite_user_input_msg">Пригласите пользователя</string>
+    <string name="prompt_learn_skills_msg">Обучение</string>
     <string name="exercises_list_info_msg">Список упражнения пока пуст</string>
     <string name="msg_exercise_need_name">Укажите  название упражнения</string>
     <string name="msg_exercise_name_already_exists">Упражнение с таким названием уже существует</string>

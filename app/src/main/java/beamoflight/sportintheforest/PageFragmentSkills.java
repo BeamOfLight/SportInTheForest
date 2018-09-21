@@ -1,17 +1,24 @@
 package beamoflight.sportintheforest;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -25,6 +32,7 @@ public class PageFragmentSkills extends Fragment {
     ListView lvSkills;
     ViewGroup mContainer;
     TextView tvUserSkillPoints;
+    Button btLearnSkills;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,11 +42,71 @@ public class PageFragmentSkills extends Fragment {
         dbHelper = new DBHelper(container.getContext());
         gameHelper = new GameHelper(container.getContext());
 
-        lvSkills = (ListView) rootView.findViewById(R.id.lvSkills);
-        lvSkills.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        btLearnSkills = rootView.findViewById(R.id.btLearnSkills);
+        btLearnSkills.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                initDialogLearnSkills();
+            }
+        });
+
+        lvSkills = rootView.findViewById(R.id.lvSkills);
+        tvUserSkillPoints = rootView.findViewById(R.id.tvUserSkillPoints);
+
+        return rootView;
+    }
+
+    public void onStart() {
+        super.onStart();
+        showSkillsList();
+    }
+
+    private void showSkillsList()
+    {
+        skillsData = dbHelper.getCurrentUserLearntSkills();
+        lvSkills.invalidateViews();
+        SimpleAdapter skillsAdapter = new SimpleAdapter(
+                mContainer.getContext(),
+                skillsData,
+                android.R.layout.simple_list_item_2,
+                new String[] {"skill_group_name", "full_info", "skill_group_id"},
+                new int[] {android.R.id.text1, android.R.id.text2}
+        );
+
+        lvSkills.setAdapter(skillsAdapter);
+
+        int user_skill_points = dbHelper.getCurrentUserSkillPoints();
+        tvUserSkillPoints.setText(String.format(Locale.ROOT, "%d", user_skill_points));
+    }
+
+    private void initDialogLearnSkills()
+    {
+        LayoutInflater li = LayoutInflater.from(getContext());
+        View prompts_view = li.inflate(R.layout.prompt_learn_skills, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(getContext());
+        alert_dialog_builder.setView(prompts_view);
+
+        int user_skill_points = dbHelper.getCurrentUserSkillPoints();
+        final TextView tvDialogUserSkillPoints = prompts_view.findViewById(R.id.tvUserSkillPoints);
+        tvDialogUserSkillPoints.setText(String.format(Locale.ROOT, "%d", user_skill_points));
+
+        final ListView lvDialogSkills = prompts_view.findViewById(R.id.lvSkills);
+        final ArrayList<Map<String, String>> dialogSkillsData = dbHelper.getUnexploredSkillsData();
+        lvDialogSkills.invalidateViews();
+        SimpleAdapter dialogSkillsAdapter = new SimpleAdapter(
+                mContainer.getContext(),
+                dialogSkillsData,
+                android.R.layout.simple_list_item_2,
+                new String[] {"skill_group_name", "full_info", "skill_group_id"},
+                new int[] {android.R.id.text1, android.R.id.text2}
+        );
+
+        lvDialogSkills.setAdapter(dialogSkillsAdapter);
+
+        lvDialogSkills.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Map<String, String> skill = skillsData.get(position);
-                int skill_id = Integer.parseInt(skillsData.get(position).get("skill_id"));
+                Map<String, String> skill = dialogSkillsData.get(position);
+                int skill_id = Integer.parseInt(dialogSkillsData.get(position).get("skill_id"));
                 int current_skill_points = dbHelper.getCurrentUserSkillPoints();
                 int required_skill_points = Integer.parseInt(skill.get("skill_points"));
                 int required_level = Integer.parseInt(skill.get("required_level"));
@@ -78,31 +146,12 @@ public class PageFragmentSkills extends Fragment {
             }
         });
 
-        tvUserSkillPoints = (TextView) rootView.findViewById(R.id.tvUserSkillPoints);
 
-        return rootView;
+        // set dialog message
+        alert_dialog_builder.setCancelable(true);
+
+        // create alert dialog
+        alert_dialog_builder.create().show();
     }
 
-    public void onStart() {
-        super.onStart();
-        showSkillsList();
-    }
-
-    private void showSkillsList()
-    {
-        skillsData = dbHelper.getUnexploredSkillsData();
-        lvSkills.invalidateViews();
-        SimpleAdapter skillsAdapter = new SimpleAdapter(
-                mContainer.getContext(),
-                skillsData,
-                android.R.layout.simple_list_item_2,
-                new String[] {"skill_group_name", "full_info", "skill_group_id"},
-                new int[] {android.R.id.text1, android.R.id.text2}
-        );
-
-        lvSkills.setAdapter(skillsAdapter);
-
-        int user_skill_points = dbHelper.getCurrentUserSkillPoints();
-        tvUserSkillPoints.setText(String.format(Locale.ROOT, "%d", user_skill_points));
-    }
 }
