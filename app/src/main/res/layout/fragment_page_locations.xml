@@ -3,14 +3,13 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@mipmap/background_inv"
     android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/lvLocations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/menuItemColor"
+        android:background="@color/fragmentListViewColor"
         />
 
 </FrameLayout>

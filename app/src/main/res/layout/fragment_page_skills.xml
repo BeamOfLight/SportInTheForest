@@ -3,7 +3,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@mipmap/background_inv"
     android:layout_height="match_parent">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,7 +21,7 @@
                 android:text= "@string/txt_main_user_skill_points"
                 android:textSize="20sp"
                 android:textAlignment="center"
-                android:textColor="@color/menuItemColor"
+                android:textColor="@color/fragmentTextColor"
                 android:layout_marginLeft= "5dp"
                 android:layout_marginRight= "5dp" />
             <TextView
@@ -32,7 +31,7 @@
                 android:text= "0"
                 android:textSize="20sp"
                 android:textAlignment="center"
-                android:textColor="@color/menuItemColor"
+                android:textColor="@color/fragmentTextColor"
                 android:layout_marginStart= "10dp"
                 android:layout_marginLeft= "10dp"
                 android:layout_marginRight= "5dp"
@@ -44,7 +43,7 @@
             android:id="@+id/lvSkills"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:background="@color/titleColor"
+            android:background="@color/fragmentListViewColor"
             />
     </LinearLayout>
 </FrameLayout>

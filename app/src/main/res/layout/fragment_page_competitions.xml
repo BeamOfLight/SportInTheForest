@@ -3,7 +3,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@mipmap/background_inv"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -27,7 +26,7 @@
                     android:layout_marginRight="5dp"
                     android:text="@string/txt_main_user_competition_specialisation"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -37,7 +36,7 @@
                     android:layout_marginRight="5dp"
                     android:text="@string/txt_main_user_competition_wins"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -48,7 +47,7 @@
                     android:layout_marginRight="5dp"
                     android:text="@string/txt_main_user_competition_draws"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -58,7 +57,7 @@
                     android:layout_marginRight="5dp"
                     android:text="@string/txt_main_user_competition_defeats"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
 
@@ -69,7 +68,7 @@
                     android:layout_marginRight="5dp"
                     android:text="@string/txt_main_user_competitions"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
             </LinearLayout>
@@ -91,7 +90,7 @@
                     android:layout_marginStart="10dp"
                     android:text="Нет"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -104,7 +103,7 @@
                     android:layout_marginStart="10dp"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -117,7 +116,7 @@
                     android:layout_marginStart="10dp"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -130,7 +129,7 @@
                     android:layout_marginStart="10dp"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
                 <TextView
@@ -143,7 +142,7 @@
                     android:layout_marginStart="10dp"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textColor="@color/menuItemColor"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
             </LinearLayout>
         </LinearLayout>

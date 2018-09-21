@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
-            android:textColor="@color/menuItemColor"
+            android:textColor="@color/titleColor"
             android:text="@string/location_title"
             android:textSize="28sp">
         </TextView>

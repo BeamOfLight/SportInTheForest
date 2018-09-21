@@ -3,7 +3,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@mipmap/background_inv"
     android:layout_height="match_parent">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -42,7 +41,7 @@
             android:id="@+id/lvAchievements"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:background="@color/menuItemColor"
+            android:background="@color/fragmentListViewColor"
             />
     </LinearLayout>
 </FrameLayout>

@@ -5,6 +5,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name="titleColor">#eeeeee</color>
     <color name="versionColor">#dddddd</color>
-    <color name="menuItemColor">#dddddd</color>
+    <color name="menuItemColor">#eeeeee</color>
+    <color name="exercisesTitleColor">#eeeeee</color>
+    <color name="fragmentTextColor">#000000</color>
+    <color name="fragmentCompetitionsTextColor">#000000</color>
+    <color name="fragmentListViewColor">#dddddd</color>
     <color name="competitionTitleColor">#dddddd</color>
+    <color name="competitionTextColor">#dddddd</color>
 </resources>
