@@ -278,14 +278,14 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("info",
                             String.format(
                                     Locale.ROOT,
-                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.2f | Выполнено заданий: %d | Общий результат: %d",
+                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.1f%% | Выполнено заданий: %d | Общий результат: %d",
                                     //"Уровень %d  ФО: %d | Сопротивление: %d  Множитель: %.2f  Множитель бонуса: %.2f  Шанс бонуса: %.2f  Выполнено заданий: %d",
                                     user_level,
                                     user_fp,
                                     user_resistance,
                                     user_multiplier,
                                     user_bonus_multiplier,
-                                    user_bonus_chance,
+                                    user_bonus_chance * 100,
                                     finished_quest_count,
                                     total_count
                             )
