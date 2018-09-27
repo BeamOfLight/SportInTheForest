@@ -139,4 +139,5 @@
     <string name="msg_exercise_edit_success">Изменения приняты</string>
     <string name="msg_exercise_edit_error">Не удалось применить изменения</string>
     <string name="are_you_sure">Вы уверены?</string>
+    <string name="are_you_sure_learn_skill">Изучить навык %s уровня %s?</string>
 </resources>

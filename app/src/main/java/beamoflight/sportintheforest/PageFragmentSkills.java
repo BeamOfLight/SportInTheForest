@@ -78,6 +78,50 @@ public class PageFragmentSkills extends Fragment {
         tvUserSkillPoints.setText(String.format(Locale.ROOT, "%d", user_skill_points));
     }
 
+    private boolean checkSkill(int required_skill_points, int required_level)
+    {
+        int current_skill_points = dbHelper.getCurrentUserSkillPoints();
+
+        // Check user_level
+        if (gameHelper.getCachedUserLevel() < required_level) {
+            Toast.makeText(
+                    mContainer.getContext(),
+                    getResources().getString(R.string.msg_new_skill_need_higher_level),
+                    Toast.LENGTH_LONG
+            ).show();
+            return false;
+        }
+
+        // Check skill points
+        if (current_skill_points < required_skill_points) {
+            Toast.makeText(
+                    mContainer.getContext(),
+                    getResources().getString(R.string.msg_new_skill_need_more_skill_points),
+                    Toast.LENGTH_LONG
+            ).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void learnSkill(final Map<String, String> skill)
+    {
+        int skill_id = Integer.parseInt(skill.get("skill_id"));
+        dbHelper.learnSkillFromSkillGroup(skill_id);
+        Toast.makeText(
+                mContainer.getContext(),
+                String.format(
+                        getResources().getString(R.string.msg_new_skill_congratulations),
+                        skill.get("skill_group_name") + ". Уровень " + skill.get("skill_level")
+                ),
+                Toast.LENGTH_LONG
+        ).show();
+        showSkillsList();
+
+        startActivity(gameHelper.getIntent4refreshedView(getActivity(), 2));
+    }
+
     private void initDialogLearnSkills()
     {
         LayoutInflater li = LayoutInflater.from(getContext());
@@ -105,44 +149,21 @@ public class PageFragmentSkills extends Fragment {
 
         lvDialogSkills.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Map<String, String> skill = dialogSkillsData.get(position);
-                int skill_id = Integer.parseInt(dialogSkillsData.get(position).get("skill_id"));
-                int current_skill_points = dbHelper.getCurrentUserSkillPoints();
+                final Map<String, String> skill = dialogSkillsData.get(position);
                 int required_skill_points = Integer.parseInt(skill.get("skill_points"));
                 int required_level = Integer.parseInt(skill.get("required_level"));
-
-                // Check user_level
-                if (gameHelper.getCachedUserLevel() < required_level) {
-                    Toast.makeText(
-                            mContainer.getContext(),
-                            getResources().getString(R.string.msg_new_skill_need_higher_level),
-                            Toast.LENGTH_LONG
-                    ).show();
-                    return;
+                if (checkSkill(required_skill_points, required_level)) {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage(getString(R.string.are_you_sure_learn_skill, skill.get("skill_level"), skill.get("skill_group_name")))
+                            .setCancelable(false)
+                            .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    learnSkill(skill);
+                                }
+                            })
+                            .setNegativeButton("Нет", null)
+                            .show();
                 }
-
-                // Check skill points
-                if (current_skill_points < required_skill_points) {
-                    Toast.makeText(
-                            mContainer.getContext(),
-                            getResources().getString(R.string.msg_new_skill_need_more_skill_points),
-                            Toast.LENGTH_LONG
-                    ).show();
-                    return;
-                }
-
-                dbHelper.learnSkillFromSkillGroup(skill_id);
-                Toast.makeText(
-                        mContainer.getContext(),
-                        String.format(
-                                getResources().getString(R.string.msg_new_skill_congratulations),
-                                skill.get("skill_group_name") + ". Уровень " + skill.get("skill_level")
-                        ),
-                        Toast.LENGTH_LONG
-                ).show();
-                showSkillsList();
-
-                startActivity(gameHelper.getIntent4refreshedView(getActivity(), 2));
             }
         });
 
@@ -153,5 +174,21 @@ public class PageFragmentSkills extends Fragment {
         // create alert dialog
         alert_dialog_builder.create().show();
     }
+
+    /*
+    new AlertDialog.Builder(SettingsActivity.this)
+                        .setMessage(R.string.are_you_sure)
+                        .setCancelable(false)
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                turnOnOffButtons(false);
+                                dbHelper.recreateCommonTable();
+                                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
+                                turnOnOffButtons(true);
+                            }
+                        })
+                        .setNegativeButton("Нет", null)
+                        .show();
+     */
 
 }
