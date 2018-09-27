@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
-    <string name="app_version">0.3.3</string>
+    <string name="app_version">0.3.4</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -138,4 +138,5 @@
     <string name="msg_exercise_add_error">Не удалось добавить новый вид упражнений</string>
     <string name="msg_exercise_edit_success">Изменения приняты</string>
     <string name="msg_exercise_edit_error">Не удалось применить изменения</string>
+    <string name="are_you_sure">Вы уверены?</string>
 </resources>

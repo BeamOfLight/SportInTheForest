@@ -1,6 +1,8 @@
 package beamoflight.sportintheforest;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -44,6 +46,29 @@ public class SettingsActivity extends Activity {
         btnImportDBAutoSun.setEnabled(status);
     }
 
+    private void loadAutoSaveDialog(final String filename)
+    {
+        new AlertDialog.Builder(SettingsActivity.this)
+                .setMessage(R.string.are_you_sure)
+                .setCancelable(false)
+                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        loadAutoSave(filename);
+                    }
+                })
+                .setNegativeButton("Нет", null)
+                .show();
+    }
+
+    private void loadAutoSave(String filename)
+    {
+        turnOnOffButtons(false);
+        dbHelper.onCreate(dbHelper.getWritableDatabase());
+        dbHelper.loadFromFile(filename, true);
+        Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
+        turnOnOffButtons(true);
+    }
+
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,104 +79,81 @@ public class SettingsActivity extends Activity {
 
         prepareBackUpDir();
 
-        btnImportDBAuto = (Button) findViewById(R.id.btnImportDBAuto);
+        btnImportDBAuto = findViewById(R.id.btnImportDBAuto);
         btnImportDBAuto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave.sif");
             }
         });
 
-        btnImportDBAutoMon = (Button) findViewById(R.id.btnImportDBAutoMon);
+        btnImportDBAutoMon = findViewById(R.id.btnImportDBAutoMon);
         btnImportDBAutoMon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Mon.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Mon.sif");
             }
         });
 
-        btnImportDBAutoTue = (Button) findViewById(R.id.btnImportDBAutoTue);
+        btnImportDBAutoTue = findViewById(R.id.btnImportDBAutoTue);
         btnImportDBAutoTue.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Tue.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Tue.sif");
             }
         });
 
-        btnImportDBAutoWed = (Button) findViewById(R.id.btnImportDBAutoWed);
+        btnImportDBAutoWed = findViewById(R.id.btnImportDBAutoWed);
         btnImportDBAutoWed.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Wed.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Wed.sif");
             }
         });
 
-        btnImportDBAutoThu = (Button) findViewById(R.id.btnImportDBAutoThu);
+        btnImportDBAutoThu = findViewById(R.id.btnImportDBAutoThu);
         btnImportDBAutoThu.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Thu.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Thu.sif");
             }
         });
 
-        btnImportDBAutoFri = (Button) findViewById(R.id.btnImportDBAutoFri);
+        btnImportDBAutoFri = findViewById(R.id.btnImportDBAutoFri);
         btnImportDBAutoFri.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Fri.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Fri.sif");
             }
         });
 
-        btnImportDBAutoSat = (Button) findViewById(R.id.btnImportDBAutoSat);
+        btnImportDBAutoSat = findViewById(R.id.btnImportDBAutoSat);
         btnImportDBAutoSat.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Sat.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Sat.sif");
             }
         });
 
-        btnImportDBAutoSun = (Button) findViewById(R.id.btnImportDBAutoSun);
+        btnImportDBAutoSun = findViewById(R.id.btnImportDBAutoSun);
         btnImportDBAutoSun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("autosave_Sun.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("autosave_Sun.sif");
             }
         });
 
-        btnImportDBold = (Button) findViewById(R.id.btnImportDBold);
+        btnImportDBold = findViewById(R.id.btnImportDBold);
         btnImportDBold.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.importDB("SportInTheForestDB.db", true);
-                turnOnOffButtons(true);
+                new AlertDialog.Builder(SettingsActivity.this)
+                        .setMessage(R.string.are_you_sure)
+                        .setCancelable(false)
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                turnOnOffButtons(false);
+                                dbHelper.importDB("SportInTheForestDB.db", true);
+                                turnOnOffButtons(true);
+                            }
+                        })
+                        .setNegativeButton("Нет", null)
+                        .show();
             }
         });
 
-        btnExportDBold = (Button) findViewById(R.id.btnExportDBold);
+        btnExportDBold = findViewById(R.id.btnExportDBold);
         btnExportDBold.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 turnOnOffButtons(false);
@@ -161,18 +163,14 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        btnImportDBnew = (Button) findViewById(R.id.btnImportDBnew);
+        btnImportDBnew = findViewById(R.id.btnImportDBnew);
         btnImportDBnew.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
-                dbHelper.loadFromFile("SportInTheForest.sif", true);
-                Toast.makeText(getBaseContext(), "Загружено!", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                loadAutoSaveDialog("SportInTheForest.sif");
             }
         });
 
-        btnExportDBnew = (Button) findViewById(R.id.btnExportDBnew);
+        btnExportDBnew = findViewById(R.id.btnExportDBnew);
         btnExportDBnew.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 turnOnOffButtons(false);
@@ -184,35 +182,53 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        btnWipe = (Button) findViewById(R.id.btnWipe);
+        btnWipe = findViewById(R.id.btnWipe);
         btnWipe.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                new AlertDialog.Builder(SettingsActivity.this)
+                        .setMessage(R.string.are_you_sure)
+                        .setCancelable(false)
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                turnOnOffButtons(false);
+                                dbHelper.onCreate(dbHelper.getWritableDatabase());
 
-                SharedPreferences s_pref = getBaseContext().getSharedPreferences(getBaseContext().getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = s_pref.edit();
-                editor.putInt(getBaseContext().getResources().getString(R.string.preference_name_user_encoded_level), 0);
-                editor.putLong(getBaseContext().getResources().getString(R.string.preference_name_user_exp), 0);
-                editor.putString(getBaseContext().getResources().getString(R.string.preference_name_user_name), "");
-                editor.commit();
+                                SharedPreferences s_pref = getBaseContext().getSharedPreferences(getBaseContext().getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = s_pref.edit();
+                                editor.putInt(getBaseContext().getResources().getString(R.string.preference_name_user_encoded_level), 0);
+                                editor.putLong(getBaseContext().getResources().getString(R.string.preference_name_user_exp), 0);
+                                editor.putString(getBaseContext().getResources().getString(R.string.preference_name_user_name), "");
+                                editor.commit();
 
-                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
+                                turnOnOffButtons(true);
+                            }
+                        })
+                        .setNegativeButton("Нет", null)
+                        .show();
             }
         });
 
-        btnWipeSaveUserProgress = (Button) findViewById(R.id.btnWipeSaveUserProgress);
+        btnWipeSaveUserProgress = findViewById(R.id.btnWipeSaveUserProgress);
         btnWipeSaveUserProgress.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                turnOnOffButtons(false);
-                dbHelper.recreateCommonTable();
-                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
-                turnOnOffButtons(true);
+                new AlertDialog.Builder(SettingsActivity.this)
+                        .setMessage(R.string.are_you_sure)
+                        .setCancelable(false)
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                turnOnOffButtons(false);
+                                dbHelper.recreateCommonTable();
+                                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
+                                turnOnOffButtons(true);
+                            }
+                        })
+                        .setNegativeButton("Нет", null)
+                        .show();
             }
         });
 
-        btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
+        btnAddExercise = findViewById(R.id.btnAddExercise);
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 turnOnOffButtons(false);
@@ -223,7 +239,7 @@ public class SettingsActivity extends Activity {
         });
 
 
-        btnTest = (Button) findViewById(R.id.btnTest);
+        btnTest = findViewById(R.id.btnTest);
         btnTest.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 turnOnOffButtons(false);
