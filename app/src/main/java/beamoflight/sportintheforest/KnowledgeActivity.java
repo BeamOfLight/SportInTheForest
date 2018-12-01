@@ -38,10 +38,10 @@ public class KnowledgeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.knowledge);
 
-        tvKnowledgeGroupName = (TextView) findViewById(R.id.tvKnowledgeGroupName);
-        tvKnowledgeInfo = (TextView) findViewById(R.id.tvKnowledgeInfo);
-        btPrevKnowledge = (Button) findViewById(R.id.btPrevKnowledge);
-        btNextKnowledge = (Button) findViewById(R.id.btNextKnowledge);
+        tvKnowledgeGroupName = findViewById(R.id.tvKnowledgeGroupName);
+        tvKnowledgeInfo = findViewById(R.id.tvKnowledgeInfo);
+        btPrevKnowledge = findViewById(R.id.btPrevKnowledge);
+        btNextKnowledge = findViewById(R.id.btNextKnowledge);
 
         btPrevKnowledge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -94,7 +94,10 @@ public class KnowledgeActivity extends Activity {
                     case XmlPullParser.START_TAG:
                         if (xpp.getName().equals("knowledge")) {
                             pages.add(
-                                    new KnowledgePage(xpp.getAttributeValue(0), xpp.getAttributeValue(1))
+                                new KnowledgePage(
+                                    xpp.getAttributeValue(null, "group"),
+                                    xpp.getAttributeValue(null, "description")
+                                )
                             );
                         }
                         break;

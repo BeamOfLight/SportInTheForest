@@ -9,7 +9,7 @@
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="125sp"
+        android:layout_height="60sp"
         android:orientation="vertical">
 
         <TextView
@@ -21,6 +21,13 @@
             android:text="@string/main_menu_knowledge"
             android:textColor="@color/fragmentTextColor"
             android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="350sp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvKnowledgeGroupName"
@@ -32,13 +39,6 @@
             android:textColor="@color/fragmentTextColor"
             android:text="Основная информация"
             android:textAlignment="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="350sp"
-        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvKnowledgeInfo"
