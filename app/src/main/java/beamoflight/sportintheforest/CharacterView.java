@@ -1,7 +1,5 @@
 package beamoflight.sportintheforest;
 
-import android.util.SparseArray;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -72,6 +70,10 @@ public class CharacterView {
     @Expose
     protected List<SkillView> activeSkills;
 
+    @SerializedName("results")
+    @Expose
+    protected String results;
+
     public String toString()
     {
         return name;
@@ -107,4 +109,5 @@ public class CharacterView {
     float getResistanceInPercents() { return resistanceInPercents; }
     public int getSpecialisationId() { return specialisationId; }
     public int getLevel() { return level; }
+    public String getResults() { return results; }
 }

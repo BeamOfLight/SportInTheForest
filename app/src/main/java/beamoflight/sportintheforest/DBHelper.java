@@ -1348,7 +1348,7 @@ class DBHelper extends DBHelperBaseLayer {
         return db.insert("user_exercise_trainings", null, values);
     }
 
-    public long updateTraining(long training_id, int user_id, int exercise_id, int level, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int location_id, int position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp)
+    public long updateTraining(long training_id, int user_id, int exercise_id, int level, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int location_id, int position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp, String results)
     {
         ContentValues values = new ContentValues();
         values.put("level", level);
@@ -1363,6 +1363,7 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("quest_owner", quest_owner);
         values.put("my_team_fp", my_team_fp);
         values.put("op_team_fp", op_team_fp);
+        values.put("results", results);
 
         return db.update(
                 "user_exercise_trainings",
@@ -1573,7 +1574,7 @@ class DBHelper extends DBHelperBaseLayer {
 
         Cursor cursor = db.query(
                 "user_exercise_trainings AS uet LEFT JOIN location_positions AS lp ON uet.level = lp.level AND uet.location_id = lp.location_id AND uet.position = lp.position LEFT JOIN locations AS l ON lp.location_id = l.location_id",
-                new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "lp.name AS location_position_name", "lp.level AS level", "l.name AS location_name", "uet.duration", "uet.my_team_fp", "uet.op_team_fp" },
+                new String[] { "uet.event_timestamp", "uet.sum_result", "uet.max_result", "uet.number_of_moves", "uet.exp", "uet.result_state", "lp.name AS location_position_name", "lp.level AS level", "l.name AS location_name", "uet.duration", "uet.my_team_fp", "uet.op_team_fp", "uet.results" },
                 "uet.user_id = ? AND uet.exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 null,
@@ -1597,6 +1598,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
                     m.put("my_team_fp", cursor.getString(cursor.getColumnIndex("my_team_fp")));
                     m.put("op_team_fp", cursor.getString(cursor.getColumnIndex("op_team_fp")));
+                    m.put("results", cursor.getString(cursor.getColumnIndex("results")));
 
                     m.put("header", String.format(
                             Locale.ROOT,
@@ -1605,12 +1607,23 @@ class DBHelper extends DBHelperBaseLayer {
                             m.get("location_name"),
                             m.get("location_position_name")
                     ));
+
+                    String sum_result_str = "";
+                    if (m.get("results") == null || m.get("results").isEmpty()) {
+                        sum_result_str = m.get("sum_result");
+                    } else {
+                        sum_result_str = String.format(
+                            "%s=%s",
+                            m.get("sum_result"),
+                            m.get("results")
+                        );
+                    }
                     m.put("info", String.format(
                             Locale.ROOT,
-                            "%s | Опыт: %s | Суммарный результат: %s | Подходы: %s | Максимум: %s | Продолжительность: %s | Счёт: %s : %s",
+                            "%s | Опыт: %s | Результат: %s | Подходы: %s | Максимум: %s | Продолжительность: %s | Счёт: %s : %s",
                             gameHelper.getCompetitionStatus(Integer.parseInt(m.get("result_state"))),
                             m.get("exp"),
-                            m.get("sum_result"),
+                            sum_result_str,
                             m.get("number_of_moves"),
                             m.get("max_result"),
                             getDuration(Integer.parseInt(m.get("duration"))),

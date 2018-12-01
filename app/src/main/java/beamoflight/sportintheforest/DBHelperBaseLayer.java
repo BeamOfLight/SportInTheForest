@@ -35,7 +35,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected int formatVersion = 4;
+    protected int formatVersion = 5;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -674,6 +674,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exp integer,"
                 + "result_state smallint,"
                 + "quest_owner boolean,"
+                + "results text,"
                 + "FOREIGN KEY(npc_id) REFERENCES non_player_characters(npc_id),"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
@@ -888,7 +889,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             m.put("user_exercise_quests", new String[] {"npc_location_id", "npc_position", "user_id", "exercise_id"});
         }
         m.put("parameters", new String[] {"app_version"});
-        if (format_version >= 4) {
+        if (format_version >= 5) {
+            m.put("user_exercise_trainings", new String[]{"training_id", "user_id", "exercise_id", "npc_id", "location_id", "position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp", "level", "results"});
+        } else if (format_version >= 4) {
             m.put("user_exercise_trainings", new String[]{"training_id", "user_id", "exercise_id", "npc_id", "location_id", "position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp", "level"});
         } else if (format_version >= 2) {
             m.put("user_exercise_trainings", new String[] {"training_id", "user_id", "exercise_id", "npc_id", "npc_location_id", "npc_position", "event_timestamp", "event_timestamp", "sum_result", "max_result", "number_of_moves", "duration", "exp", "result_state", "quest_owner", "my_team_fp", "op_team_fp"});

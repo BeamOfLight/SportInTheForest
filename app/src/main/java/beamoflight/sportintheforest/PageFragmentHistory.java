@@ -30,8 +30,8 @@ public class PageFragmentHistory extends Fragment {
         dbHelper = new DBHelper(container.getContext());
         gameHelper = new GameHelper(container.getContext());
 
-        lvHistory = (ListView) rootView.findViewById(R.id.lvHistory);
-        tvHistory = (TextView) rootView.findViewById(R.id.tvHistory);
+        lvHistory = rootView.findViewById(R.id.lvHistory);
+        tvHistory = rootView.findViewById(R.id.tvHistory);
 
 
         return rootView;

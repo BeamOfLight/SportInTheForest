@@ -46,6 +46,7 @@ abstract class CharacterEntity {
     protected boolean isActive;
     protected int level;
     protected int specialisationId;
+    protected String results;
 
     protected SparseArray<SkillView> activeSkills;
     protected SparseIntArray alreadyUsedActiveSkills;
@@ -57,6 +58,7 @@ abstract class CharacterEntity {
         alreadyUsedActiveSkills = new SparseIntArray();
         dbHelper = new DBHelper(current);
         gameHelper = new GameHelper(current);
+        results = "";
     }
 
     public CharacterView getView()
@@ -77,6 +79,7 @@ abstract class CharacterEntity {
         data.avgResult = getAvgResult();
         data.level = getLevel();
         data.specialisationId = getSpecialisationId();
+        data.results = getResults();
 
         return data;
     }
@@ -159,10 +162,7 @@ abstract class CharacterEntity {
 
     void calculateStatus()
     {
-        isActive = false;
-        if (getCurrentFitnessPoints() > 0) {
-            isActive = true;
-        }
+        isActive = (getCurrentFitnessPoints() > 0);
     }
 
     CharacterEntity setTeamIdx(int team_idx)
@@ -238,6 +238,20 @@ abstract class CharacterEntity {
     int getResult()
     {
         return move.result;
+    }
+
+    public void addResultFromCurrentMove()
+    {
+        if (getResults().length() > 0) {
+            results += "+" + String.valueOf(move.result);
+        } else {
+            results = String.valueOf(move.result);
+        }
+    }
+
+    public String getResults()
+    {
+        return results;
     }
 
     abstract boolean isPlayer();
