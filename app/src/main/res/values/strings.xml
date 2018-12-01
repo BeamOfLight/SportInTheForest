@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.5</string>
-    <string name="app_version_revision">2</string>
+    <string name="app_version_revision">3</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -105,6 +105,8 @@
     <string name="txt_main_user_multiplier">Множитель ФО:</string>
     <string name="txt_main_user_bonus_chance">Вероятность бонуса:</string>
     <string name="txt_main_user_bonus_multiplier">Множитель бонуса:</string>
+    <string name="txt_main_user_action_points">Очки действий:</string>
+    <string name="txt_main_user_max_action_points">Макс. очков действий:</string>
     <string name="txt_main_user_exp">Очки опыта:</string>
     <string name="txt_main_user_percents">Прогресс:</string>
     <string name="txt_main_non_player_max_result">Результат:</string>

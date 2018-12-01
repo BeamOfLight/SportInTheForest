@@ -74,6 +74,14 @@ public class CharacterView {
     @Expose
     protected String results;
 
+    @SerializedName("current_action_points")
+    @Expose
+    protected int currentActionPoints;
+
+    @SerializedName("initial_action_points")
+    @Expose
+    protected int initialActionPoints;
+
     public String toString()
     {
         return name;
@@ -110,4 +118,6 @@ public class CharacterView {
     public int getSpecialisationId() { return specialisationId; }
     public int getLevel() { return level; }
     public String getResults() { return results; }
+    public int getCurrentActionPoints() { return currentActionPoints; }
+    public int getInitialActionPoints() { return initialActionPoints; }
 }

@@ -47,7 +47,8 @@ public class TabsActivity extends Activity {
 
     ProgressBar pbUserExp;
     TextView tvExerciseName, tvUserLevel, tvUserPercentsAndExp;
-    TextView tvUserFitnessPoints, tvUserResistance, tvUserMultiplier, tvUserBonusChance, tvUserBonusMultiplier;
+    TextView tvUserFitnessPoints, tvUserResistance, tvUserMultiplier, tvUserBonusChance;
+    TextView tvUserBonusMultiplier, tvUserMaxActionPoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,16 +76,17 @@ public class TabsActivity extends Activity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-        pbUserExp = (ProgressBar) findViewById(R.id.pbUserExp);
-        tvUserLevel = (TextView) findViewById(R.id.tvUserLevel);
-        tvExerciseName = (TextView) findViewById(R.id.tvExerciseName);
-        tvUserPercentsAndExp = (TextView) findViewById(R.id.tvUserPercentsAndExp);
+        pbUserExp = findViewById(R.id.pbUserExp);
+        tvUserLevel = findViewById(R.id.tvUserLevel);
+        tvExerciseName = findViewById(R.id.tvExerciseName);
+        tvUserPercentsAndExp = findViewById(R.id.tvUserPercentsAndExp);
 
-        tvUserFitnessPoints = (TextView) findViewById(R.id.tvUserFitnessPoints);
-        tvUserResistance = (TextView) findViewById(R.id.tvUserResistance);
-        tvUserMultiplier = (TextView) findViewById(R.id.tvUserMultiplier);
-        tvUserBonusChance = (TextView) findViewById(R.id.tvUserBonusChance);
-        tvUserBonusMultiplier = (TextView) findViewById(R.id.tvUserBonusMultiplier);
+        tvUserFitnessPoints = findViewById(R.id.tvUserFitnessPoints);
+        tvUserResistance = findViewById(R.id.tvUserResistance);
+        tvUserMultiplier = findViewById(R.id.tvUserMultiplier);
+        tvUserBonusChance = findViewById(R.id.tvUserBonusChance);
+        tvUserBonusMultiplier = findViewById(R.id.tvUserBonusMultiplier);
+        tvUserMaxActionPoints = findViewById(R.id.tvUserMaxActionPoints);
 
         tvUserLevel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -129,6 +131,12 @@ public class TabsActivity extends Activity {
         tvUserMultiplier.setText(String.format(Locale.ROOT, "%.2f", dbHelper.getCurrentUserMultiplier()));
         tvUserBonusChance.setText(String.format(Locale.ROOT, "%.1f%%", 100.0 * dbHelper.getCurrentUserBonusChance()));
         tvUserBonusMultiplier.setText(String.format(Locale.ROOT, "%.2f", dbHelper.getCurrentUserBonusMultiplier()));
+
+        tvUserMaxActionPoints.setText(String.format(
+            Locale.ROOT,
+            "%d",
+            dbHelper.getUserExerciseTrainingMaxCompetitionResult())
+        );
     }
 
     /* PagerAdapter for supplying the ViewPager with the pages (fragments) to display. */

@@ -301,6 +301,7 @@ class CompetitionEngine {
 
     private void calculatePlayerStat(CharacterEntity current_character)
     {
+        current_character.addActionPointsFromCurrentMove();
         if (current_character.isPlayer()) {
             PlayerEntity current_player = (PlayerEntity) current_character;
             if (current_player.getResult() > current_player.getMaxResult()) {

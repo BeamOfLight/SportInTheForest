@@ -32,10 +32,10 @@ public class CharacterViewArrayAdapter extends ArrayAdapter<CharacterView> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.competition_player_list_item, parent, false);
 
-        TextView tvPlayerName = (TextView) rowView.findViewById(R.id.tvPlayerName);
+        TextView tvPlayerName = rowView.findViewById(R.id.tvPlayerName);
         tvPlayerName.setText(String.format(Locale.ROOT, "%s", values.get(position).getName()));
 
-        TextView tvPlayerFPInfo = (TextView) rowView.findViewById(R.id.tvPlayerFPInfo);
+        TextView tvPlayerFPInfo = rowView.findViewById(R.id.tvPlayerFPInfo);
         tvPlayerFPInfo.setText(
                 String.format(
                         Locale.ROOT,
@@ -50,9 +50,13 @@ public class CharacterViewArrayAdapter extends ArrayAdapter<CharacterView> {
             tvPlayerFPInfo.setTextColor(Color.parseColor("#000000"));
         }
 
-        ProgressBar pbPlayerFP = (ProgressBar) rowView.findViewById(R.id.pbPlayerFP);
+        ProgressBar pbPlayerFP = rowView.findViewById(R.id.pbPlayerFP);
         pbPlayerFP.setMax(values.get(position).getInitialFitnessPoints());
         pbPlayerFP.setProgress(values.get(position).getCurrentFitnessPoints());
+
+        ProgressBar pbPlayerAP = rowView.findViewById(R.id.pbPlayerAP);
+        pbPlayerAP.setMax(values.get(position).getInitialActionPoints());
+        pbPlayerAP.setProgress(values.get(position).getCurrentActionPoints());
 
         return rowView;
     }

@@ -624,10 +624,15 @@ class DBHelper extends DBHelperBaseLayer {
                 do {
                     NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(context);
                     int fitness_points = cursor.getInt(cursor.getColumnIndex("fp"));
+                    int max_result = cursor.getInt(cursor.getColumnIndex("max_res"));
+                    float multiplier = cursor.getFloat(cursor.getColumnIndex("multiplier"));
+                    int initialActionPoints = Math.round(max_result * multiplier * location_id);
                     npc_entity.setId(cursor.getInt(cursor.getColumnIndex("npc_id")))
                             .setName(cursor.getString(cursor.getColumnIndex("name")))
                             .setInitialFitnessPoints(fitness_points)
                             .setCurrentFitnessPoints(fitness_points)
+                            .setInitialActionPoints(initialActionPoints)
+                            .setCurrentActionPoints(0)
                             .setMultiplier(cursor.getFloat(cursor.getColumnIndex("multiplier")))
                             .setResistance(cursor.getInt(cursor.getColumnIndex("resistance")))
                             .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
@@ -635,7 +640,7 @@ class DBHelper extends DBHelperBaseLayer {
                             .setSpecialisationId(0)
                             .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")));
                     npc_entity.setExp(cursor.getInt(cursor.getColumnIndex("exp")))
-                            .setMaxResult(cursor.getInt(cursor.getColumnIndex("max_res")))
+                            .setMaxResult(max_result)
                             .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
                             .setPosition(cursor.getInt(cursor.getColumnIndex("position")))
                             .setType(cursor.getString(cursor.getColumnIndex("type")))
@@ -1896,7 +1901,10 @@ class DBHelper extends DBHelperBaseLayer {
                 .setMultiplier(getUserMultiplier(user_id, exercise_id))
                 .setResistance(getUserResistance(user_id, exercise_id))
                 .setBonusChance(getUserBonusChance(user_id, exercise_id))
-                .setBonusMultiplier(getUserBonusMultiplier(user_id, exercise_id));
+                .setBonusMultiplier(getUserBonusMultiplier(user_id, exercise_id))
+                .setInitialActionPoints(getUserExerciseTrainingMaxCompetitionResult())
+                .setCurrentActionPoints(0);
+
         return player_entity;
     }
 

@@ -109,6 +109,14 @@
                                 android:text="@string/txt_main_user_bonus_multiplier"
                                 android:textAlignment="center"
                                 android:textSize="16sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="5dp"
+                                android:text="@string/txt_main_user_action_points"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
 
                         </LinearLayout>
 
@@ -172,6 +180,13 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
+                                android:textAlignment="center"
+                                android:textSize="16sp"/>
+                            <TextView
+                                android:id="@+id/tvCharacterActionPoints"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0/0"
                                 android:textAlignment="center"
                                 android:textSize="16sp"/>
                         </LinearLayout>

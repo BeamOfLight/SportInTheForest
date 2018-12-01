@@ -47,6 +47,8 @@ abstract class CharacterEntity {
     protected int level;
     protected int specialisationId;
     protected String results;
+    protected int currentActionPoints;
+    protected int initialActionPoints;
 
     protected SparseArray<SkillView> activeSkills;
     protected SparseIntArray alreadyUsedActiveSkills;
@@ -59,7 +61,10 @@ abstract class CharacterEntity {
         dbHelper = new DBHelper(current);
         gameHelper = new GameHelper(current);
         results = "";
+        initialActionPoints = 0;
+        currentActionPoints = 0;
     }
+
 
     public CharacterView getView()
     {
@@ -80,6 +85,8 @@ abstract class CharacterEntity {
         data.level = getLevel();
         data.specialisationId = getSpecialisationId();
         data.results = getResults();
+        data.currentActionPoints = getCurrentActionPoints();
+        data.initialActionPoints = getInitialActionPoints();
 
         return data;
     }
@@ -165,6 +172,24 @@ abstract class CharacterEntity {
         isActive = (getCurrentFitnessPoints() > 0);
     }
 
+    public int getCurrentActionPoints() {
+        return currentActionPoints;
+    }
+
+    public CharacterEntity setCurrentActionPoints(int current_action_points) {
+        currentActionPoints = current_action_points;
+        return this;
+    }
+
+    public int getInitialActionPoints() {
+        return initialActionPoints;
+    }
+
+    public CharacterEntity setInitialActionPoints(int initial_action_points) {
+        initialActionPoints = initial_action_points;
+        return this;
+    }
+
     CharacterEntity setTeamIdx(int team_idx)
     {
         teamIdx = team_idx;
@@ -238,6 +263,14 @@ abstract class CharacterEntity {
     int getResult()
     {
         return move.result;
+    }
+
+    public void addActionPointsFromCurrentMove()
+    {
+        currentActionPoints += move.result;
+        if (currentActionPoints > initialActionPoints) {
+            currentActionPoints = initialActionPoints;
+        }
     }
 
     public void addResultFromCurrentMove()

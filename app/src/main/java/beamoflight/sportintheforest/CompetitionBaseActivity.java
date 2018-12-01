@@ -202,16 +202,16 @@ abstract public class CompetitionBaseActivity extends Activity {
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
 
-        TextView tvCharacterName = (TextView) prompts_view.findViewById(R.id.tvCharacterName);
+        TextView tvCharacterName = prompts_view.findViewById(R.id.tvCharacterName);
         tvCharacterName.setText(character_view.getName());
 
-        TextView tvCharacterSpecialisation = (TextView) prompts_view.findViewById(R.id.tvCharacterSpecialisation);
+        TextView tvCharacterSpecialisation = prompts_view.findViewById(R.id.tvCharacterSpecialisation);
         tvCharacterSpecialisation.setText(gameHelper.getSpecialisationName(character_view.getSpecialisationId()));
 
-        TextView tvCharacterLevel = (TextView) prompts_view.findViewById(R.id.tvCharacterLevel);
+        TextView tvCharacterLevel = prompts_view.findViewById(R.id.tvCharacterLevel);
         tvCharacterLevel.setText(String.format(Locale.ROOT, "%d", character_view.getLevel()));
 
-        TextView tvCharacterFitnessPoints = (TextView) prompts_view.findViewById(R.id.tvCharacterFitnessPoints);
+        TextView tvCharacterFitnessPoints = prompts_view.findViewById(R.id.tvCharacterFitnessPoints);
         tvCharacterFitnessPoints.setText(
                 String.format(
                         Locale.ROOT,
@@ -221,7 +221,7 @@ abstract public class CompetitionBaseActivity extends Activity {
                 )
         );
 
-        TextView tvCharacterResistance = (TextView) prompts_view.findViewById(R.id.tvCharacterResistance);
+        TextView tvCharacterResistance = prompts_view.findViewById(R.id.tvCharacterResistance);
         tvCharacterResistance.setText(
                 String.format(
                         Locale.ROOT,
@@ -231,23 +231,33 @@ abstract public class CompetitionBaseActivity extends Activity {
                 )
         );
 
-        TextView tvCharacterBonusChance = (TextView) prompts_view.findViewById(R.id.tvCharacterBonusChance);
+        TextView tvCharacterBonusChance = prompts_view.findViewById(R.id.tvCharacterBonusChance);
         tvCharacterBonusChance.setText(String.format(Locale.ROOT, "%.1f%%", 100.0 * character_view.getBonusChance()));
 
-        TextView tvCharacterBonusMultiplier = (TextView) prompts_view.findViewById(R.id.tvCharacterBonusMultiplier);
+        TextView tvCharacterBonusMultiplier = prompts_view.findViewById(R.id.tvCharacterBonusMultiplier);
         tvCharacterBonusMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_view.getBonusMultiplier()));
 
-        TextView tvCharacterMultiplier = (TextView) prompts_view.findViewById(R.id.tvCharacterMultiplier);
+        TextView tvCharacterMultiplier = prompts_view.findViewById(R.id.tvCharacterMultiplier);
         tvCharacterMultiplier.setText(String.format(Locale.ROOT, "%.2f", character_view.getMultiplier()));
 
-        TextView tvCharacterAvgResult = (TextView) prompts_view.findViewById(R.id.tvCharacterAvgResult);
+        TextView tvCharacterAvgResult = prompts_view.findViewById(R.id.tvCharacterAvgResult);
         tvCharacterAvgResult.setText(String.format(Locale.ROOT, "%.0f", character_view.getAvgResult()));
 
-        ListView lvActiveSkills = (ListView) prompts_view.findViewById(R.id.lvActiveSkills);
+        TextView tvCharacterActionPoints = prompts_view.findViewById(R.id.tvCharacterActionPoints);
+        tvCharacterActionPoints.setText(
+                String.format(
+                        Locale.ROOT,
+                        "%d / %d",
+                        character_view.getCurrentActionPoints(),
+                        character_view.getInitialActionPoints()
+                )
+        );
+
+        ListView lvActiveSkills = prompts_view.findViewById(R.id.lvActiveSkills);
         List<SkillView> active_skills = character_view.getActiveSkills();
         lvActiveSkills.setAdapter(new SkillArrayAdapter(getBaseContext(), active_skills));
 
-        TextView tvActiveSkillsStatus = (TextView) prompts_view.findViewById(R.id.tvActiveSkillsStatus);
+        TextView tvActiveSkillsStatus = prompts_view.findViewById(R.id.tvActiveSkillsStatus);
         String active_skills_status = "";
         if (active_skills.size() == 0) {
             active_skills_status = "Нет усилений";
