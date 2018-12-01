@@ -1929,6 +1929,11 @@ class DBHelper extends DBHelperBaseLayer {
         return app_version;
     }
 
+    public String getAppVersionRevision()
+    {
+        return context.getString(R.string.app_version_revision);
+    }
+
     public long updateAppVersion(String app_version)
     {
         ContentValues values = new ContentValues();

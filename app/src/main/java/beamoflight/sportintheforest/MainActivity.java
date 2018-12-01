@@ -61,7 +61,12 @@ public class MainActivity extends Activity {
     private void showVersion()
     {
         tvVersion.setText(
-            String.format(Locale.ROOT, "ver. %s", dbHelper.getAppVersion())
+            String.format(
+                Locale.ROOT,
+                "ver. %s.%s",
+                dbHelper.getAppVersion(),
+                dbHelper.getAppVersionRevision()
+            )
         );
     }
 
