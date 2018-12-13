@@ -23,7 +23,7 @@ class CompetitionEngine {
     private LocationPositionEntity locationPosition;
     private GameHelper gameHelper;
     private DBHelper dbHelper;
-    private String log_message;
+    private String logMessage;
     private int numberOfMoves;
     private Long competitionStartTime;
     boolean finishedCompetition;
@@ -86,7 +86,7 @@ class CompetitionEngine {
             }
         }
 
-        addCompetitionLogMessage("Соревнование началось!");
+        addCompetitionLogMessage("Соревнование началось!", false);
         finishedCompetition = false;
     }
 
@@ -283,7 +283,7 @@ class CompetitionEngine {
         int targetFPDiff = gameHelper.getTargetFitnessPointsDifference(target_character.getCurrentFitnessPoints(), target_character.getResistance(), final_result);
         target_character.setCurrentFitnessPoints(target_character.getCurrentFitnessPoints() - targetFPDiff);
 
-        log_message += String.format(
+        logMessage += String.format(
                 Locale.ROOT,
                 " %s => %s Результат %d x %.2f %s= %d %s (сопр. %d%%) ФО изменены на %d до %d.",
                 current_character.getName(),
@@ -416,12 +416,12 @@ class CompetitionEngine {
 
     private void cleanLogMessage()
     {
-        log_message = "";
+        logMessage = "";
     }
 
     private void saveLogMessage()
     {
-        addCompetitionLogMessage(log_message);
+        addCompetitionLogMessage(logMessage, true);
     }
 
     void proceed() {
@@ -533,7 +533,7 @@ class CompetitionEngine {
 
     private void addSkillUseLogMessage(CharacterEntity character, String message)
     {
-        log_message += String.format(
+        logMessage += String.format(
                 Locale.ROOT,
                 "%s использовал(а) \"%s\". ",
                 character.getName(),
@@ -579,7 +579,7 @@ class CompetitionEngine {
                     character.setCurrentFitnessPoints(new_fitness_points);
                     int regeneration = new_fitness_points - old_fitness_points;
                     if (regeneration != 0) {
-                        log_message += String.format(
+                        logMessage += String.format(
                                 Locale.ROOT,
                                 " %s: %s %d ФО.",
                                 character.getName(),
@@ -663,7 +663,8 @@ class CompetitionEngine {
                                         "Ничья! Вы получили %d %s опыта.",
                                         result_exp,
                                         gameHelper.getCorrectPointWordRU(result_exp)
-                                )
+                                ),
+                                false
                         );
                         dbHelper.updateUserInfoWithLevelCheck();
                     }
@@ -754,8 +755,10 @@ class CompetitionEngine {
                                             "Победа! Вы получили %d %s опыта.",
                                             team_exp,
                                             gameHelper.getCorrectPointWordRU(team_exp)
-                                    )
+                                    ),
+                                    false
                             );
+
                             if (locationPosition.getLevel() < locationPosition.getQuestCnt()) {
                                 dbHelper.levelUpForNPC(player_entity.getUserId(), player_entity.getExerciseId(), locationPosition.getLocationId(), locationPosition.getPosition());
                             }
@@ -790,7 +793,8 @@ class CompetitionEngine {
                                             "Поражение! Вы получили %d %s опыта.",
                                             result_exp,
                                             gameHelper.getCorrectPointWordRU(result_exp)
-                                    )
+                                    ),
+                                    false
                             );
                             dbHelper.updateUserInfoWithLevelCheck();
                         }
@@ -810,14 +814,26 @@ class CompetitionEngine {
         return finishedCompetition;
     }
 
-    private void addCompetitionLogMessage(String src_msg) {
+    private void addCompetitionLogMessage(String src_msg, boolean isMove) {
         Map<String, String> m = new HashMap<String, String>();
-        String dst_msg = String.format(
-                Locale.ROOT,
-                "[%s]  %s",
-                gameHelper.getShortCurrentTime(),
-                src_msg
-        );
+        String dst_msg;
+        if (isMove) {
+            dst_msg = String.format(
+                    Locale.ROOT,
+                    "[%s]  Подход %d. %s",
+                    gameHelper.getShortCurrentTime(),
+                    numberOfMoves,
+                    src_msg
+            );
+        } else {
+            dst_msg = String.format(
+                    Locale.ROOT,
+                    "[%s]  %s",
+                    gameHelper.getShortCurrentTime(),
+                    src_msg
+            );
+        }
+
 
         m.put("log_msg", dst_msg);
         logData.add(0, m);
@@ -837,7 +853,8 @@ class CompetitionEngine {
                             "Прогресс выполнения задания: %d / %d",
                             locationPosition.getWins() + 1,
                             locationPosition.getQuestCnt()
-                    )
+                    ),
+                    false
             );
         }
     }
@@ -853,7 +870,8 @@ class CompetitionEngine {
                                     Locale.ROOT,
                                     "Вы открыли новое место: %s",
                                     location_name
-                            )
+                            ),
+                            false
                     );
                 }
             }
@@ -869,7 +887,8 @@ class CompetitionEngine {
                         "Вы выполнили задание и получили %d %s опыта.",
                         locationPosition.getQuestExp(),
                         gameHelper.getCorrectPointWordRU(locationPosition.getQuestExp())
-                )
+                ),
+                false
         );
     }
 
