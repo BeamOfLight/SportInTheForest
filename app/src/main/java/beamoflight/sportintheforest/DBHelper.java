@@ -1614,7 +1614,7 @@ class DBHelper extends DBHelperBaseLayer {
                     ));
 
                     String sum_result_str = "";
-                    if (m.get("results") == null || m.get("results").isEmpty()) {
+                    if (m.get("results") == null || m.get("results").isEmpty() || m.get("number_of_moves").equals("1")) {
                         sum_result_str = m.get("sum_result");
                     } else {
                         sum_result_str = String.format(
