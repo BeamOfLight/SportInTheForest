@@ -169,4 +169,14 @@
 
         </LinearLayout>
     </LinearLayout>
+    <Button
+        android:id="@+id/btStat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/leaf_button_1"
+        android:width="200sp"
+        android:height="70sp"
+        android:layout_marginTop="200sp"
+        android:text="Графики"
+        android:textColor="@color/menuItemColor" />
 </FrameLayout>

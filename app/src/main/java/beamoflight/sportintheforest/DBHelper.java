@@ -1745,6 +1745,83 @@ class DBHelper extends DBHelperBaseLayer {
         return getUserExerciseFinishedQuestsCount(user_id, exercise_id);
     }
 
+    // ============ Stat
+
+    public ArrayList<Stat> getCurrentUserExerciseStat()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStat(user_id, exercise_id);
+    }
+
+    public ArrayList<Stat> getUserExerciseStat(int user_id, int exercise_id)
+    {
+        ArrayList<Stat> stat_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS value, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id, year, month",
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Stat stat_entity = new Stat();
+                    stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))));
+                    stat_entity.setMonth(Integer.parseInt(cursor.getString(cursor.getColumnIndex("month"))));
+                    stat_entity.setValue(cursor.getInt(cursor.getColumnIndex("value")));
+
+                    stat_entities.add(stat_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return stat_entities;
+    }
+
+    public int getCurrentUserExerciseMaxMonthlySumResult()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxMonthlySumResult(user_id, exercise_id);
+    }
+
+    public int getUserExerciseMaxMonthlySumResult(int user_id, int exercise_id)
+    {
+        int max_monthly_result = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS sum_result, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id, year, month",
+                null,
+                null
+        );
+
+        int sum_result;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    sum_result = cursor.getInt(cursor.getColumnIndex("sum_result"));
+                    if (sum_result > max_monthly_result) {
+                        max_monthly_result = sum_result;
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return max_monthly_result;
+    }
+
+
+
     // ============ Other
 
     private float getAbstractFloatLevel(long exp, String table_name, float default_result_level)

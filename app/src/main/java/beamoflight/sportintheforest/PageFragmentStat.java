@@ -1,12 +1,22 @@
 package beamoflight.sportintheforest;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -40,6 +50,8 @@ public class PageFragmentStat extends Fragment {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
+//    ListView lvStat;
+    Button btStat;
     Spinner spinnerFragmentPageStatTime;
     TextView tvFragmentPageStatTrainingDays, tvFragmentPageStatAverageResult, tvFragmentPageStatTotalNumberOfMoves;
     TextView tvFragmentPageStatMaxCompetitionResult, tvFragmentPageStatMaxResult, tvFragmentPageStatTotalCount;
@@ -58,11 +70,36 @@ public class PageFragmentStat extends Fragment {
         tvFragmentPageStatMaxResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatMaxResult);
         tvFragmentPageStatTotalNumberOfMoves = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTotalNumberOfMoves);
         tvFragmentPageStatAverageResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatAverageResult);
+
+        btStat = rootView.findViewById(R.id.btStat);
+        btStat.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), StatActivity.class);
+                startActivity(intent);
+            }
+        });
+
+//        lvStat = rootView.findViewById(R.id.lvStat);
         return rootView;
     }
 
     public void onStart() {
         super.onStart();
+
+//        List<Stat> values = new ArrayList<>();
+//        values.add(new Stat(2018, 6, 30));
+//        values.add(new Stat(2018, 7, 120));
+//        values.add(new Stat(2018, 8, 160));
+//        values.add(new Stat(2018, 9, 200));
+//        values.add(new Stat(2018, 10, 220));
+//        values.add(new Stat(2018, 11, 20));
+//        values.add(new Stat(2018, 12, 320));
+//        values.add(new Stat(2019, 1, 100));
+//
+//        StatArrayAdapter statAdapter;
+//        statAdapter = new StatArrayAdapter(getContext(), values, 500);
+//        lvStat.setAdapter(statAdapter);
+
 
         List<UserExerciseTrainingStatTimeOption> timeList = new ArrayList<>();
         timeList.add(new UserExerciseTrainingStatTimeOption("Сегодня", Calendar.DAY_OF_YEAR, -1, Calendar.DAY_OF_YEAR , 0));
