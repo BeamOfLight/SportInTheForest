@@ -15,7 +15,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="70sp"
+            android:layout_marginStart="100sp"
+            android:layout_marginEnd="10sp"
             android:max="100"
             android:progress="56" />
 
@@ -23,7 +24,6 @@
             android:id="@+id/tvStatMonth"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/pbPlayerFP"
             android:background="@android:color/transparent"
             android:text="2019 Янв"
             android:gravity="left" />
@@ -31,10 +31,9 @@
             android:id="@+id/tvStatValue"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/pbPlayerFP"
             android:background="@android:color/transparent"
             android:text="10"
-            android:layout_marginStart="70sp"
+            android:layout_marginStart="100sp"
             android:gravity="left" />
     </RelativeLayout>
 </RelativeLayout>

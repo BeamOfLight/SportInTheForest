@@ -2,13 +2,14 @@ package beamoflight.sportintheforest;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.icu.util.Calendar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -44,6 +45,12 @@ public class StatArrayAdapter extends ArrayAdapter<Stat> {
                 )
         );
 
+        String startOfLine = "      ";
+        if (values.get(position).isCurrentPeriod()) {
+            startOfLine = "=> ";
+            tvStatMonth.setTypeface(null, Typeface.BOLD);
+        }
+        tvStatMonth.setText(String.format("%s%s", startOfLine, tvStatMonth.getText()));
 
         TextView tvStatValue = rowView.findViewById(R.id.tvStatValue);
         if (values.get(position).getValue() < (float) maxValue / 10) {

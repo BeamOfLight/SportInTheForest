@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.icu.util.Calendar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -1764,9 +1765,15 @@ class DBHelper extends DBHelperBaseLayer {
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 "user_id, exercise_id, year, month",
                 null,
-                null
+                "value DESC, year,month"
         );
 
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        boolean needCurrentStat = true;
+
+        int position = 1;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -1774,11 +1781,23 @@ class DBHelper extends DBHelperBaseLayer {
                     stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))));
                     stat_entity.setMonth(Integer.parseInt(cursor.getString(cursor.getColumnIndex("month"))));
                     stat_entity.setValue(cursor.getInt(cursor.getColumnIndex("value")));
+                    stat_entity.setPosition(position);
+                    stat_entity.setCurrentPeriod(false);
+                    stat_entity.setDay(0);
+                    position++;
 
+                    if (stat_entity.getYear() == year && stat_entity.getMonth() == month) {
+                        needCurrentStat = false;
+                        stat_entity.setCurrentPeriod(true);
+                    }
                     stat_entities.add(stat_entity);
                 } while (cursor.moveToNext());
             }
             cursor.close();
+        }
+
+        if (needCurrentStat) {
+            stat_entities.add(new Stat(year, month, 0, position, true));
         }
 
         return stat_entities;

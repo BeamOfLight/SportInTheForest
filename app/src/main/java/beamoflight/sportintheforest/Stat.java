@@ -2,11 +2,13 @@ package beamoflight.sportintheforest;
 
 public class Stat
 {
-    Stat(int year_, int month_, int value_)
+    Stat(int year_, int month_, int value_, int position_, boolean current_period)
     {
         year = year_;
         month = month_;
         value = value_;
+        position = position_;
+        currentPeriod = current_period;
     }
 
     Stat()
@@ -19,6 +21,40 @@ public class Stat
     protected int year;
     protected int month;
     protected int value;
+    protected int day;
+    protected int position;
+    protected boolean currentPeriod;
+
+    public boolean isCurrentPeriod() {
+        return currentPeriod;
+    }
+
+    public Stat setCurrentPeriod(boolean currentPeriod) {
+        this.currentPeriod = currentPeriod;
+        return this;
+    }
+
+    public int getDay()
+    {
+        return day;
+    }
+
+    public Stat setDay(int day)
+    {
+        this.day = day;
+        return this;
+    }
+
+    public int getPosition()
+    {
+        return position;
+    }
+
+    public Stat setPosition(int position)
+    {
+        this.position = position;
+        return this;
+    }
 
     public int getYear()
     {

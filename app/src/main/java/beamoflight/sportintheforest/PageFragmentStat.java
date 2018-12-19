@@ -50,8 +50,7 @@ public class PageFragmentStat extends Fragment {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
-//    ListView lvStat;
-    Button btStat;
+    Button btStatCharts, btStatMyShadows;
     Spinner spinnerFragmentPageStatTime;
     TextView tvFragmentPageStatTrainingDays, tvFragmentPageStatAverageResult, tvFragmentPageStatTotalNumberOfMoves;
     TextView tvFragmentPageStatMaxCompetitionResult, tvFragmentPageStatMaxResult, tvFragmentPageStatTotalCount;
@@ -63,23 +62,30 @@ public class PageFragmentStat extends Fragment {
         dbHelper = new DBHelper(container.getContext());
         gameHelper = new GameHelper(container.getContext());
 
-        spinnerFragmentPageStatTime = (Spinner) rootView.findViewById(R.id.spinnerFragmentPageStatTime);
-        tvFragmentPageStatTrainingDays = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTrainingDays);
-        tvFragmentPageStatTotalCount = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTotalCount);
-        tvFragmentPageStatMaxCompetitionResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatMaxCompetitionResult);
-        tvFragmentPageStatMaxResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatMaxResult);
-        tvFragmentPageStatTotalNumberOfMoves = (TextView) rootView.findViewById(R.id.tvFragmentPageStatTotalNumberOfMoves);
-        tvFragmentPageStatAverageResult = (TextView) rootView.findViewById(R.id.tvFragmentPageStatAverageResult);
+        spinnerFragmentPageStatTime = rootView.findViewById(R.id.spinnerFragmentPageStatTime);
+        tvFragmentPageStatTrainingDays = rootView.findViewById(R.id.tvFragmentPageStatTrainingDays);
+        tvFragmentPageStatTotalCount = rootView.findViewById(R.id.tvFragmentPageStatTotalCount);
+        tvFragmentPageStatMaxCompetitionResult = rootView.findViewById(R.id.tvFragmentPageStatMaxCompetitionResult);
+        tvFragmentPageStatMaxResult = rootView.findViewById(R.id.tvFragmentPageStatMaxResult);
+        tvFragmentPageStatTotalNumberOfMoves = rootView.findViewById(R.id.tvFragmentPageStatTotalNumberOfMoves);
+        tvFragmentPageStatAverageResult = rootView.findViewById(R.id.tvFragmentPageStatAverageResult);
 
-        btStat = rootView.findViewById(R.id.btStat);
-        btStat.setOnClickListener(new View.OnClickListener() {
+        btStatCharts = rootView.findViewById(R.id.btStatCharts);
+        btStatCharts.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity(), StatActivity.class);
+//                startActivity(intent);
+            }
+        });
+
+        btStatMyShadows = rootView.findViewById(R.id.btStatMyShadows);
+        btStatMyShadows.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), StatActivity.class);
                 startActivity(intent);
             }
         });
 
-//        lvStat = rootView.findViewById(R.id.lvStat);
         return rootView;
     }
 
