@@ -24,7 +24,7 @@
             android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
-            android:text="Упражнение"
+            android:text="@string/myStatShadowActivityExerciseName"
             android:textColor="@color/titleColor"
             android:textSize="28sp">
         </TextView>
@@ -40,11 +40,17 @@
             android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
-            android:text="Вы занимаете 1-е место"
+            android:text="@string/myStatShadowActivityPosition"
             android:textColor="@color/fragmentTextColor"
             android:textSize="20sp">
         </TextView>
     </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinnerMyStatShadowsActivityType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>
 
     <ListView
         android:id="@+id/lvStat"

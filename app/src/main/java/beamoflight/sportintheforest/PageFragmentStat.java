@@ -1,12 +1,7 @@
 package beamoflight.sportintheforest;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +9,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -73,7 +65,7 @@ public class PageFragmentStat extends Fragment {
         btStatCharts = rootView.findViewById(R.id.btStatCharts);
         btStatCharts.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), StatActivity.class);
+//                Intent intent = new Intent(getActivity(), MyStatShadowsActivity.class);
 //                startActivity(intent);
             }
         });
@@ -81,7 +73,7 @@ public class PageFragmentStat extends Fragment {
         btStatMyShadows = rootView.findViewById(R.id.btStatMyShadows);
         btStatMyShadows.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), StatActivity.class);
+                Intent intent = new Intent(getActivity(), MyStatShadowsActivity.class);
                 startActivity(intent);
             }
         });

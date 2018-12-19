@@ -106,11 +106,11 @@
         </activity>
 
         <activity
-            android:name=".StatActivity"
+            android:name=".MyStatShadowsActivity"
             android:screenOrientation="portrait"
             >
             <intent-filter>
-                <action android:name="android.intent.action.STAT" />
+                <action android:name="android.intent.action.MY_STAT_SHADOWS" />
             </intent-filter>
         </activity>
 
