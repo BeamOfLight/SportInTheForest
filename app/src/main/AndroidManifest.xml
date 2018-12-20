@@ -110,7 +110,16 @@
             android:screenOrientation="portrait"
             >
             <intent-filter>
-                <action android:name="android.intent.action.MY_STAT_SHADOWS" />
+                <action android:name="android.intent.action.STAT_MY_SHADOWS" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".StatYearsActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.STAT_YEARS" />
             </intent-filter>
         </activity>
 

@@ -4,29 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="24sp" >
+    android:minHeight="30sp" >
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <ProgressBar
-            android:id="@+id/pbStatMonth"
+            android:id="@+id/pbStatYear"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="24sp"
+            android:layout_height="30sp"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="120sp"
+            android:layout_marginStart="90sp"
             android:layout_marginEnd="10sp"
             android:max="100"
             android:progress="56" />
 
         <TextView
-            android:id="@+id/tvStatMonth"
+            android:id="@+id/tvStatYear"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="Янв 2019"
-            android:textSize="18sp"
+            android:text="2019"
+            android:textSize="22sp"
             android:gravity="left" />
         <TextView
             android:id="@+id/tvStatValue"
@@ -34,8 +34,8 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="10"
-            android:layout_marginStart="130sp"
-            android:textSize="18sp"
+            android:textSize="22sp"
+            android:layout_marginStart="100sp"
             android:gravity="left" />
     </RelativeLayout>
 </RelativeLayout>

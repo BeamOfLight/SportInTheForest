@@ -65,8 +65,8 @@ public class PageFragmentStat extends Fragment {
         btStatCharts = rootView.findViewById(R.id.btStatCharts);
         btStatCharts.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), StatMyShadowsActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), StatYearsActivity.class);
+                startActivity(intent);
             }
         });
 

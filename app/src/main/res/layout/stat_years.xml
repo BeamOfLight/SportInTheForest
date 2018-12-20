@@ -30,32 +30,16 @@
             android:textColor="@color/titleColor"
             android:textSize="28sp">
         </TextView>
-        <TextView
-            android:id="@+id/tvPosition"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="40dp"
-            android:minWidth="250sp"
-            android:maxLines="1"
-            android:layout_gravity="center"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            android:singleLine="true"
-            android:text="@string/myStatShadowActivityPosition"
-            android:textColor="@color/fragmentTextColor"
-            android:textSize="20sp">
-        </TextView>
     </LinearLayout>
 
     <Spinner
-        android:id="@+id/spinnerMyStatShadowsActivityType"
+        android:id="@+id/spinnerStatYearsActivityType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </Spinner>
 
     <ListView
-        android:id="@+id/lvStat"
+        android:id="@+id/lvStatYears"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10sp"

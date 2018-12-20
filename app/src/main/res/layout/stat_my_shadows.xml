@@ -42,14 +42,14 @@
             android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
-            android:text="@string/myStatShadowActivityPosition"
+            android:text="@string/statMyShadowActivityPosition"
             android:textColor="@color/fragmentTextColor"
             android:textSize="20sp">
         </TextView>
     </LinearLayout>
 
     <Spinner
-        android:id="@+id/spinnerMyStatShadowsActivityType"
+        android:id="@+id/spinnerStatMyShadowsActivityType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </Spinner>

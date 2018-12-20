@@ -11,28 +11,26 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-public class StatMyShadowsActivity extends Activity {
+public class StatYearsActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
-    ListView lvStat;
+    ListView lvStatYears;
     TextView tvExerciseName, tvPosition;
-    Spinner spinnerStatMyShadowsActivityType;
+    Spinner spinner;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stat_my_shadows);
+        setContentView(R.layout.stat_years);
 
         dbHelper = new DBHelper( getBaseContext() );
         gameHelper = new GameHelper( getBaseContext() );
 
-        lvStat = findViewById(R.id.lvStat);
+        lvStatYears = findViewById(R.id.lvStatYears);
         tvExerciseName = findViewById(R.id.tvExerciseName);
-        tvPosition = findViewById(R.id.tvPosition);
-        spinnerStatMyShadowsActivityType = findViewById(R.id.spinnerStatMyShadowsActivityType);
+        spinner = findViewById(R.id.spinnerStatYearsActivityType);
     }
 
     public void onStart() {
@@ -46,45 +44,30 @@ public class StatMyShadowsActivity extends Activity {
 
         ArrayAdapter<StatTypeOption> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerStatMyShadowsActivityType.setAdapter(adapter);
-        spinnerStatMyShadowsActivityType.setSelection(0);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0);
 
-        spinnerStatMyShadowsActivityType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                int currentValuePosition = 0;
-                StatTypeOption type_option = (StatTypeOption) spinnerStatMyShadowsActivityType.getSelectedItem();
+                StatTypeOption type_option = (StatTypeOption) spinner.getSelectedItem();
 
                 int max_result = 0;
                 List<Stat> values = new ArrayList<>();
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult();
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumResult();
+                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumResult();
+                        values = dbHelper.getCurrentUserExerciseStatYearsSumResult();
                         break;
                     case StatTypeOption.TYPE_EXP:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumExp();
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumExp();
+                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumExp();
+                        values = dbHelper.getCurrentUserExerciseStatYearsSumExp();
                         break;
                 }
 
-                for (Stat value : values) {
-                    if (value.isCurrentPeriod()) {
-                        currentValuePosition = value.getPosition();
-                    }
-                }
-
-                StatArrayAdapter statAdapter;
-                statAdapter = new StatArrayAdapter(getBaseContext(), values, max_result);
-                lvStat.setAdapter(statAdapter);
-                tvPosition.setText(
-                    String.format(
-                        Locale.ROOT,
-                        "Вы занимаете %d-е место из %d",
-                        currentValuePosition,
-                        values.size()
-                    )
-                );
+                StatYearArrayAdapter statAdapter;
+                statAdapter = new StatYearArrayAdapter(getBaseContext(), values, max_result);
+                lvStatYears.setAdapter(statAdapter);
             }
 
             @Override
