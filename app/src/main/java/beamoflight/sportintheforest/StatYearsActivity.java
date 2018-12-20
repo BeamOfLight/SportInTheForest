@@ -27,8 +27,8 @@ public class StatYearsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stat_years);
 
-        dbHelper = new DBHelper( getBaseContext() );
-        gameHelper = new GameHelper( getBaseContext() );
+        dbHelper = new DBHelper(getBaseContext());
+        gameHelper = new GameHelper(getBaseContext());
 
         lvStatYears = findViewById(R.id.lvStatYears);
         tvExerciseName = findViewById(R.id.tvExerciseName);

@@ -16,12 +16,14 @@ public class StatArrayAdapter extends ArrayAdapter<Stat> {
     private final Context context;
     private final List<Stat> values;
     private int maxValue;
+    private GameHelper gameHelper;
 
     public StatArrayAdapter(Context context, List<Stat> values, int maxValue) {
         super(context, R.layout.stat_shadow_month_list_item, values);
         this.context = context;
         this.values = values;
         this.maxValue = maxValue;
+        gameHelper = new GameHelper(getContext());
     }
 
     @Override
@@ -39,7 +41,7 @@ public class StatArrayAdapter extends ArrayAdapter<Stat> {
                 String.format(
                         Locale.ROOT,
                         "%s %d",
-                        values.get(position).getMonthName(),
+                        gameHelper.getMonthName(values.get(position).getMonth()),
                         values.get(position).getYear()
                 )
         );

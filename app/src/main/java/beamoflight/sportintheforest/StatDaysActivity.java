@@ -1,7 +1,6 @@
 package beamoflight.sportintheforest;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,45 +13,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class StatMonthsActivity extends Activity {
+public class StatDaysActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
-    List<Stat> values = new ArrayList<>();
 
-    ListView lvStatMonths;
-    TextView tvExerciseName, tvYear;
+    ListView lvStatDays;
+    TextView tvExerciseName, tvYearWithMonth;
     Spinner spinner;
     int year;
+    int month;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stat_months);
+        setContentView(R.layout.stat_days);
 
         dbHelper = new DBHelper(getBaseContext());
         gameHelper = new GameHelper(getBaseContext());
-        year = Integer.parseInt(this.getIntent().getAction());
 
-        lvStatMonths = findViewById(R.id.lvStatMonths);
+        int action = Integer.parseInt(this.getIntent().getAction());
+        month = action % 100;
+        year = (action - month) / 100;
+
+        lvStatDays = findViewById(R.id.lvStatDays);
         tvExerciseName = findViewById(R.id.tvExerciseName);
-        tvYear = findViewById(R.id.tvYear);
-        spinner = findViewById(R.id.spinnerStatMonthsActivityType);
-
-        lvStatMonths.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Intent intent = new Intent(StatMonthsActivity.this, StatDaysActivity.class);
-                intent.setAction(Integer.toString(values.get(position).year * 100 + values.get(position).month));
-                startActivity(intent);
-            }
-        });
+        tvYearWithMonth = findViewById(R.id.tvYearWithMonth);
+        spinner = findViewById(R.id.spinnerStatDaysActivityType);
     }
 
     public void onStart() {
         super.onStart();
 
         tvExerciseName.setText(dbHelper.getExerciseName(gameHelper.getExerciseId()));
-        tvYear.setText(String.format(Locale.ROOT, "%d", year));
+        tvYearWithMonth.setText(String.format(Locale.ROOT, "%s %d", gameHelper.getMonthName(month), year));
 
         List<StatTypeOption> typeList = new ArrayList<>();
         typeList.add(new StatTypeOption("Суммарный результат", StatTypeOption.TYPE_RESULT));
@@ -69,20 +62,21 @@ public class StatMonthsActivity extends Activity {
                 StatTypeOption type_option = (StatTypeOption) spinner.getSelectedItem();
 
                 int max_result = 0;
+                List<Stat> values = new ArrayList<>();
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult(year);
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumResult(year);
+                        max_result = dbHelper.getCurrentUserExerciseMaxDaySumResult(year, month);
+                        values = dbHelper.getCurrentUserExerciseStatDaysSumResult(year, month);
                         break;
                     case StatTypeOption.TYPE_EXP:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumExp(year);
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumExp(year);
+                        max_result = dbHelper.getCurrentUserExerciseMaxDaySumExp(year, month);
+                        values = dbHelper.getCurrentUserExerciseStatDaysSumExp(year, month);
                         break;
                 }
 
-                StatMonthArrayAdapter statAdapter;
-                statAdapter = new StatMonthArrayAdapter(getBaseContext(), values, max_result);
-                lvStatMonths.setAdapter(statAdapter);
+                StatDayArrayAdapter statAdapter;
+                statAdapter = new StatDayArrayAdapter(getBaseContext(), values, max_result);
+                lvStatDays.setAdapter(statAdapter);
             }
 
             @Override
