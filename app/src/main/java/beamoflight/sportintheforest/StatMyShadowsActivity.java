@@ -10,11 +10,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class MyStatShadowsActivity extends Activity {
+public class StatMyShadowsActivity extends Activity {
     private class MyStatShadowsActivityTypeOption {
         String title;
         int type;
@@ -42,7 +41,7 @@ public class MyStatShadowsActivity extends Activity {
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stat);
+        setContentView(R.layout.stat_my_shadows);
 
         dbHelper = new DBHelper( getBaseContext() );
         gameHelper = new GameHelper( getBaseContext() );
@@ -95,7 +94,14 @@ public class MyStatShadowsActivity extends Activity {
                 StatArrayAdapter statAdapter;
                 statAdapter = new StatArrayAdapter(getBaseContext(), values, max_result);
                 lvStat.setAdapter(statAdapter);
-                tvPosition.setText(String.format(Locale.ROOT,"Вы занимаете %d-е место.", currentValuePosition));
+                tvPosition.setText(
+                    String.format(
+                        Locale.ROOT,
+                        "Вы занимаете %d-е место из %d",
+                        currentValuePosition,
+                        values.size()
+                    )
+                );
             }
 
             @Override

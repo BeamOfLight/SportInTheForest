@@ -65,7 +65,7 @@ public class PageFragmentStat extends Fragment {
         btStatCharts = rootView.findViewById(R.id.btStatCharts);
         btStatCharts.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), MyStatShadowsActivity.class);
+//                Intent intent = new Intent(getActivity(), StatMyShadowsActivity.class);
 //                startActivity(intent);
             }
         });
@@ -73,7 +73,7 @@ public class PageFragmentStat extends Fragment {
         btStatMyShadows = rootView.findViewById(R.id.btStatMyShadows);
         btStatMyShadows.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MyStatShadowsActivity.class);
+                Intent intent = new Intent(getActivity(), StatMyShadowsActivity.class);
                 startActivity(intent);
             }
         });
