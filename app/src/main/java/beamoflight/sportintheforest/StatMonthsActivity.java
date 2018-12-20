@@ -1,7 +1,6 @@
 package beamoflight.sportintheforest;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -12,42 +11,38 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class StatYearsActivity extends Activity {
+public class StatMonthsActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
-    ListView lvStatYears;
-    TextView tvExerciseName, tvPosition;
+    ListView lvStatMonths;
+    TextView tvExerciseName, tvYear;
     Spinner spinner;
-    List<Stat> values = new ArrayList<>();
+    int year;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stat_years);
+        setContentView(R.layout.stat_months);
 
-        dbHelper = new DBHelper( getBaseContext() );
-        gameHelper = new GameHelper( getBaseContext() );
+        dbHelper = new DBHelper(getBaseContext());
+        gameHelper = new GameHelper(getBaseContext());
 
-        lvStatYears = findViewById(R.id.lvStatYears);
+        year = Integer.parseInt(this.getIntent().getAction());
+
+        lvStatMonths = findViewById(R.id.lvStatMonths);
         tvExerciseName = findViewById(R.id.tvExerciseName);
-        spinner = findViewById(R.id.spinnerStatYearsActivityType);
-
-        lvStatYears.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                Intent intent = new Intent(StatYearsActivity.this, StatMonthsActivity.class);
-                intent.setAction(Integer.toString(values.get(position).year));
-                startActivity(intent);
-            }
-        });
+        tvYear = findViewById(R.id.tvYear);
+        spinner = findViewById(R.id.spinnerStatMonthsActivityType);
     }
 
     public void onStart() {
         super.onStart();
 
         tvExerciseName.setText(dbHelper.getExerciseName(gameHelper.getExerciseId()));
+        tvYear.setText(String.format(Locale.ROOT, "%d", year));
 
         List<StatTypeOption> typeList = new ArrayList<>();
         typeList.add(new StatTypeOption("Суммарный результат", StatTypeOption.TYPE_RESULT));
@@ -64,20 +59,21 @@ public class StatYearsActivity extends Activity {
                 StatTypeOption type_option = (StatTypeOption) spinner.getSelectedItem();
 
                 int max_result = 0;
+                List<Stat> values = new ArrayList<>();
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
-                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumResult();
-                        values = dbHelper.getCurrentUserExerciseStatYearsSumResult();
+                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult(year);
+                        values = dbHelper.getCurrentUserExerciseStatMonthsSumResult(year);
                         break;
                     case StatTypeOption.TYPE_EXP:
-                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumExp();
-                        values = dbHelper.getCurrentUserExerciseStatYearsSumExp();
+                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumExp(year);
+                        values = dbHelper.getCurrentUserExerciseStatMonthsSumExp(year);
                         break;
                 }
 
-                StatYearArrayAdapter statAdapter;
-                statAdapter = new StatYearArrayAdapter(getBaseContext(), values, max_result);
-                lvStatYears.setAdapter(statAdapter);
+                StatMonthArrayAdapter statAdapter;
+                statAdapter = new StatMonthArrayAdapter(getBaseContext(), values, max_result);
+                lvStatMonths.setAdapter(statAdapter);
             }
 
             @Override

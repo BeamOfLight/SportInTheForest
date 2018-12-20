@@ -59,12 +59,12 @@ public class StatMyShadowsActivity extends Activity {
                 List<Stat> values = new ArrayList<>();
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult();
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumResult();
+                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult(0);
+                        values = dbHelper.getCurrentUserExerciseStatShadowMonthsSumResult();
                         break;
                     case StatTypeOption.TYPE_EXP:
-                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumExp();
-                        values = dbHelper.getCurrentUserExerciseStatMonthsSumExp();
+                        max_result = dbHelper.getCurrentUserExerciseMaxMonthSumExp(0);
+                        values = dbHelper.getCurrentUserExerciseStatShadowMonthsSumExp();
                         break;
                 }
 

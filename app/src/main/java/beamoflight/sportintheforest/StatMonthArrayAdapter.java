@@ -9,16 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.util.List;
 import java.util.Locale;
 
-public class StatArrayAdapter extends ArrayAdapter<Stat> {
+public class StatMonthArrayAdapter extends ArrayAdapter<Stat> {
     private final Context context;
     private final List<Stat> values;
     private int maxValue;
 
-    public StatArrayAdapter(Context context, List<Stat> values, int maxValue) {
-        super(context, R.layout.stat_shadow_month_list_item, values);
+    public StatMonthArrayAdapter(Context context, List<Stat> values, int maxValue) {
+        super(context, R.layout.stat_month_list_item, values);
         this.context = context;
         this.values = values;
         this.maxValue = maxValue;
@@ -32,17 +33,10 @@ public class StatArrayAdapter extends ArrayAdapter<Stat> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.stat_shadow_month_list_item, parent, false);
+        View rowView = inflater.inflate(R.layout.stat_month_list_item, parent, false);
 
         TextView tvStatMonth = rowView.findViewById(R.id.tvStatMonth);
-        tvStatMonth.setText(
-                String.format(
-                        Locale.ROOT,
-                        "%s %d",
-                        values.get(position).getMonthName(),
-                        values.get(position).getYear()
-                )
-        );
+        tvStatMonth.setText(String.format(Locale.ROOT,"%s", values.get(position).getMonthName()));
 
         String startOfLine = "      ";
         if (values.get(position).isCurrentPeriod()) {

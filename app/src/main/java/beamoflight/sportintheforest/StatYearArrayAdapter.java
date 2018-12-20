@@ -19,7 +19,7 @@ public class StatYearArrayAdapter extends ArrayAdapter<Stat> {
     private int maxValue;
 
     public StatYearArrayAdapter(Context context, List<Stat> values, int maxValue) {
-        super(context, R.layout.stat_month_list_item, values);
+        super(context, R.layout.stat_shadow_month_list_item, values);
         this.context = context;
         this.values = values;
         this.maxValue = maxValue;

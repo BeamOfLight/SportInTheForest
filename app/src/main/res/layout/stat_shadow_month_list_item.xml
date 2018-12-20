@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="24sp"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="70sp"
+            android:layout_marginStart="120sp"
             android:layout_marginEnd="10sp"
             android:max="100"
             android:progress="56" />
@@ -25,7 +25,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="Янв"
+            android:text="Янв 2019"
             android:textSize="18sp"
             android:gravity="left" />
         <TextView
@@ -34,8 +34,8 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="10"
+            android:layout_marginStart="130sp"
             android:textSize="18sp"
-            android:layout_marginStart="80sp"
             android:gravity="left" />
     </RelativeLayout>
 </RelativeLayout>

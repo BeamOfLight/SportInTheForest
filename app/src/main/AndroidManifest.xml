@@ -124,6 +124,15 @@
         </activity>
 
         <activity
+            android:name=".StatMonthsActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.STAT_MONTHS" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".PlayerExpActivity"
             android:screenOrientation="landscape"
             >

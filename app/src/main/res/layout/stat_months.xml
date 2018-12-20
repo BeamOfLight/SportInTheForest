@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@mipmap/background_portrait_menu"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="105sp"
+        android:layout_marginTop="2sp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvExerciseName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:minWidth="250sp"
+            android:maxLines="1"
+            android:layout_gravity="center"
+            android:scrollbarAlwaysDrawHorizontalTrack="true"
+            android:singleLine="true"
+            android:text="@string/myStatShadowActivityExerciseName"
+            android:textAlignment="center"
+            android:textColor="@color/titleColor"
+            android:textSize="28sp">
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:minWidth="250sp"
+            android:maxLines="1"
+            android:layout_gravity="center"
+            android:scrollbarAlwaysDrawHorizontalTrack="true"
+            android:singleLine="true"
+            android:text="2017"
+            android:textAlignment="center"
+            android:textColor="@color/fragmentTextColor"
+            android:textSize="28sp">
+        </TextView>
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/spinnerStatMonthsActivityType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>
+
+    <ListView
+        android:id="@+id/lvStatMonths"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        />
+</LinearLayout>

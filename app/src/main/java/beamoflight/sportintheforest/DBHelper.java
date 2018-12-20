@@ -1747,21 +1747,21 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ============ Stat
-    public ArrayList<Stat> getCurrentUserExerciseStatMonthsSumResult()
+    public ArrayList<Stat> getCurrentUserExerciseStatShadowMonthsSumResult()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseStatMonths(user_id, exercise_id, "sum_result");
+        return getUserExerciseStatShadowMonths(user_id, exercise_id, "sum_result");
     }
 
-    public ArrayList<Stat> getCurrentUserExerciseStatMonthsSumExp()
+    public ArrayList<Stat> getCurrentUserExerciseStatShadowMonthsSumExp()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseStatMonths(user_id, exercise_id, "exp");
+        return getUserExerciseStatShadowMonths(user_id, exercise_id, "exp");
     }
 
-    private ArrayList<Stat> getUserExerciseStatMonths(int user_id, int exercise_id, String field)
+    private ArrayList<Stat> getUserExerciseStatShadowMonths(int user_id, int exercise_id, String field)
     {
         ArrayList<Stat> stat_entities = new ArrayList<>();
         Cursor cursor = db.query(
@@ -1771,7 +1771,7 @@ class DBHelper extends DBHelperBaseLayer {
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 "user_id, exercise_id, year, month",
                 null,
-                "value DESC, year,month"
+                "value DESC, year, month"
         );
 
         Calendar c = Calendar.getInstance();
@@ -1804,6 +1804,62 @@ class DBHelper extends DBHelperBaseLayer {
 
         if (needCurrentStat) {
             stat_entities.add(new Stat(year, month, 0, position, true));
+        }
+
+        return stat_entities;
+    }
+
+    public ArrayList<Stat> getCurrentUserExerciseStatMonthsSumResult(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStatMonths(user_id, exercise_id, "sum_result", year);
+    }
+
+    public ArrayList<Stat> getCurrentUserExerciseStatMonthsSumExp(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStatMonths(user_id, exercise_id, "exp", year);
+    }
+
+    private ArrayList<Stat> getUserExerciseStatMonths(int user_id, int exercise_id, String field, int year)
+    {
+        ArrayList<Stat> stat_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month"},
+                "user_id = ? AND exercise_id = ? AND year = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
+                "user_id, exercise_id, year, month",
+                null,
+                "month ASC"
+        );
+
+        Calendar c = Calendar.getInstance();
+        int current_month = c.get(Calendar.MONTH) + 1;
+
+        for (int month_idx = 0; month_idx < 12; month_idx++) {
+            stat_entities.add(
+                new Stat(
+                    year,
+                    month_idx + 1,
+                    0,
+                    month_idx + 1,
+                    current_month == month_idx + 1
+                )
+            );
+        }
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int month = Integer.parseInt(cursor.getString(cursor.getColumnIndex("month")));
+                    int value = cursor.getInt(cursor.getColumnIndex("value"));
+                    stat_entities.get(month - 1).setValue(value);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
         }
 
         return stat_entities;
@@ -1874,14 +1930,14 @@ class DBHelper extends DBHelperBaseLayer {
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "sum_result");
+        return getUserExerciseMaxYearSumResult(user_id, exercise_id, "sum_result");
     }
 
     public int getCurrentUserExerciseMaxYearSumExp()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "exp");
+        return getUserExerciseMaxYearSumResult(user_id, exercise_id, "exp");
     }
 
     // TODO: rewrite SQL query
@@ -1914,29 +1970,35 @@ class DBHelper extends DBHelperBaseLayer {
         return max_value;
     }
 
-    public int getCurrentUserExerciseMaxMonthSumResult()
+    public int getCurrentUserExerciseMaxMonthSumResult(int year)
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "sum_result");
+        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "sum_result", year);
     }
 
-    public int getCurrentUserExerciseMaxMonthSumExp()
+    public int getCurrentUserExerciseMaxMonthSumExp(int year)
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "exp");
+        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, "exp", year);
     }
 
     // TODO: rewrite SQL query
-    private int getUserExerciseMaxMonthSumResult(int user_id, int exercise_id, String field)
+    private int getUserExerciseMaxMonthSumResult(int user_id, int exercise_id, String field, int year)
     {
         int max_value= 0;
+        String additionalSelectionString = "";
+        String[] selections = new String[]{Integer.toString(user_id), Integer.toString(exercise_id)};
+        if (year != 0) {
+            additionalSelectionString = " AND year = ?";
+            selections = new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)};
+        }
         Cursor cursor = db.query(
                 "user_exercise_trainings",
                 new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month"},
-                "user_id = ? AND exercise_id = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id = ? AND exercise_id = ?" + additionalSelectionString,
+                selections,
                 "user_id, exercise_id, year, month",
                 null,
                 null
