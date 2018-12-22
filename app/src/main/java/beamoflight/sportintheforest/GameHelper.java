@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -57,12 +58,40 @@ public class GameHelper {
         return date_format.format(calendar.getTime());
     }
 
+    public String getDayInWeekString(Date target_date)
+    {
+        SimpleDateFormat date_format = new SimpleDateFormat("E", Locale.ROOT);
+
+        return date_format.format(target_date);
+    }
+
+    public String getDayInWeekStringRu(Date target_date)
+    {
+        String engDayIngWeekStr = getDayInWeekString(target_date);
+        switch(engDayIngWeekStr) {
+            case "Sun":
+                return "Вс";
+            case "Mon":
+                return "Пн";
+            case "Tue":
+                return "Вт";
+            case "Wed":
+                return "Ср";
+            case "Thu":
+                return "Чт";
+            case "Fri":
+                return "Пт";
+            case "Sat":
+                return "Сб";
+        }
+
+        return "";
+    }
+
     public String getDayInWeekString()
     {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat date_format = new SimpleDateFormat("E", Locale.ROOT);
-
-        return date_format.format(calendar.getTime());
+        return getDayInWeekString(calendar.getTime());
     }
 
     public String getTodayStringWithHours()
@@ -331,37 +360,26 @@ public class GameHelper {
         switch (month){
             case 1:
                 return "Янв";
-
             case 2:
                 return "Фев";
-
             case 3:
                 return "Мар";
-
             case 4:
                 return "Апр";
-
             case 5:
                 return "Май";
-
             case 6:
                 return "Июн";
-
             case 7:
                 return "Июл";
-
             case 8:
                 return "Авг";
-
             case 9:
                 return "Сен";
-
             case 10:
                 return "Окт";
-
             case 11:
                 return "Ноя";
-
             case 12:
                 return "Дек";
         }

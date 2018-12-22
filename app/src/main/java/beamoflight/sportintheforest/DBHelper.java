@@ -1803,7 +1803,7 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         if (needCurrentStat) {
-            stat_entities.add(new Stat(year, month, 0, 0, position, true));
+            stat_entities.add(new Stat(year, month, 0, 0, 0, position, true));
         }
 
         return stat_entities;
@@ -1844,6 +1844,7 @@ class DBHelper extends DBHelperBaseLayer {
                 new Stat(
                     year,
                     month_idx + 1,
+                    0,
                     0,
                     0,
                     month_idx + 1,
@@ -1912,7 +1913,6 @@ class DBHelper extends DBHelperBaseLayer {
 
                     if (stat_entity.getYear() == year) {
                         needCurrentStat = false;
-                        stat_entity.setCurrentPeriod(true);
                     }
                     stat_entities.add(stat_entity);
                 } while (cursor.moveToNext());
@@ -1921,7 +1921,7 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         if (needCurrentStat) {
-            stat_entities.add(new Stat(year, 0, 0, 0, position, true));
+            stat_entities.add(new Stat(year, 0, 0, 0, 0, position, false));
         }
 
         return stat_entities;
@@ -2084,7 +2084,7 @@ class DBHelper extends DBHelperBaseLayer {
         ArrayList<Stat> stat_entities = new ArrayList<>();
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month, strftime('%d', event_timestamp) AS day"},
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month, strftime('%d', event_timestamp) AS day, strftime('%w', event_timestamp) AS day_of_week"},
                 "user_id = ? AND exercise_id = ? AND year = ? AND month = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year), String.format(Locale.ROOT, "%02d", month)},
                 "user_id, exercise_id, year, month, day",
@@ -2095,7 +2095,7 @@ class DBHelper extends DBHelperBaseLayer {
         Calendar c = Calendar.getInstance();
         int current_year = c.get(Calendar.YEAR);
         int current_month = c.get(Calendar.MONTH) + 1;
-        int current_day = c.get(Calendar.DAY_OF_MONTH) + 1;
+        int current_day = c.get(Calendar.DAY_OF_MONTH);
 
         for (int day_idx = 0; day_idx < 31; day_idx++) {
             stat_entities.add(
@@ -2103,6 +2103,7 @@ class DBHelper extends DBHelperBaseLayer {
                             year,
                             month,
                             day_idx + 1,
+                            0,
                             0,
                             day_idx + 1,
                             current_day == day_idx + 1 && current_year == year && current_month == month
@@ -2115,6 +2116,7 @@ class DBHelper extends DBHelperBaseLayer {
                 do {
                     int day = Integer.parseInt(cursor.getString(cursor.getColumnIndex("day")));
                     int value = cursor.getInt(cursor.getColumnIndex("value"));
+
                     stat_entities.get(day - 1).setValue(value);
                 } while (cursor.moveToNext());
             }

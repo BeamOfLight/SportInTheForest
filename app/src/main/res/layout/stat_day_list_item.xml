@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="24sp"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="50sp"
+            android:layout_marginStart="80sp"
             android:layout_marginEnd="10sp"
             android:max="100"
             android:progress="56" />
@@ -35,7 +35,7 @@
             android:background="@android:color/transparent"
             android:text="10"
             android:textSize="18sp"
-            android:layout_marginStart="60sp"
+            android:layout_marginStart="90sp"
             android:gravity="left" />
     </RelativeLayout>
 </RelativeLayout>
