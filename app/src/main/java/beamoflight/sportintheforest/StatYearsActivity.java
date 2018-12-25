@@ -1,17 +1,22 @@
 package beamoflight.sportintheforest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class StatYearsActivity extends Activity {
     DBHelper dbHelper;
@@ -37,9 +42,7 @@ public class StatYearsActivity extends Activity {
         lvStatYears.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent = new Intent(StatYearsActivity.this, StatMonthsActivity.class);
-                intent.setAction(Integer.toString(values.get(position).year));
-                startActivity(intent);
+                initDialogSelectStatType(values.get(position).year);
             }
         });
     }
@@ -86,6 +89,45 @@ public class StatYearsActivity extends Activity {
             }
 
         });
+    }
+
+    private void initDialogSelectStatType(int year)
+    {
+        final String current_year_str = Integer.toString(year);
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_select_stat_type, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+        alert_dialog_builder.setView(prompts_view);
+
+        TextView tvSelectStatTypeTitle = prompts_view.findViewById(R.id.tvSelectStatTypeTitle);
+        tvSelectStatTypeTitle.setText(current_year_str);
+
+        Button btSelectStatTypeMonths = prompts_view.findViewById(R.id.btSelectStatTypeMonths);
+        btSelectStatTypeMonths.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(StatYearsActivity.this, StatMonthsActivity.class);
+                intent.setAction(current_year_str);
+                startActivity(intent);
+            }
+        });
+
+        Button btSelectStatTypeWeeks = prompts_view.findViewById(R.id.btSelectStatTypeWeeks);
+        btSelectStatTypeWeeks.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(StatYearsActivity.this, StatWeeksActivity.class);
+                intent.setAction(current_year_str);
+                startActivity(intent);
+            }
+        });
+
+        // set dialog message
+        alert_dialog_builder.setCancelable(true);
+
+        // create alert dialog
+        AlertDialog dialog = alert_dialog_builder.create();
+        dialog.show();
+        //dialog.cancel();
     }
 
 }

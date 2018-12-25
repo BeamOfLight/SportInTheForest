@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.5</string>
-    <string name="app_version_revision">12</string>
+    <string name="app_version_revision">13</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -23,6 +23,9 @@
     <string name="prompt_select_specialisation_button_result">Результат</string>
     <string name="prompt_select_specialisation_button_resistance">Сопротивление</string>
     <string name="prompt_select_specialisation_button_regeneration">Восстановление</string>
+    <string name="prompt_select_stat_type_title">2018</string>
+    <string name="prompt_select_stat_type_months">По месяцам</string>
+    <string name="prompt_select_stat_type_weeks">По неделям</string>
     <string name="shared_preferences">SportInTheForest</string>
     <string name="preference_name_user_name">user_name</string>
     <string name="preference_name_user_fitness_points">user_fitness_points</string>

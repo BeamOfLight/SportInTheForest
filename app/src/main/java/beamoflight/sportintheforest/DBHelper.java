@@ -2021,6 +2021,110 @@ class DBHelper extends DBHelperBaseLayer {
         return max_value;
     }
 
+
+    public int getCurrentUserExerciseMaxWeekSumResult(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxWeekSumValue(user_id, exercise_id, "sum_result", year);
+    }
+
+    public int getCurrentUserExerciseMaxWeekSumExp(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxWeekSumValue(user_id, exercise_id, "exp", year);
+    }
+
+    // TODO: rewrite SQL query
+    private int getUserExerciseMaxWeekSumValue(int user_id, int exercise_id, String field, int year)
+    {
+        int max_value= 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, strftime('%W', event_timestamp) AS week"},
+                "user_id = ? AND exercise_id = ? AND year = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
+                "user_id, exercise_id, year, week",
+                null,
+                null
+        );
+
+        int sum_value;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    sum_value = cursor.getInt(cursor.getColumnIndex("sum_value"));
+                    if (sum_value > max_value) {
+                        max_value = sum_value;
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return max_value;
+    }
+
+    public ArrayList<Stat> getCurrentUserExerciseStatWeeksSumResult(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStatWeeks(user_id, exercise_id, "sum_result", year);
+    }
+
+    public ArrayList<Stat> getCurrentUserExerciseStatWeeksSumExp(int year)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStatWeeks(user_id, exercise_id, "exp", year);
+    }
+
+    private ArrayList<Stat> getUserExerciseStatWeeks(int user_id, int exercise_id, String field, int year)
+    {
+        ArrayList<Stat> stat_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, strftime('%W', event_timestamp) AS week"},
+                "user_id = ? AND exercise_id = ? AND year = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
+                "user_id, exercise_id, year, week",
+                null,
+                "week ASC"
+        );
+
+        Calendar c = Calendar.getInstance();
+        int current_week = c.get(Calendar.WEEK_OF_YEAR) + 1;
+
+        for (int week_idx = 0; week_idx < 53; week_idx++) {
+            stat_entities.add(
+                    new Stat(
+                            year,
+                            0,
+                            0,
+                            week_idx + 1,
+                            0,
+                            week_idx + 1,
+                            current_week == week_idx + 1
+                    )
+            );
+        }
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int week = Integer.parseInt(cursor.getString(cursor.getColumnIndex("week")));
+                    int value = cursor.getInt(cursor.getColumnIndex("value"));
+                    stat_entities.get(week).setValue(value);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return stat_entities;
+    }
+
+
     public int getCurrentUserExerciseMaxDaySumResult(int year, int month)
     {
         int user_id = gameHelper.getUserId();

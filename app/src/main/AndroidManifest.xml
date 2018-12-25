@@ -133,6 +133,15 @@
         </activity>
 
         <activity
+            android:name=".StatWeeksActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.STAT_WEEKS" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".StatDaysActivity"
             android:screenOrientation="portrait"
             >

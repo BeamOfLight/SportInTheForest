@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="24sp" >
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ProgressBar
+            android:id="@+id/pbStatWeek"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="70sp"
+            android:layout_marginEnd="10sp"
+            android:max="100"
+            android:progress="56" />
+
+        <TextView
+            android:id="@+id/tvStatWeek"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="Янв"
+            android:textSize="18sp"
+            android:gravity="left" />
+        <TextView
+            android:id="@+id/tvStatValue"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="10"
+            android:textSize="18sp"
+            android:layout_marginStart="80sp"
+            android:gravity="left" />
+    </RelativeLayout>
+</RelativeLayout>

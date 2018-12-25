@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/tvSelectStatTypeTitle"
+        android:layout_gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5sp"
+        android:textAlignment="center"
+        android:text="@string/prompt_select_stat_type_title"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:padding="5dp" >
+
+        <Button
+            android:id="@+id/btSelectStatTypeMonths"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:width="180sp"
+            android:layout_marginTop="5sp"
+            android:background="@mipmap/leaf_button_1"
+            android:height="70sp"
+            android:textColor="@color/menuItemColor"
+            android:text="@string/prompt_select_stat_type_months" />
+
+        <Button
+            android:id="@+id/btSelectStatTypeWeeks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:width="180sp"
+            android:layout_marginTop="5sp"
+            android:background="@mipmap/leaf_button_1"
+            android:height="70sp"
+            android:textColor="@color/menuItemColor"
+            android:text="@string/prompt_select_stat_type_weeks" />
+
+    </LinearLayout>
+</LinearLayout>
