@@ -2093,21 +2093,26 @@ class DBHelper extends DBHelperBaseLayer {
                 "week ASC"
         );
 
-        Calendar c = Calendar.getInstance();
-        int current_week = c.get(Calendar.WEEK_OF_YEAR) + 1;
+        Calendar today = Calendar.getInstance();
+        int current_week = today.get(Calendar.WEEK_OF_YEAR) + 1;
 
-        for (int week_idx = 0; week_idx < 53; week_idx++) {
+        Calendar that_day = Calendar.getInstance();
+        that_day.set(year, Calendar.JANUARY, 1);
+        int max_week_count = that_day.getMaximum(Calendar.WEEK_OF_YEAR);
+
+        for (int week_idx = 0; week_idx < max_week_count; week_idx++) {
             stat_entities.add(
                     new Stat(
                             year,
-                            0,
-                            0,
+                            that_day.get(Calendar.MONTH) + 1,
+                            that_day.get(Calendar.DAY_OF_MONTH),
                             week_idx + 1,
                             0,
                             week_idx + 1,
-                            current_week == week_idx + 1
+                            current_week == week_idx
                     )
             );
+            that_day.add(Calendar.DAY_OF_MONTH, 7);
         }
 
         if (cursor != null) {
@@ -2196,12 +2201,16 @@ class DBHelper extends DBHelperBaseLayer {
                 "day ASC"
         );
 
-        Calendar c = Calendar.getInstance();
-        int current_year = c.get(Calendar.YEAR);
-        int current_month = c.get(Calendar.MONTH) + 1;
-        int current_day = c.get(Calendar.DAY_OF_MONTH);
+        Calendar today = Calendar.getInstance();
+        int current_year = today.get(Calendar.YEAR);
+        int current_month = today.get(Calendar.MONTH) + 1;
+        int current_day = today.get(Calendar.DAY_OF_MONTH);
 
-        for (int day_idx = 0; day_idx < 31; day_idx++) {
+        Calendar that_day = Calendar.getInstance();
+        that_day.set(year, month - 1, 1);
+        int days_in_month = that_day.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        for (int day_idx = 0; day_idx < days_in_month; day_idx++) {
             stat_entities.add(
                     new Stat(
                             year,

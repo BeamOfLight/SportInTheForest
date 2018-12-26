@@ -3,6 +3,7 @@ package beamoflight.sportintheforest;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.icu.util.Calendar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,26 @@ public class StatWeekArrayAdapter extends ArrayAdapter<Stat> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.stat_week_list_item, parent, false);
 
+        Calendar that_day = Calendar.getInstance();
+        that_day.set(
+            values.get(position).getYear(),
+            values.get(position).getMonth() - 1,
+            values.get(position).getDay()
+        );
+        that_day.add(Calendar.DAY_OF_MONTH, 6);
+
         TextView tvStatWeek = rowView.findViewById(R.id.tvStatWeek);
-        tvStatWeek.setText(String.format(Locale.ROOT,"%d", values.get(position).getWeekOfYear()));
+        tvStatWeek.setText(
+                String.format(
+                        Locale.ROOT,
+                        "%d  %02d %s - %02d %s",
+                        values.get(position).getWeekOfYear(),
+                        values.get(position).getDay(),
+                        gameHelper.getMonthName(values.get(position).getMonth()),
+                        that_day.get(Calendar.DAY_OF_MONTH),
+                        gameHelper.getMonthName(that_day.get(Calendar.MONTH) + 1)
+                )
+        );
 
         String startOfLine = "      ";
         if (values.get(position).isCurrentPeriod()) {
