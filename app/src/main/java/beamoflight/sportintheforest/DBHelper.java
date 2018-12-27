@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.icu.util.Calendar;
+import android.icu.util.TimeZone;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -2094,9 +2095,11 @@ class DBHelper extends DBHelperBaseLayer {
         );
 
         Calendar today = Calendar.getInstance();
-        int current_week = today.get(Calendar.WEEK_OF_YEAR) + 1;
+        today.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        int current_week = today.get(Calendar.WEEK_OF_YEAR) - 1;
 
         Calendar that_day = Calendar.getInstance();
+        that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
         that_day.set(year, Calendar.JANUARY, 1);
         int max_week_count = that_day.getMaximum(Calendar.WEEK_OF_YEAR);
 
@@ -2118,7 +2121,7 @@ class DBHelper extends DBHelperBaseLayer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    int week = Integer.parseInt(cursor.getString(cursor.getColumnIndex("week")));
+                    int week = Integer.parseInt(cursor.getString(cursor.getColumnIndex("week"))) - 1;
                     int value = cursor.getInt(cursor.getColumnIndex("value"));
                     stat_entities.get(week).setValue(value);
                 } while (cursor.moveToNext());
