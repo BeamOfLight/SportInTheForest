@@ -2096,7 +2096,7 @@ class DBHelper extends DBHelperBaseLayer {
 
         Calendar today = Calendar.getInstance();
         today.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        int current_week = today.get(Calendar.WEEK_OF_YEAR) - 1;
+//        int current_week = today.get(Calendar.WEEK_OF_YEAR) - 1;
 
         Calendar that_day = Calendar.getInstance();
         that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
@@ -2104,6 +2104,7 @@ class DBHelper extends DBHelperBaseLayer {
         int max_week_count = that_day.getMaximum(Calendar.WEEK_OF_YEAR);
 
         for (int week_idx = 0; week_idx < max_week_count; week_idx++) {
+            boolean current_period = that_day.getTime().getTime() <= today.getTime().getTime() && that_day.getTime().getTime() + 7 * 24 * 3600 * 1000 > today.getTime().getTime();
             stat_entities.add(
                     new Stat(
                             year,
@@ -2112,7 +2113,7 @@ class DBHelper extends DBHelperBaseLayer {
                             week_idx + 1,
                             0,
                             week_idx + 1,
-                            current_week == week_idx
+                            current_period
                     )
             );
             that_day.add(Calendar.DAY_OF_MONTH, 7);
