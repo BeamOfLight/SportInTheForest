@@ -421,7 +421,7 @@ class DBHelper extends DBHelperBaseLayer {
         int success_achievements_cnt = 0;
         Cursor cursor = db.query(
                 "achievements",
-                new String[]{"achievement_id", "required_parameter_name", "required_parameter_values", "skill_points_values", "name"},
+                new String[]{"achievement_id", "required_parameter_name", "required_parameter_values", "skill_points_values", "exp_values", "name"},
                 null,
                 null,
                 null,
@@ -437,20 +437,26 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("required_parameter_name", cursor.getString(cursor.getColumnIndex("required_parameter_name")));
                     m.put("required_parameter_values", cursor.getString(cursor.getColumnIndex("required_parameter_values")));
                     m.put("skill_points_values", cursor.getString(cursor.getColumnIndex("skill_points_values")));
+                    m.put("exp_values", cursor.getString(cursor.getColumnIndex("exp_values")));
                     m.put("name", cursor.getString(cursor.getColumnIndex("name")));
                     int received_skill_points = 0;
+                    int received_exp = 0;
                     int current_count = Integer.parseInt(achievements_data.get(m.get("required_parameter_name")));
 
                     String[] expected_string_counts = m.get("required_parameter_values").split(";");
                     String[] skill_points_values = m.get("skill_points_values").split(";");
+                    String[] exp_values = m.get("exp_values").split(";");
+                    boolean checked = skill_points_values.length != expected_string_counts.length
+                            || exp_values.length != expected_string_counts.length;
 
-                    if (skill_points_values.length != expected_string_counts.length) {
+                    if (checked) {
                         Toast.makeText(
                                 context,
                                 String.format(
                                         Locale.ROOT,
-                                        "Achievement data error for record \"%s\": %d != %d",
+                                        "Achievement data error for record \"%s\": %d | %d | %d",
                                         m.get("name"),
+                                        exp_values.length,
                                         skill_points_values.length,
                                         expected_string_counts.length
                                 ),
@@ -467,17 +473,20 @@ class DBHelper extends DBHelperBaseLayer {
                         int expected_count = Integer.parseInt(expected_string_count);
                         if (idx < expected_string_counts.length - 1) {
                             int skill_points = Integer.parseInt(skill_points_values[idx]);
+                            int exp = Integer.parseInt(exp_values[idx]);
                             if (current_count >= expected_count) {
+                                received_exp += exp;
                                 received_skill_points += skill_points;
                                 achievement_level++;
                                 success_achievements_cnt++;
                             } else if (!hasInfo) {
                                 m.put("info", String.format(
                                         Locale.ROOT,
-                                        "[ %s / %s ] Награда в очках навыков: %d",
+                                        "[ %s / %s ] Награда:\nочки навыков: %d\nопыт: %d",
                                         current_count,
                                         expected_count,
-                                        skill_points
+                                        skill_points,
+                                        exp
                                 ));
                                 hasInfo = true;
                             }
@@ -502,6 +511,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("success_achievements_cnt", Integer.toString(success_achievements_cnt));
                     m.put("success_progress", Integer.toString(achievement_level));
                     m.put("skill_points", Integer.toString(received_skill_points));
+                    m.put("exp", Integer.toString(received_exp));
                     m.put("header", String.format(
                             Locale.ROOT,
                             "%s Ур. %d",

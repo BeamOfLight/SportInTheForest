@@ -533,14 +533,15 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "required_parameter_name text,"
                 + "required_parameter_values text,"
                 + "skill_points_values text,"
-                + "name text"
+                + "name text,"
+                + "exp_values text"
                 + ");");
 
 
-        String base_sql = "INSERT INTO achievements (achievement_id, required_parameter_name, required_parameter_values, skill_points_values, name) VALUES";
+        String base_sql = "INSERT INTO achievements (achievement_id, required_parameter_name, required_parameter_values, skill_points_values, name, exp_values) VALUES";
         String sql = "";
         int achievement_id;
-        String required_parameter_name, required_parameter_values, skill_points_values, name;
+        String required_parameter_name, required_parameter_values, skill_points_values, name, exp_values;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.achievements);
@@ -554,8 +555,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                             required_parameter_values = xpp.getAttributeValue(null, "required_parameter_values");
                             skill_points_values = xpp.getAttributeValue(null, "skill_points_values");
                             name = xpp.getAttributeValue(null, "name");
+                            exp_values = xpp.getAttributeValue(null, "exp_values");
 
-                            sql += ", (" + achievement_id + ", \"" + required_parameter_name + "\", \"" + required_parameter_values + "\", \"" + skill_points_values + "\", \"" + name + "\")";
+                            sql += ", (" + achievement_id + ", \"" + required_parameter_name + "\", \"" + required_parameter_values + "\", \"" + skill_points_values + "\", \"" + name + "\", \"" + exp_values + "\")";
                         }
                         break;
                     default:
