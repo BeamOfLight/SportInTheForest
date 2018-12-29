@@ -44,7 +44,7 @@ public class PageFragmentAchievements extends Fragment {
 
     private void showAchievementList()
     {
-        data = dbHelper.getAchievementsData();
+        data = dbHelper.getCurrentUserAchievementsData();
         lvAchievements.invalidateViews();
         SimpleAdapter achievementAdapter = new SimpleAdapter(
                 mContainer.getContext(),

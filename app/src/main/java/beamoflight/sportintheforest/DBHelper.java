@@ -396,26 +396,33 @@ class DBHelper extends DBHelperBaseLayer {
         return user_exercise_data;
     }
 
-    public Map<String, String> getAchievementsResultData()
+    public Map<String, String> getAchievementsResultData(int user_id, int exercise_id)
     {
-        Map<String, String> user_exercise_data = getCurrentUserExerciseData();
+        Map<String, String> user_exercise_data = getUserExerciseData(user_id, exercise_id);
         Map<String, String> m = new HashMap<String, String>();
-        m.put("quests_count", Integer.toString(getCurrentUserExerciseFinishedQuestsCount()));
-        m.put("total_result", Integer.toString(getCurrentUserTrainingSumResult()));
-        m.put("total_number_of_moves", Integer.toString(getCurrentUserExerciseTrainingTotalNumberOfMoves()));
-        m.put("max_competition_result", Integer.toString(getUserExerciseTrainingMaxCompetitionResult()));
+        m.put("quests_count", Integer.toString(getUserExerciseFinishedQuestsCount(user_id, exercise_id)));
+        m.put("total_result", Integer.toString(getTrainingSumResult(user_id, exercise_id)));
+        m.put("total_number_of_moves", Integer.toString(getUserExerciseTrainingTotalNumberOfMoves(user_id, exercise_id)));
+        m.put("max_competition_result", Integer.toString(getUserExerciseTrainingMaxCompetitionResult(user_id, exercise_id)));
         m.put("competitions", user_exercise_data.get("competitions"));
         m.put("wins", user_exercise_data.get("wins"));
-        m.put("training_days", Integer.toString(getCurrentUserTrainingDaysCount()));
-        m.put("max_weekly_result", Integer.toString(getCurrentUserExerciseMaxWeekSumResult(0)));
-        m.put("max_monthly_result", Integer.toString(getCurrentUserExerciseMaxMonthSumResult(0)));
+        m.put("training_days", Integer.toString(getTrainingDaysCount(user_id, exercise_id)));
+        m.put("max_weekly_result", Integer.toString(getUserExerciseMaxWeekSumResult(user_id, exercise_id, 0)));
+        m.put("max_monthly_result", Integer.toString(getUserExerciseMaxMonthSumResult(user_id, exercise_id, 0)));
 
         return m;
     }
 
-    public ArrayList<Map<String, String>> getAchievementsData()
+    public ArrayList<Map<String, String>> getCurrentUserAchievementsData()
     {
-        Map<String, String> achievements_data = getAchievementsResultData();
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getAchievementsData(user_id, exercise_id);
+    }
+
+    public ArrayList<Map<String, String>> getAchievementsData(int user_id, int exercise_id)
+    {
+        Map<String, String> achievements_data = getAchievementsResultData(user_id, exercise_id);
         ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
         Map<String, String> m;
         int success_achievements_cnt = 0;
@@ -440,7 +447,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("exp_values", cursor.getString(cursor.getColumnIndex("exp_values")));
                     m.put("name", cursor.getString(cursor.getColumnIndex("name")));
                     int received_skill_points = 0;
-                    int received_exp = 0;
+                    long received_exp = 0;
                     int current_count = Integer.parseInt(achievements_data.get(m.get("required_parameter_name")));
 
                     String[] expected_string_counts = m.get("required_parameter_values").split(";");
@@ -473,7 +480,7 @@ class DBHelper extends DBHelperBaseLayer {
                         int expected_count = Integer.parseInt(expected_string_count);
                         if (idx < expected_string_counts.length - 1) {
                             int skill_points = Integer.parseInt(skill_points_values[idx]);
-                            int exp = Integer.parseInt(exp_values[idx]);
+                            long exp = Long.parseLong(exp_values[idx]);
                             if (current_count >= expected_count) {
                                 received_exp += exp;
                                 received_skill_points += skill_points;
@@ -511,7 +518,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("success_achievements_cnt", Integer.toString(success_achievements_cnt));
                     m.put("success_progress", Integer.toString(achievement_level));
                     m.put("skill_points", Integer.toString(received_skill_points));
-                    m.put("exp", Integer.toString(received_exp));
+                    m.put("exp", Long.toString(received_exp));
                     m.put("header", String.format(
                             Locale.ROOT,
                             "%s Ур. %d",
@@ -1436,18 +1443,43 @@ class DBHelper extends DBHelperBaseLayer {
 
     int getCurrentUserSkillPoints()
     {
-        return getCurrentUserTrainingSumResult() + getAchievementSkillPoints() - getSpentSkillPoints();
+        return getCurrentUserTrainingSumResult() + getCurrentUserAchievementSkillPoints() - getSpentSkillPoints();
     }
 
-    int getAchievementSkillPoints()
+    int getCurrentUserAchievementSkillPoints()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getAchievementSkillPoints(user_id, exercise_id);
+    }
+
+    int getAchievementSkillPoints(int user_id, int exercise_id)
     {
         int total_skill_points = 0;
-        ArrayList<Map<String, String>> achievement_data = getAchievementsData();
+        ArrayList<Map<String, String>> achievement_data = getAchievementsData(user_id, exercise_id);
         for (Map<String, String> data : achievement_data) {
             total_skill_points += Integer.parseInt(data.get("skill_points"));
         }
 
         return total_skill_points;
+    }
+
+    long getCurrentUserAchievementExp()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getAchievementExp(user_id, exercise_id);
+    }
+
+    long getAchievementExp(int user_id, int exercise_id)
+    {
+        long total_exp = 0;
+        ArrayList<Map<String, String>> achievement_data = getAchievementsData(user_id, exercise_id);
+        for (Map<String, String> data : achievement_data) {
+            total_exp += Long.parseLong(data.get("exp"));
+        }
+
+        return total_exp;
     }
 
     public int getTrainingSumResult(int user_id, int exercise_id)
@@ -1505,10 +1537,15 @@ class DBHelper extends DBHelperBaseLayer {
         return stat;
     }
 
-    public int getUserExerciseTrainingMaxCompetitionResult()
+    public int getCurrentUserExerciseTrainingMaxCompetitionResult()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseTrainingMaxCompetitionResult(user_id, exercise_id);
+    }
+
+    public int getUserExerciseTrainingMaxCompetitionResult(int user_id, int exercise_id)
+    {
         int max_result = 0;
         Cursor cursor = db.query(
                 "user_exercise_trainings",
@@ -1988,6 +2025,11 @@ class DBHelper extends DBHelperBaseLayer {
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxMonthSumResult(user_id, exercise_id, year);
+    }
+
+    public int getUserExerciseMaxMonthSumResult(int user_id, int exercise_id, int year)
+    {
         return getUserExerciseMaxMonthSum(user_id, exercise_id, "sum_result", year);
     }
 
@@ -1995,8 +2037,14 @@ class DBHelper extends DBHelperBaseLayer {
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxMonthSumExp(user_id, exercise_id, year);
+    }
+
+    public int getUserExerciseMaxMonthSumExp(int user_id, int exercise_id, int year)
+    {
         return getUserExerciseMaxMonthSum(user_id, exercise_id, "exp", year);
     }
+
 
     // TODO: rewrite SQL query
     private int getUserExerciseMaxMonthSum(int user_id, int exercise_id, String field, int year)
@@ -2034,11 +2082,15 @@ class DBHelper extends DBHelperBaseLayer {
         return max_value;
     }
 
-
     public int getCurrentUserExerciseMaxWeekSumResult(int year)
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxWeekSumResult(user_id, exercise_id, year);
+    }
+
+    public int getUserExerciseMaxWeekSumResult(int user_id, int exercise_id, int year)
+    {
         return getUserExerciseMaxWeekSumValue(user_id, exercise_id, "sum_result", year);
     }
 
@@ -2046,6 +2098,11 @@ class DBHelper extends DBHelperBaseLayer {
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxWeekSumExp(user_id, exercise_id, year);
+    }
+
+    public int getUserExerciseMaxWeekSumExp(int user_id, int exercise_id, int year)
+    {
         return getUserExerciseMaxWeekSumValue(user_id, exercise_id, "exp", year);
     }
 
@@ -2302,7 +2359,9 @@ class DBHelper extends DBHelperBaseLayer {
 
     public long getUserExerciseExp(int user_id, int exercise_id)
     {
-        return getUserExerciseTrainingsTotalExp(user_id, exercise_id) + getUserExerciseQuestsExp(user_id, exercise_id);
+        return getUserExerciseTrainingsTotalExp(user_id, exercise_id)
+                + getUserExerciseQuestsExp(user_id, exercise_id)
+                + getAchievementExp(user_id, exercise_id);
     }
 
     public void updateUserInfo()
@@ -2419,7 +2478,7 @@ class DBHelper extends DBHelperBaseLayer {
                 .setResistance(getUserResistance(user_id, exercise_id))
                 .setBonusChance(getUserBonusChance(user_id, exercise_id))
                 .setBonusMultiplier(getUserBonusMultiplier(user_id, exercise_id))
-                .setInitialActionPoints(getUserExerciseTrainingMaxCompetitionResult())
+                .setInitialActionPoints(getCurrentUserExerciseTrainingMaxCompetitionResult())
                 .setCurrentActionPoints(0);
 
         return player_entity;

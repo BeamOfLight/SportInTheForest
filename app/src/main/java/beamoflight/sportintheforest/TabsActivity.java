@@ -135,7 +135,7 @@ public class TabsActivity extends Activity {
         tvUserMaxActionPoints.setText(String.format(
             Locale.ROOT,
             "%d",
-            dbHelper.getUserExerciseTrainingMaxCompetitionResult())
+            dbHelper.getCurrentUserExerciseTrainingMaxCompetitionResult())
         );
     }
 
