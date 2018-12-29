@@ -31,8 +31,8 @@ public class PageFragmentAchievements extends Fragment {
         dbHelper = new DBHelper(container.getContext());
         gameHelper = new GameHelper(container.getContext());
 
-        lvAchievements = (ListView) rootView.findViewById(R.id.lvAchievements);
-        tvUserAchievements = (TextView) rootView.findViewById(R.id.tvUserAchievements);
+        lvAchievements = rootView.findViewById(R.id.lvAchievements);
+        tvUserAchievements = rootView.findViewById(R.id.tvUserAchievements);
 
         return rootView;
     }

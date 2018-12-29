@@ -407,6 +407,8 @@ class DBHelper extends DBHelperBaseLayer {
         m.put("competitions", user_exercise_data.get("competitions"));
         m.put("wins", user_exercise_data.get("wins"));
         m.put("training_days", Integer.toString(getCurrentUserTrainingDaysCount()));
+        m.put("max_weekly_result", Integer.toString(getCurrentUserExerciseMaxWeekSumResult(0)));
+        m.put("max_monthly_result", Integer.toString(getCurrentUserExerciseMaxMonthSumResult(0)));
 
         return m;
     }
@@ -2041,11 +2043,17 @@ class DBHelper extends DBHelperBaseLayer {
     private int getUserExerciseMaxWeekSumValue(int user_id, int exercise_id, String field, int year)
     {
         int max_value= 0;
+        String additionalSelectionString = "";
+        String[] selections = new String[]{Integer.toString(user_id), Integer.toString(exercise_id)};
+        if (year != 0) {
+            additionalSelectionString = " AND year = ?";
+            selections = new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)};
+        }
         Cursor cursor = db.query(
                 "user_exercise_trainings",
                 new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, strftime('%W', event_timestamp) AS week"},
-                "user_id = ? AND exercise_id = ? AND year = ?",
-                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
+                "user_id = ? AND exercise_id = ? " + additionalSelectionString,
+                selections,
                 "user_id, exercise_id, year, week",
                 null,
                 null
