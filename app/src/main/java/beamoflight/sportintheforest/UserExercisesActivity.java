@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -28,6 +29,7 @@ public class UserExercisesActivity extends Activity {
     TextView tvExercisesListInfo;
 
     FloatingActionButton fabAddUserExercise;
+    //Button btAddUserExercise;
     AlertDialog dialogAddUserExercise;
 
     /** Called when the activity is first created. */
@@ -62,6 +64,13 @@ public class UserExercisesActivity extends Activity {
                 dialogAddUserExercise.show();
             }
         });
+//        btAddUserExercise = findViewById(R.id.btAddUserExercise);
+//        btAddUserExercise.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                initDialogAddUserExercise();
+//                dialogAddUserExercise.show();
+//            }
+//        });
     }
 
     private void initDialogAddUserExercise()
