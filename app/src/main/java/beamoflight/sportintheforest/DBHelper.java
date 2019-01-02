@@ -383,7 +383,7 @@ class DBHelper extends DBHelperBaseLayer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    user_exercise_data = new HashMap<String, String>();
+                    user_exercise_data = new HashMap<>();
                     user_exercise_data.put("wins", cursor.getString(cursor.getColumnIndex("wins")));
                     user_exercise_data.put("competitions", cursor.getString(cursor.getColumnIndex("competitions")));
                     user_exercise_data.put("draws", cursor.getString(cursor.getColumnIndex("draws")));
@@ -409,6 +409,9 @@ class DBHelper extends DBHelperBaseLayer {
         m.put("training_days", Integer.toString(getTrainingDaysCount(user_id, exercise_id)));
         m.put("max_weekly_result", Integer.toString(getUserExerciseMaxWeekSumResult(user_id, exercise_id, 0)));
         m.put("max_monthly_result", Integer.toString(getUserExerciseMaxMonthSumResult(user_id, exercise_id, 0)));
+        m.put("weekly_greater_100_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 100)));
+        m.put("weekly_greater_500_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 500)));
+        m.put("weekly_greater_1000_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 1000)));
 
         return m;
     }
@@ -2119,7 +2122,7 @@ class DBHelper extends DBHelperBaseLayer {
         }
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, strftime('%W', event_timestamp) AS week"},
+                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
                 "user_id = ? AND exercise_id = ? " + additionalSelectionString,
                 selections,
                 "user_id, exercise_id, year, week",
@@ -2317,6 +2320,27 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return stat_entities;
+    }
+
+    private int getUserExerciseWeekGreaterNPeriodsSumValue(int user_id, int exercise_id, int limit)
+    {
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"COUNT(training_id) AS cnt, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
+                "user_id = ? AND exercise_id = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
+                "user_id, exercise_id, year, week",
+                "SUM(sum_result) >= " + Integer.toString(limit),
+                null
+        );
+
+        int cnt = 0;
+        if (cursor != null) {
+            cnt = cursor.getCount();
+            cursor.close();
+        }
+
+        return cnt;
     }
 
 
