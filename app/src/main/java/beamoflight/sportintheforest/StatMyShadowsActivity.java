@@ -1,6 +1,7 @@
 package beamoflight.sportintheforest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +18,7 @@ public class StatMyShadowsActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
+    List<Stat> values = new ArrayList<>();
     ListView lvStat;
     TextView tvExerciseName, tvPosition;
     Spinner spinnerStatMyShadowsActivityType;
@@ -30,6 +32,15 @@ public class StatMyShadowsActivity extends Activity {
         gameHelper = new GameHelper( getBaseContext() );
 
         lvStat = findViewById(R.id.lvStat);
+        lvStat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                Intent intent = new Intent(StatMyShadowsActivity.this, StatDaysActivity.class);
+                intent.setAction(Integer.toString(values.get(position).year * 100 + values.get(position).month));
+                startActivity(intent);
+            }
+        });
+
         tvExerciseName = findViewById(R.id.tvExerciseName);
         tvPosition = findViewById(R.id.tvPosition);
         spinnerStatMyShadowsActivityType = findViewById(R.id.spinnerStatMyShadowsActivityType);
@@ -56,7 +67,6 @@ public class StatMyShadowsActivity extends Activity {
                 StatTypeOption type_option = (StatTypeOption) spinnerStatMyShadowsActivityType.getSelectedItem();
 
                 int max_result = 0;
-                List<Stat> values = new ArrayList<>();
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
                         max_result = dbHelper.getCurrentUserExerciseMaxMonthSumResult(0);

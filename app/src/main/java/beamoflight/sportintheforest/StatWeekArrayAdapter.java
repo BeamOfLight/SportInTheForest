@@ -39,12 +39,16 @@ public class StatWeekArrayAdapter extends ArrayAdapter<Stat> {
         View rowView = inflater.inflate(R.layout.stat_week_list_item, parent, false);
 
         Calendar that_day = Calendar.getInstance();
+        int that_year = values.get(position).getYear();
         that_day.set(
-            values.get(position).getYear(),
+            that_year,
             values.get(position).getMonth() - 1,
             values.get(position).getDay()
         );
         that_day.add(Calendar.DAY_OF_MONTH, 6);
+        if (that_day.get(Calendar.YEAR) != that_year) {
+            that_day.set(that_year, Calendar.DECEMBER, 31);
+        }
 
         TextView tvStatWeek = rowView.findViewById(R.id.tvStatWeek);
         tvStatWeek.setText(

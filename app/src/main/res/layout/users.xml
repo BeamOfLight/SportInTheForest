@@ -53,7 +53,7 @@
         android:layout_width= "wrap_content"
         android:layout_height= "wrap_content"
         android:text= ""
-        android:textColor="@color/titleColor"
+        android:textColor="@color/fragmentTextColor"
         android:textSize="20sp"
         android:layout_marginLeft= "5dp"
         android:layout_marginRight= "5dp" >

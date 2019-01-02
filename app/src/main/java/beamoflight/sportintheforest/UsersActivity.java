@@ -40,7 +40,7 @@ public class UsersActivity extends Activity {
         gameHelper = new GameHelper(this.getBaseContext());
         //dbHelper.onCreate(dbHelper.getWritableDatabase());
 
-        tvUsersListInfo = (TextView) findViewById(R.id.tvUsersListInfo);
+        tvUsersListInfo = findViewById(R.id.tvUsersListInfo);
 
         initUsersListView();
 

@@ -1834,12 +1834,12 @@ class DBHelper extends DBHelperBaseLayer {
             if (cursor.moveToFirst()) {
                 do {
                     Stat stat_entity = new Stat();
-                    stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))));
-                    stat_entity.setMonth(Integer.parseInt(cursor.getString(cursor.getColumnIndex("month"))));
-                    stat_entity.setValue(cursor.getInt(cursor.getColumnIndex("value")));
-                    stat_entity.setPosition(position);
-                    stat_entity.setCurrentPeriod(false);
-                    stat_entity.setDay(0);
+                    stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))))
+                        .setMonth(Integer.parseInt(cursor.getString(cursor.getColumnIndex("month"))))
+                        .setValue(cursor.getInt(cursor.getColumnIndex("value")))
+                        .setPosition(position)
+                        .setCurrentPeriod(false)
+                        .setDay(0);
                     position++;
 
                     if (stat_entity.getYear() == year && stat_entity.getMonth() == month) {
@@ -1887,6 +1887,7 @@ class DBHelper extends DBHelperBaseLayer {
         );
 
         Calendar c = Calendar.getInstance();
+        int current_year = c.get(Calendar.YEAR);
         int current_month = c.get(Calendar.MONTH) + 1;
 
         for (int month_idx = 0; month_idx < 12; month_idx++) {
@@ -1898,7 +1899,7 @@ class DBHelper extends DBHelperBaseLayer {
                     0,
                     0,
                     month_idx + 1,
-                    current_month == month_idx + 1
+                    current_month == month_idx + 1 && current_year == year
                 )
             );
         }
@@ -1953,12 +1954,12 @@ class DBHelper extends DBHelperBaseLayer {
             if (cursor.moveToFirst()) {
                 do {
                     Stat stat_entity = new Stat();
-                    stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))));
-                    stat_entity.setValue(cursor.getInt(cursor.getColumnIndex("value")));
-                    stat_entity.setPosition(position);
-                    stat_entity.setCurrentPeriod(false);
-                    stat_entity.setMonth(0);
-                    stat_entity.setDay(0);
+                    stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))))
+                        .setValue(cursor.getInt(cursor.getColumnIndex("value")))
+                        .setPosition(position)
+                        .setCurrentPeriod(false)
+                        .setMonth(0)
+                        .setDay(0);
                     position++;
 
                     if (stat_entity.getYear() == year) {
@@ -2161,7 +2162,7 @@ class DBHelper extends DBHelperBaseLayer {
         ArrayList<Stat> stat_entities = new ArrayList<>();
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, strftime('%W', event_timestamp) AS week"},
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
                 "user_id = ? AND exercise_id = ? AND year = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
                 "user_id, exercise_id, year, week",
@@ -2171,15 +2172,15 @@ class DBHelper extends DBHelperBaseLayer {
 
         Calendar today = Calendar.getInstance();
         today.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-//        int current_week = today.get(Calendar.WEEK_OF_YEAR) - 1;
+        int current_year = today.get(Calendar.YEAR);
 
         Calendar that_day = Calendar.getInstance();
         that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        that_day.set(year, Calendar.JANUARY, 1);
+        that_day.set(year, Calendar.JANUARY, 1, 0, 0, 0);
         int max_week_count = that_day.getMaximum(Calendar.WEEK_OF_YEAR);
 
         for (int week_idx = 0; week_idx < max_week_count; week_idx++) {
-            boolean current_period = that_day.getTime().getTime() <= today.getTime().getTime() && that_day.getTime().getTime() + 7 * 24 * 3600 * 1000 > today.getTime().getTime();
+            boolean current_period = that_day.getTime().getTime() <= today.getTime().getTime() && that_day.getTime().getTime() + 7 * 24 * 3600 * 1000 > today.getTime().getTime() && current_year == that_day.get(Calendar.YEAR);
             stat_entities.add(
                     new Stat(
                             year,
@@ -2197,7 +2198,7 @@ class DBHelper extends DBHelperBaseLayer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    int week = Integer.parseInt(cursor.getString(cursor.getColumnIndex("week"))) - 1;
+                    int week = Integer.parseInt(cursor.getString(cursor.getColumnIndex("week")));
                     int value = cursor.getInt(cursor.getColumnIndex("value"));
                     stat_entities.get(week).setValue(value);
                 } while (cursor.moveToNext());
