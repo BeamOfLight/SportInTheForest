@@ -410,8 +410,8 @@ class DBHelper extends DBHelperBaseLayer {
         m.put("max_weekly_result", Integer.toString(getUserExerciseMaxWeekSumResult(user_id, exercise_id, 0)));
         m.put("max_monthly_result", Integer.toString(getUserExerciseMaxMonthSumResult(user_id, exercise_id, 0)));
         m.put("weekly_greater_100_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 100)));
-        m.put("weekly_greater_500_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 500)));
-        m.put("weekly_greater_1000_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 1000)));
+        m.put("weekly_greater_300_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 300)));
+        m.put("weekly_greater_700_periods_cnt", Integer.toString(getUserExerciseWeekGreaterNPeriodsSumValue(user_id, exercise_id, 700)));
 
         return m;
     }

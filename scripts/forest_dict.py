@@ -206,7 +206,7 @@ def get_extra_character_name(name, id):
 
 def get_achievements():
 	achievements = []
-	for i in xrange(7):
+	for i in xrange(12):
 		achievements.append({})
 
 	achievements[0] = ("quests_count", "Выполнить задания")
@@ -216,4 +216,9 @@ def get_achievements():
 	achievements[4] = ("competitions", "Поучаствовать в соревнованиях")
 	achievements[5] = ("wins", "Победить в соревнованиях")
 	achievements[6] = ("training_days", "Дни тренировок")
+	achievements[7] = ("max_weekly_result", "Максимум за неделю")
+	achievements[8] = ("max_monthly_result", "Максимум за месяц")
+	achievements[9] = ("weekly_greater_100_periods_cnt", "Неделя с результатом больше 100")
+	achievements[10] = ("weekly_greater_300_periods_cnt", "Неделя с результатом больше 300")
+	achievements[11] = ("weekly_greater_700_periods_cnt", "Неделя с результатом больше 700")
 	return achievements
