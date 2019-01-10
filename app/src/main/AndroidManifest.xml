@@ -34,6 +34,15 @@
         </activity>
 
         <activity
+            android:name=".TabsDailyStatOnlyActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.TABS_DAILY_STAT_ONLY" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".UsersActivity"
             android:screenOrientation="portrait"
             >

@@ -22,4 +22,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </Spinner>
+
+    <CheckBox
+        android:id="@+id/cbDailyStatOnly"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Только статистика за день" />
 </LinearLayout>

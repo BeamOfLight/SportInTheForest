@@ -35,7 +35,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected int formatVersion = 5;
+    protected int formatVersion = 6;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -125,13 +125,14 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "competitions integer,"
                 + "draws integer,"
                 + "specialisation integer,"
+                + "type integer,"
                 + "FOREIGN KEY(user_id) REFERENCES users(user_id),"
                 + "FOREIGN KEY(exercise_id) REFERENCES exercises(exercise_id)"
                 + ");");
     }
 
     protected void createTableParameters() {
-        // создаем таблицу user_exercises
+        // создаем таблицу parameters
         db.execSQL("DROP TABLE IF EXISTS parameters;");
         db.execSQL("CREATE TABLE IF NOT EXISTS parameters ("
                 + "id integer,"
@@ -879,7 +880,12 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     {
         Map<String, String[]> m = new HashMap<>();
         m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
-        m.put("user_exercises", new String[] {"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation"});
+
+        if (format_version >= 6) {
+            m.put("user_exercises", new String[]{"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation", "type"});
+        } else {
+            m.put("user_exercises", new String[]{"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation"});
+        }
         m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name"});
 
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});

@@ -22,6 +22,9 @@ class DBHelper extends DBHelperBaseLayer {
     private GameHelper gameHelper;
     private Context context;
 
+    public final int USER_EXERCISE_TYPE_RPG = 0;
+    public final int USER_EXERCISE_TYPE_DAILY_STAT_ONLY = 1;
+
     public DBHelper(Context current) {
         super (current);
 
@@ -247,7 +250,7 @@ class DBHelper extends DBHelperBaseLayer {
         int user_id = gameHelper.getUserId();
         Cursor cursor = db.query(
                 "exercises AS e INNER JOIN user_exercises AS ue ON e.exercise_id = ue.exercise_id AND ue.user_id = " + Integer.toString(user_id),
-                new String[]{"e.exercise_id", "e.name"},
+                new String[]{"e.exercise_id", "e.name", "ue.type"},
                 null,
                 null,
                 "e.exercise_id",
@@ -258,8 +261,10 @@ class DBHelper extends DBHelperBaseLayer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
+                    int type = cursor.getInt(cursor.getColumnIndex("type"));
                     m = new HashMap<>();
                     m.put("exercise_id", cursor.getString(cursor.getColumnIndex("exercise_id")));
+                    m.put("type", Integer.toString(type));
                     m.put("name",
                             String.format(
                                 Locale.ROOT,
@@ -277,21 +282,25 @@ class DBHelper extends DBHelperBaseLayer {
                     float user_bonus_multiplier = getUserBonusMultiplier(user_id, exercise_id);
                     float user_bonus_chance = getUserBonusChance(user_id, exercise_id);
                     int finished_quest_count = getUserExerciseFinishedQuestsCount(user_id, exercise_id);
-                    m.put("info",
-                            String.format(
-                                    Locale.ROOT,
-                                    "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.1f%% | Выполнено заданий: %d | Общий результат: %d",
-                                    //"Уровень %d  ФО: %d | Сопротивление: %d  Множитель: %.2f  Множитель бонуса: %.2f  Шанс бонуса: %.2f  Выполнено заданий: %d",
-                                    user_level,
-                                    user_fp,
-                                    user_resistance,
-                                    user_multiplier,
-                                    user_bonus_multiplier,
-                                    user_bonus_chance * 100,
-                                    finished_quest_count,
-                                    total_count
-                            )
-                    );
+                    if (type == USER_EXERCISE_TYPE_RPG) {
+                        m.put("info",
+                                String.format(
+                                        Locale.ROOT,
+                                        "Уровень %d | ФО: %d | Сопротивление: %d | Множитель: %.2f | Множитель бонуса: %.2f | Шанс бонуса: %.1f%% | Выполнено заданий: %d | Общий результат: %d",
+                                        //"Уровень %d  ФО: %d | Сопротивление: %d  Множитель: %.2f  Множитель бонуса: %.2f  Шанс бонуса: %.2f  Выполнено заданий: %d",
+                                        user_level,
+                                        user_fp,
+                                        user_resistance,
+                                        user_multiplier,
+                                        user_bonus_multiplier,
+                                        user_bonus_chance * 100,
+                                        finished_quest_count,
+                                        total_count
+                                )
+                        );
+                    } else if (type == USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
+                        m.put("info", String.format(Locale.ROOT,"Общий результат: %d", total_count));
+                    }
 
                     users_data.add(m);
                 } while (cursor.moveToNext());
@@ -346,7 +355,7 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ===============UserExercise
-    public void createUserExercise(int user_id, int exercise_id)
+    public void createUserExercise(int user_id, int exercise_id, int type)
     {
         ContentValues values = new ContentValues();
         values.put("user_id", user_id);
@@ -355,6 +364,7 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("competitions", 0);
         values.put("wins", 0);
         values.put("draws", 0);
+        values.put("type", type);
 
         db.insert("user_exercises", null, values);
     }
@@ -372,7 +382,7 @@ class DBHelper extends DBHelperBaseLayer {
         Map<String, String> user_exercise_data = null;
         Cursor cursor = db.query(
                 "user_exercises",
-                new String[]{"wins", "competitions", "draws", "specialisation"},
+                new String[]{"wins", "competitions", "draws", "specialisation", "type"},
                 "user_id = ? AND exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 null,
@@ -388,6 +398,7 @@ class DBHelper extends DBHelperBaseLayer {
                     user_exercise_data.put("competitions", cursor.getString(cursor.getColumnIndex("competitions")));
                     user_exercise_data.put("draws", cursor.getString(cursor.getColumnIndex("draws")));
                     user_exercise_data.put("specialisation", cursor.getString(cursor.getColumnIndex("specialisation")));
+                    user_exercise_data.put("type", cursor.getString(cursor.getColumnIndex("type")));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -1355,7 +1366,7 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ============== Training
-    public long addTraining(int user_id, int exercise_id, int level, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int location_id, int position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp)
+    public long addTraining(int user_id, int exercise_id, int level, int sum_result, int max_result, int exp, int number_of_moves, int result_state, int location_id, int position, int duration, boolean quest_owner, int my_team_fp, int op_team_fp, String date)
     {
         ContentValues values = new ContentValues();
         values.put("event_timestamp", gameHelper.getTodayTimestampString());
@@ -1373,6 +1384,9 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("quest_owner", quest_owner);
         values.put("my_team_fp", my_team_fp);
         values.put("op_team_fp", op_team_fp);
+        if (!date.equals("")) {
+            values.put("event_timestamp", date);
+        }
 
         return db.insert("user_exercise_trainings", null, values);
     }
@@ -1404,6 +1418,55 @@ class DBHelper extends DBHelperBaseLayer {
                         Integer.toString(exercise_id)
                 }
         );
+    }
+
+    public long updateTrainingResult(long training_id, int user_id, int exercise_id, int result)
+    {
+        ContentValues values = new ContentValues();
+        values.put("sum_result", result);
+        values.put("max_result", result);
+        values.put("results", Integer.toString(result));
+
+        return db.update(
+                "user_exercise_trainings",
+                values,
+                "training_id = ? AND user_id = ? AND exercise_id = ?",
+                new String[] {
+                        Long.toString(training_id),
+                        Integer.toString(user_id),
+                        Integer.toString(exercise_id)
+                }
+        );
+    }
+
+
+    public Map<String, String> getFirstTrainingByDate(int user_id, int exercise_id, String date)
+    {
+        Map<String, String> m = new HashMap<>();
+        int training_id = 0;
+        int sum_result = 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"training_id, sum_result"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) = ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), date},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                training_id = cursor.getInt(cursor.getColumnIndex("training_id"));
+                sum_result = cursor.getInt(cursor.getColumnIndex("sum_result"));
+            }
+
+            cursor.close();
+        }
+        m.put("training_id", Integer.toString(training_id));
+        m.put("sum_result", Integer.toString(sum_result));
+
+        return m;
     }
 
     public int getCurrentUserTrainingDaysCount()

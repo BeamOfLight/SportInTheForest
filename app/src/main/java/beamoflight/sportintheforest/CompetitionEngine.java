@@ -80,7 +80,7 @@ class CompetitionEngine {
                     PlayerEntity player_entity = (PlayerEntity) character;
                     dbHelper.addCompetition2UserExerciseStat(player_entity.getUserId(), player_entity.getExerciseId());
                     player_entity.setCurrentTrainingId(
-                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), locationPosition.getLevel(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, locationPosition.getLocationId(), locationPosition.getPosition(), 0, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)))
+                            dbHelper.addTraining(player_entity.getUserId(), player_entity.getExerciseId(), locationPosition.getLevel(), player_entity.getSumResult(), player_entity.getMaxResult(), 0, 0, GameHelper.RESULT_STATE_UNFINISHED, locationPosition.getLocationId(), locationPosition.getPosition(), 0, getQuestOwner(player_entity), getTeamFP(mainPlayerTeamIdx), getTeamFP(getOppositeTeamIdx(mainPlayerTeamIdx)), "")
                     );
                 }
             }

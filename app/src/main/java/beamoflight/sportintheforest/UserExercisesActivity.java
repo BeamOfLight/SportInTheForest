@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -40,9 +41,9 @@ public class UserExercisesActivity extends Activity {
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(this );
 
-        TextView tvUserName = (TextView) findViewById(R.id.tvUserName);
+        TextView tvUserName = findViewById(R.id.tvUserName);
         tvUserName.setText(dbHelper.getUserNameById(gameHelper.getUserId()));
-        tvExercisesListInfo = (TextView) findViewById(R.id.tvExercisesListInfo);
+        tvExercisesListInfo = findViewById(R.id.tvExercisesListInfo);
 
         initExercisesListView();
 
@@ -64,13 +65,6 @@ public class UserExercisesActivity extends Activity {
                 dialogAddUserExercise.show();
             }
         });
-//        btAddUserExercise = findViewById(R.id.btAddUserExercise);
-//        btAddUserExercise.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                initDialogAddUserExercise();
-//                dialogAddUserExercise.show();
-//            }
-//        });
     }
 
     private void initDialogAddUserExercise()
@@ -80,10 +74,12 @@ public class UserExercisesActivity extends Activity {
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
 
-        final Spinner spinnerAddUserExercise = (Spinner) prompts_view.findViewById(R.id.spinnerAddUserExercise);
+        final Spinner spinnerAddUserExercise = prompts_view.findViewById(R.id.spinnerAddUserExercise);
         ArrayAdapter<ExerciseEntity> spinnerAddUserExerciseAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dbHelper.getExercises(gameHelper.getUserId()));
         spinnerAddUserExerciseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAddUserExercise.setAdapter(spinnerAddUserExerciseAdapter);
+
+        final CheckBox cbDailyStatOnly = prompts_view.findViewById(R.id.cbDailyStatOnly);
 
         // set dialog message
         alert_dialog_builder
@@ -92,7 +88,11 @@ public class UserExercisesActivity extends Activity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 int exerciseId = ((ExerciseEntity) spinnerAddUserExercise.getSelectedItem()).getId();
-                                dbHelper.createUserExercise(gameHelper.getUserId(), exerciseId);
+                                int type = dbHelper.USER_EXERCISE_TYPE_RPG;
+                                if (cbDailyStatOnly.isChecked()) {
+                                    type = dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY;
+                                }
+                                dbHelper.createUserExercise(gameHelper.getUserId(), exerciseId, type);
                                 dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
 
                                 showExercisesList();
@@ -111,21 +111,21 @@ public class UserExercisesActivity extends Activity {
 
     private void initExercisesListView()
     {
-        lvExercises = (ListView) findViewById(R.id.lvExercises);
+        lvExercises = findViewById(R.id.lvExercises);
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
                 gameHelper.saveExerciseId2Preferences(exercise_id);
-/*
-                int user_id = gameHelper.getUserId();
-                Map<String, String> user_exercise_data = dbHelper.getUserExerciseData(user_id, exercise_id);
-                if (user_exercise_data == null) {
-                    dbHelper.createUserExercise(user_id, exercise_id);
-                    dbHelper.openLocationForCurrentUserExercise(1);
+
+                Intent intent = null;
+                Map<String, String> data = dbHelper.getCurrentUserExerciseData();
+                int user_exercise_type = Integer.parseInt(data.get("type"));
+                if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
+                    intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
+                } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
+                    intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
                 }
-*/
-                Intent intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
                 startActivity(intent);
             }
         });
