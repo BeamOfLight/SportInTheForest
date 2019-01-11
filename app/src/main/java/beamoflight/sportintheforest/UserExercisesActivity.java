@@ -120,13 +120,16 @@ public class UserExercisesActivity extends Activity {
 
                 Intent intent = null;
                 Map<String, String> data = dbHelper.getCurrentUserExerciseData();
-                int user_exercise_type = Integer.parseInt(data.get("type"));
-                if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
-                    intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
-                } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
-                    intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
+                if (data != null) {
+                    int user_exercise_type = Integer.parseInt(data.get("type"));
+                    if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
+                        intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
+                    } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
+                        intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
+                    }
+                    startActivity(intent);
                 }
-                startActivity(intent);
+
             }
         });
 

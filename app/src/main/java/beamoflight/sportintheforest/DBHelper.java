@@ -398,7 +398,7 @@ class DBHelper extends DBHelperBaseLayer {
                     user_exercise_data.put("competitions", cursor.getString(cursor.getColumnIndex("competitions")));
                     user_exercise_data.put("draws", cursor.getString(cursor.getColumnIndex("draws")));
                     user_exercise_data.put("specialisation", cursor.getString(cursor.getColumnIndex("specialisation")));
-                    user_exercise_data.put("type", cursor.getString(cursor.getColumnIndex("type")));
+                    user_exercise_data.put("type", Integer.toString(cursor.getInt(cursor.getColumnIndex("type"))));
                 } while (cursor.moveToNext());
             }
             cursor.close();
