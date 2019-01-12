@@ -2185,7 +2185,7 @@ class DBHelper extends DBHelperBaseLayer {
         }
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
+                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year, ((strftime('%j', event_timestamp) - 1)/7) AS week"},
                 "user_id = ? AND exercise_id = ? " + additionalSelectionString,
                 selections,
                 "user_id, exercise_id, year, week",
@@ -2228,7 +2228,7 @@ class DBHelper extends DBHelperBaseLayer {
         ArrayList<Stat> stat_entities = new ArrayList<>();
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year, ((strftime('%j', event_timestamp)-1)/7) AS week"},
                 "user_id = ? AND exercise_id = ? AND year = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id), Integer.toString(year)},
                 "user_id, exercise_id, year, week",
@@ -2389,7 +2389,7 @@ class DBHelper extends DBHelperBaseLayer {
     {
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"COUNT(training_id) AS cnt, strftime('%Y', event_timestamp) AS year, (strftime('%j', event_timestamp)/7) AS week"},
+                new String[]{"COUNT(training_id) AS cnt, strftime('%Y', event_timestamp) AS year, ((strftime('%j', event_timestamp)-1)/7) AS week"},
                 "user_id = ? AND exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 "user_id, exercise_id, year, week",
