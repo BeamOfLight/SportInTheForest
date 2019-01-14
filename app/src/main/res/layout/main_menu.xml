@@ -10,6 +10,18 @@
         android:layout_width="fill_parent"
         android:layout_height="120sp"
         android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/pbUpdate"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:max="100"
+            android:maxWidth="10sp"
+            android:minWidth="10sp"
+            android:progress="65" />
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
@@ -17,20 +29,27 @@
             android:text="@string/app_name_title"
             android:textAlignment="center"
             android:textSize="40sp"
-            android:layout_marginTop="38sp"
+            android:layout_marginTop="18sp"
             android:textColor="@color/titleColor"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="20sp"
             android:layout_marginTop="1sp"
-            android:fontFamily="monospace"
-            android:text="ver. 0.0.0"
-            android:textStyle="bold"
-            android:textColor="@color/versionColor"
-            android:textAlignment="center" />
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="ver. 0.0.0.0"
+                android:textStyle="bold"
+                android:textColor="@color/versionColor"
+                android:textAlignment="center" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

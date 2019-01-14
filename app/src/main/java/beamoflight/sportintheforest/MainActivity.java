@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
 
     TextView tvVersion;
     Button btMenuStart, btMenuSettings, btMenuKnowledge;
+    ProgressBar pbUpdate;
     String app_version;
     Handler errorHandler;
     Thread thread;
@@ -43,7 +45,9 @@ public class MainActivity extends Activity {
         gameHelper = new GameHelper( getBaseContext() );
 
         app_version = dbHelper.getAppVersion();
-        tvVersion = (TextView) findViewById(R.id.tvVersion);
+        tvVersion = findViewById(R.id.tvVersion);
+
+        pbUpdate = findViewById(R.id.pbUpdate);
 
         errorHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -65,7 +69,7 @@ public class MainActivity extends Activity {
                 Locale.ROOT,
                 "ver. %s.%s",
                 dbHelper.getAppVersion(),
-                dbHelper.getAppVersionRevision()
+                dbHelper.getAppVersion().equals("0.0.0") ? "0" : dbHelper.getAppVersionRevision()
             )
         );
     }
@@ -74,7 +78,7 @@ public class MainActivity extends Activity {
     {
         try {
             dbHelper.customOnCreate();
-            dbHelper.loadFromFile("autosave.sif", false);
+            dbHelper.loadFromFileWithProgress("autosave.sif", false, pbUpdate);
             dbHelper.updateAppVersion(getResources().getString(R.string.app_version));
             updateStarted = false;
         } catch (Exception e){
@@ -95,6 +99,15 @@ public class MainActivity extends Activity {
         btMenuStart.setEnabled(status);
         btMenuSettings.setEnabled(status);
         btMenuKnowledge.setEnabled(status);
+        if (status) {
+            btMenuStart.setVisibility(View.VISIBLE);
+            btMenuSettings.setVisibility(View.VISIBLE);
+            btMenuKnowledge.setVisibility(View.VISIBLE);
+        } else {
+            btMenuStart.setVisibility(View.INVISIBLE);
+            btMenuSettings.setVisibility(View.INVISIBLE);
+            btMenuKnowledge.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void checkVersion()
@@ -114,6 +127,7 @@ public class MainActivity extends Activity {
                         public void run() {
                             showVersion();
                             turnOnOffButtons(true);
+                            pbUpdate.setProgress(0);
                         }
                     });
                 }
@@ -138,7 +152,7 @@ public class MainActivity extends Activity {
 
     private void initMenuButtons()
     {
-        btMenuStart = (Button) findViewById(R.id.btMenuStart);
+        btMenuStart = findViewById(R.id.btMenuStart);
         btMenuStart.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UsersActivity.class);
@@ -146,7 +160,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        btMenuSettings = (Button) findViewById(R.id.btMenuSettings);
+        btMenuSettings = findViewById(R.id.btMenuSettings);
         btMenuSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -154,7 +168,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        btMenuKnowledge = (Button) findViewById(R.id.btMenuKnowledge);
+        btMenuKnowledge = findViewById(R.id.btMenuKnowledge);
         btMenuKnowledge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, KnowledgeActivity.class);
@@ -165,6 +179,8 @@ public class MainActivity extends Activity {
 
     protected void onStart() {
         super.onStart();
+
+        pbUpdate.setProgress(0);
 
         if (
                 ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED

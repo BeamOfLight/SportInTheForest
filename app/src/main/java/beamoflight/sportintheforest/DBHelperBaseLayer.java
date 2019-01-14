@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -1002,6 +1003,65 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 if (!local_status) {
                     status = false;
                 }
+            }
+            if (record.format_version < 4 && formatVersion >= 4) {
+                db.execSQL("UPDATE user_exercise_trainings SET level=(SELECT non_player_characters.level FROM non_player_characters WHERE non_player_characters.npc_id = user_exercise_trainings.npc_id) WHERE user_exercise_trainings.npc_id IS NOT NULL");
+            }
+        } else {
+            status = false;
+            Log.d("myLogs", "error");
+            if (toastOn) Toast.makeText(context, "Error!", Toast.LENGTH_SHORT).show();
+        }
+
+        return status;
+    }
+
+    public boolean loadFromFileWithProgress(String filename, boolean toastOn, ProgressBar pbUpdate)
+    {
+        boolean status = true;
+        String json_string = "";
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            if (sd.canRead()) {
+                //String path = sd.getAbsolutePath();
+                File file = new File(sd, "/SportInTheForest/" + filename);
+                StringBuilder text = new StringBuilder();
+
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    text.append(line);
+                    text.append('\n');
+                }
+                json_string = text.toString();
+            }
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            status = false;
+        }
+        Record record;
+        if (json_string.length() > 0) {
+            record = (new Gson()).fromJson(json_string, Record.class);
+            String tables[] = getTables2Save(record.format_version);
+
+            int total_cnt = 0;
+            for (String table_name : tables) {
+                total_cnt += record.tables.get(table_name).size();
+            }
+            pbUpdate.setMax(total_cnt);
+
+            int progress = 0;
+            for (String table_name : tables) {
+                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version);
+                if (!local_status) {
+                    status = false;
+                }
+                progress += record.tables.get(table_name).size();
+                pbUpdate.setProgress(progress);
             }
             if (record.format_version < 4 && formatVersion >= 4) {
                 db.execSQL("UPDATE user_exercise_trainings SET level=(SELECT non_player_characters.level FROM non_player_characters WHERE non_player_characters.npc_id = user_exercise_trainings.npc_id) WHERE user_exercise_trainings.npc_id IS NOT NULL");
