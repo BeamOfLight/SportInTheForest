@@ -4,16 +4,15 @@ package beamoflight.sportintheforest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -25,9 +24,7 @@ public class UsersActivity extends Activity {
     GameHelper gameHelper;
     List<Map<String, String>> usersData;
 
-    FloatingActionButton fabAddUser;
-    TextView tvUsersListInfo;
-    ListView lvUsers;
+    ListView lvUsers, lvNewUser;
 
     AlertDialog dialogAddOrEditUser;
 
@@ -40,33 +37,20 @@ public class UsersActivity extends Activity {
         gameHelper = new GameHelper(this.getBaseContext());
         //dbHelper.onCreate(dbHelper.getWritableDatabase());
 
-        tvUsersListInfo = findViewById(R.id.tvUsersListInfo);
-
         initUsersListView();
-
-        initFABAddUser();
+        initNewUserListView();
     }
 
     protected void onStart() {
         super.onStart();
 
+        showNewUserList();
         showUsersList();
-    }
-
-    private void initFABAddUser()
-    {
-        fabAddUser = (FloatingActionButton) findViewById(R.id.fabAddUser);
-        fabAddUser.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            initDialogAddOrEditUser(-1);
-                dialogAddOrEditUser.show();
-            }
-        });
     }
 
     private void initUsersListView()
     {
-        lvUsers = (ListView) findViewById(R.id.lvUsers);
+        lvUsers = findViewById(R.id.lvUsers);
         lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -90,15 +74,21 @@ public class UsersActivity extends Activity {
         lvUsers.setFooterDividersEnabled(true);
     }
 
+    private void initNewUserListView()
+    {
+        lvNewUser = findViewById(R.id.lvNewUser);
+        lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                initDialogAddOrEditUser(-1);
+                dialogAddOrEditUser.show();
+            }
+        });
+    }
+
     private void showUsersList()
     {
         usersData = dbHelper.getUsersData();
-        if (usersData.size() > 0) {
-            tvUsersListInfo.setText("");
-        } else {
-            tvUsersListInfo.setText(getResources().getString(R.string.users_list_info_msg));
-        }
-
         lvUsers.invalidateViews();
         SimpleAdapter usersAdapter = new SimpleAdapter(
                 this,
@@ -111,6 +101,15 @@ public class UsersActivity extends Activity {
         lvUsers.setAdapter(usersAdapter);
     }
 
+    private void showNewUserList()
+    {
+        lvNewUser.invalidateViews();
+        String[] items = {"Новый пользователь"};
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+
+        lvNewUser.setAdapter(itemsAdapter);
+    }
+
     private void initDialogAddOrEditUser(int current_user_id)
     {
         // get prompt_add_group.xmlgroup.xml view
@@ -119,7 +118,7 @@ public class UsersActivity extends Activity {
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
 
-        final EditText et_input_user_name = (EditText) prompts_view.findViewById(R.id.editTextDialogUserInput);
+        final EditText et_input_user_name = prompts_view.findViewById(R.id.editTextDialogUserInput);
 
         final int user_id = current_user_id;
         if (current_user_id != -1) {

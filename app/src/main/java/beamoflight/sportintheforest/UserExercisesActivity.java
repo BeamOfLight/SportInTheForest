@@ -6,12 +6,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -26,11 +24,7 @@ public class UserExercisesActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
     List<Map<String, String>> exercisesData;
-    ListView lvExercises;
-    TextView tvExercisesListInfo;
-
-    FloatingActionButton fabAddUserExercise;
-    //Button btAddUserExercise;
+    ListView lvExercises, lvNewUserExercise;
     AlertDialog dialogAddUserExercise;
 
     /** Called when the activity is first created. */
@@ -43,8 +37,8 @@ public class UserExercisesActivity extends Activity {
 
         TextView tvUserName = findViewById(R.id.tvUserName);
         tvUserName.setText(dbHelper.getUserNameById(gameHelper.getUserId()));
-        tvExercisesListInfo = findViewById(R.id.tvExercisesListInfo);
 
+        initNewUserListView();
         initExercisesListView();
 
     }
@@ -52,15 +46,16 @@ public class UserExercisesActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
+        initNewUserListView();
         initExercisesListView();
-        initFABAddUser();
     }
 
-    private void initFABAddUser()
+    private void initNewUserListView()
     {
-        fabAddUserExercise = (FloatingActionButton) findViewById(R.id.fabAddUserExercise);
-        fabAddUserExercise.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        lvNewUserExercise = findViewById(R.id.lvNewUserExercise);
+        lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
                 initDialogAddUserExercise();
                 dialogAddUserExercise.show();
             }
@@ -135,6 +130,7 @@ public class UserExercisesActivity extends Activity {
 
         lvExercises.setFooterDividersEnabled(true);
         showExercisesList();
+        showNewUserExerciseList();
     }
 
     private void showExercisesList()
@@ -150,10 +146,14 @@ public class UserExercisesActivity extends Activity {
         );
 
         lvExercises.setAdapter(exercisesAdapter);
-        String exercises_list_info = "";
-        if (exercisesData.size() == 0) {
-            exercises_list_info = "У вас пока нет активных упражнений";
-        }
-        tvExercisesListInfo.setText(exercises_list_info);
+    }
+
+    private void showNewUserExerciseList()
+    {
+        lvNewUserExercise.invalidateViews();
+        String[] items = {"Новое упражнение"};
+        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+
+        lvNewUserExercise.setAdapter(itemsAdapter);
     }
 }
