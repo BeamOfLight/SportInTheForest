@@ -7,16 +7,18 @@
     android:orientation="vertical"
     android:gravity="center"
     android:layout_gravity="center"
+    android:background="#AA333333"
     android:padding="5dp" >
 
     <TextView
-        android:id="@+id/tvSelectStatTypeTitle"
+        android:id="@+id/tvTitle"
         android:layout_gravity="center"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5sp"
         android:textAlignment="center"
-        android:text="@string/prompt_select_stat_type_title"
+        android:textColor="@color/menuItemColor"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,7 +30,7 @@
         android:padding="5dp" >
 
         <Button
-            android:id="@+id/btSelectStatTypeMonths"
+            android:id="@+id/btTitleLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -37,10 +39,10 @@
             android:background="@mipmap/leaf_button_1"
             android:height="70sp"
             android:textColor="@color/menuItemColor"
-            android:text="@string/prompt_select_stat_type_months" />
+            android:text="" />
 
         <Button
-            android:id="@+id/btSelectStatTypeWeeks"
+            android:id="@+id/btTitleRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,7 +51,7 @@
             android:background="@mipmap/leaf_button_1"
             android:height="70sp"
             android:textColor="@color/menuItemColor"
-            android:text="@string/prompt_select_stat_type_weeks" />
+            android:text="" />
 
     </LinearLayout>
 </LinearLayout>

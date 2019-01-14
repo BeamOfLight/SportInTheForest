@@ -10,9 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class UsersActivity extends Activity {
 
     ListView lvUsers, lvNewUser;
 
-    AlertDialog dialogAddOrEditUser;
+    AlertDialog dialogAddOrEditUser, dialogSelectAction, dialogUserDelete;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -63,15 +65,10 @@ public class UsersActivity extends Activity {
 
         lvUsers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            int user_id = Integer.parseInt(usersData.get(position).get("user_id"));
-            initDialogAddOrEditUser(user_id);
-                dialogAddOrEditUser.show();
-
-            return true;
+                initDialogSelectAction(position);
+                return true;
             }
         });
-
-        lvUsers.setFooterDividersEnabled(true);
     }
 
     private void initNewUserListView()
@@ -167,4 +164,83 @@ public class UsersActivity extends Activity {
         // create alert dialog
         dialogAddOrEditUser = alert_dialog_builder.create();
     }
+
+
+    private void initDialogSelectAction(int position)
+    {
+        final int final_position = position;
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_select_from_two_variants, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+        alert_dialog_builder.setView(prompts_view);
+        alert_dialog_builder.setCancelable(true);
+        dialogSelectAction = alert_dialog_builder.create();
+
+        TextView tvTitle = prompts_view.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.prompt_select_action_title));
+
+        Button btTitleLeft = prompts_view.findViewById(R.id.btTitleLeft);
+        btTitleLeft.setText(getResources().getString(R.string.prompt_select_action_delete));
+        btTitleLeft.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                initDialogAreYouSure(final_position);
+                dialogSelectAction.cancel();
+            }
+        });
+
+        Button btTitleRight = prompts_view.findViewById(R.id.btTitleRight);
+        btTitleRight.setText(getResources().getString(R.string.prompt_select_action_edit));
+        btTitleRight.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                int user_id = Integer.parseInt(usersData.get(final_position).get("user_id"));
+                initDialogAddOrEditUser(user_id);
+                dialogAddOrEditUser.show();
+                dialogSelectAction.cancel();
+            }
+        });
+
+
+        dialogSelectAction.show();
+    }
+
+    private void initDialogAreYouSure(int position)
+    {
+        final int final_position = position;
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_select_from_two_variants, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+        alert_dialog_builder.setView(prompts_view);
+        alert_dialog_builder.setCancelable(true);
+        dialogUserDelete = alert_dialog_builder.create();
+
+        final String final_username = usersData.get(final_position).get("name");
+        TextView tvTitle = prompts_view.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.prompt_delete_user, final_username));
+
+
+        Button btTitleLeft = prompts_view.findViewById(R.id.btTitleLeft);
+        btTitleLeft.setText(getResources().getString(R.string.prompt_no));
+        btTitleLeft.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dialogUserDelete.cancel();
+            }
+        });
+
+        Button btTitleRight = prompts_view.findViewById(R.id.btTitleRight);
+        btTitleRight.setText(getResources().getString(R.string.prompt_yes));
+        btTitleRight.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dbHelper.exportDB("SportInTheForestDB_before_last_delete.db", false);
+                dbHelper.exportDB("SportInTheForestDB_before_last_delete_" + gameHelper.getTodayString() + ".db", false);
+                Toast.makeText(getBaseContext(), getResources().getString(R.string.prompt_delete_user_success, final_username), Toast.LENGTH_LONG).show();
+                //TODO: delete user
+                dialogUserDelete.cancel();
+            }
+        });
+
+        dialogUserDelete.show();
+    }
+
 }

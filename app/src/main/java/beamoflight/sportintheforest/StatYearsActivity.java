@@ -2,7 +2,6 @@ package beamoflight.sportintheforest;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class StatYearsActivity extends Activity {
     DBHelper dbHelper;
@@ -95,16 +93,17 @@ public class StatYearsActivity extends Activity {
     {
         final String current_year_str = Integer.toString(year);
         LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_select_stat_type, null);
+        View prompts_view = li.inflate(R.layout.prompt_select_from_two_variants, null);
 
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
 
-        TextView tvSelectStatTypeTitle = prompts_view.findViewById(R.id.tvSelectStatTypeTitle);
-        tvSelectStatTypeTitle.setText(current_year_str);
+        TextView tvTitle = prompts_view.findViewById(R.id.tvTitle);
+        tvTitle.setText(current_year_str);
 
-        Button btSelectStatTypeMonths = prompts_view.findViewById(R.id.btSelectStatTypeMonths);
-        btSelectStatTypeMonths.setOnClickListener(new View.OnClickListener() {
+        Button btTitleLeft = prompts_view.findViewById(R.id.btTitleLeft);
+        btTitleLeft.setText(getResources().getString(R.string.prompt_select_stat_type_months));
+        btTitleLeft.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(StatYearsActivity.this, StatMonthsActivity.class);
                 intent.setAction(current_year_str);
@@ -112,8 +111,9 @@ public class StatYearsActivity extends Activity {
             }
         });
 
-        Button btSelectStatTypeWeeks = prompts_view.findViewById(R.id.btSelectStatTypeWeeks);
-        btSelectStatTypeWeeks.setOnClickListener(new View.OnClickListener() {
+        Button btTitleRight = prompts_view.findViewById(R.id.btTitleRight);
+        btTitleRight.setText(getResources().getString(R.string.prompt_select_stat_type_weeks));
+        btTitleRight.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(StatYearsActivity.this, StatWeeksActivity.class);
                 intent.setAction(current_year_str);

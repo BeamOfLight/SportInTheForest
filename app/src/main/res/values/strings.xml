@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.12</string>
-    <string name="app_version_revision">1</string>
+    <string name="app_version_revision">2</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -57,6 +57,11 @@
     <string name="btn_cancel_text">Отмена</string>
     <string name="btn_save_text">Сохранить</string>
     <string name="btn_ok_text">Хорошо</string>
+
+    <string name="prompt_select_action_title">Выберите действие</string>
+    <string name="prompt_select_action_edit">Редактировать</string>
+    <string name="prompt_select_action_delete">Удалить</string>
+
     <string name="msg_group_add_error">Не удалось создать группу</string>
     <string name="msg_group_add_success">Группа успешно создана</string>
     <string name="msg_group_edit_success">Группа успешно изменена</string>
@@ -145,6 +150,10 @@
     <string name="msg_exercise_edit_success">Изменения приняты</string>
     <string name="msg_exercise_edit_error">Не удалось применить изменения</string>
     <string name="are_you_sure">Вы уверены?</string>
+    <string name="prompt_delete_user">Удалить пользователя %s?</string>
+    <string name="prompt_delete_user_success">Пользователь %s был успешно удалён</string>
+    <string name="prompt_yes">Да</string>
+    <string name="prompt_no">Нет</string>
     <string name="are_you_sure_learn_skill">Изучить навык %s уровня %s?</string>
     <string name="myStatShadowActivityExerciseName">Упражнение</string>
     <string name="statMyShadowActivityPosition">Вы занимаете 1-е место из 3</string>
