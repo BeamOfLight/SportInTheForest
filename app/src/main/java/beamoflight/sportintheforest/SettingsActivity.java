@@ -22,6 +22,7 @@ public class SettingsActivity extends Activity {
     Button btnAddExercise, btnWipe, btnWipeSaveUserProgress, btnTest;
     Button btnImportDBAuto, btnImportDBAutoMon, btnImportDBAutoTue, btnImportDBAutoWed;
     Button btnImportDBAutoThu, btnImportDBAutoFri, btnImportDBAutoSat, btnImportDBAutoSun;
+    Button btnTestReplay;
 
     private void turnOnOffButtons(boolean status)
     {
@@ -246,6 +247,16 @@ public class SettingsActivity extends Activity {
                 Intent intent = new Intent(SettingsActivity.this, CompetitionViewerActivity.class);
                 startActivity(intent);
                 turnOnOffButtons(true);
+            }
+        });
+
+        btnTestReplay = findViewById(R.id.btnTestReplay);
+        btnTestReplay.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                gameHelper.setSharedPreferencesInt("replay_idx", 1);
+                gameHelper.setSharedPreferencesInt("replay_pos", 0);
+                gameHelper.setSharedPreferencesInt("replay_last_pos", 3);
+                gameHelper.startReplay(SettingsActivity.this);
             }
         });
     }

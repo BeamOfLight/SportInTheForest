@@ -132,4 +132,10 @@
         android:layout_height="wrap_content"
         android:text="Настройка упражнений" />
 
+    <Button
+        android:id="@+id/btnTestReplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Проигрыватель" />
+
 </LinearLayout>

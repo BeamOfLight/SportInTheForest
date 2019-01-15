@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.12</string>
-    <string name="app_version_revision">2</string>
+    <string name="app_version_revision">3a</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -131,7 +131,7 @@
     <string name="msg_new_skill_need_more_skill_points">Нужно больше очков навыков</string>
     <string name="msg_new_skill_need_higher_level">Вы ещё не достигли нужного уровня</string>
     <string name="select_user_title">Выберите пользователя</string>
-    <string name="select_user_exercise">Пользователь</string>
+    <string name="select_user_exercise">ПоbtnTestReplayльзователь</string>
     <string name="users_list_info_msg">В списке пока нет пользователей</string>
 
     <string name="main_menu_start">Старт</string>

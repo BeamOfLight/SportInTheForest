@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -385,5 +389,69 @@ public class GameHelper {
         }
 
         return "";
+    }
+
+    private boolean startReplayLoop(Activity current_activity)
+    {
+        int replayPos = getSharedPreferencesInt("replay_pos", 0);
+        Log.d("replay", "replayPos: " + replayPos);
+        // Save new replay pos
+        setSharedPreferencesInt("replay_pos", replayPos + 1);
+
+        switch(replayPos) {
+            case 0:
+                Toast.makeText(context, "Начинаем", Toast.LENGTH_LONG).show();
+                break;
+            case 1:
+                Intent intent = new Intent(current_activity, UsersActivity.class);
+                current_activity.startActivity(intent);
+                return false;
+
+            case 2:
+                ListView lvNewUser = current_activity.findViewById(R.id.lvNewUser);
+                lvNewUser.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+
+                break;
+            case 3:
+                Toast.makeText(context, "Завершаем", Toast.LENGTH_LONG).show();
+                break;
+            case 5:
+                return false;
+        }
+
+        return true;
+    }
+
+    public void startReplay(final Activity current_activity)
+    {
+        int replayIdx = getSharedPreferencesInt("replay_idx", 0);
+        Log.d("replay", "startReplay: " + replayIdx);
+        if (replayIdx > 0) {
+            int replayLastPos = getSharedPreferencesInt("replay_last_pos", 0);
+
+            while(startReplayLoop(current_activity)) {
+                Log.d("replay", "cycle");
+            }
+
+//            Runnable runnable = new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    startReplayLoop(current_activity);
+//                }
+//            };
+//
+//            Handler handler = new Handler();
+//
+//            // Execute the Runnable in 3000 milliseconds
+//            handler.postDelayed(runnable, 3000);
+
+            int replayPos = getSharedPreferencesInt("replay_pos", 0);
+            if (replayPos >= replayLastPos) {
+                setSharedPreferencesInt("replay_idx", 0);
+                setSharedPreferencesInt("replay_pos", 0);
+                setSharedPreferencesInt("replay_last_pos", 0);
+            }
+        }
     }
 }

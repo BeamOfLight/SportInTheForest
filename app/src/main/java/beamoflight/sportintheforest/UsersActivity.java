@@ -48,6 +48,8 @@ public class UsersActivity extends Activity {
 
         showNewUserList();
         showUsersList();
+
+        gameHelper.startReplay(this);
     }
 
     private void initUsersListView()
