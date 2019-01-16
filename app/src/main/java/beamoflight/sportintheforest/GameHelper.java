@@ -457,28 +457,6 @@ public class GameHelper {
             }
         }
 
-//        switch(replayPos) {
-//            case 0:
-//                Toast.makeText(context, "Начинаем", Toast.LENGTH_LONG).show();
-//                break;
-//            case 1:
-//                Intent intent = new Intent(current_activity, UsersActivity.class);
-//                current_activity.startActivity(intent);
-//                return false;
-//
-//            case 2:
-//                ListView lvNewUser = current_activity.findViewById(R.id.lvNewUser);
-//                lvNewUser.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-//
-//                break;
-//            case 3:
-//                Toast.makeText(context, "Завершаем", Toast.LENGTH_LONG).show();
-//                break;
-//            case 4:
-//                disableReplayMode();
-//                return false;
-//        }
-
         return true;
     }
 
@@ -491,24 +469,27 @@ public class GameHelper {
 
     public boolean isReplayMode()
     {
-        int replayIdx = getSharedPreferencesInt("replay_enable", 0);
-        return (replayIdx > 0);
+        return (getSharedPreferencesInt("replay_enable", 0) > 0);
     }
 
     public void disableReplayMode()
     {
+        Log.d("replay", "disableReplayMode");
         setSharedPreferencesInt("replay_enable", 0);
     }
 
-    public void enableReplayMode(String replay_string)
+    public void enableReplayMode(final Activity current_activity, String replay_string)
     {
-        setSharedPreferencesInt("replay_enable", 1);
-        setSharedPreferencesInt("replay_pos", 0);
-        String[] replay_records = replay_string.split("#");
-        int idx = 0;
-        for (String replay_record : replay_records) {
-            setSharedPreferencesString(getReplayRecordName(idx), replay_record);
-            idx++;
+        if (!isReplayMode()) {
+            setSharedPreferencesInt("replay_enable", 1);
+            setSharedPreferencesInt("replay_pos", 0);
+            String[] replay_records = replay_string.split("#");
+            int idx = 0;
+            for (String replay_record : replay_records) {
+                setSharedPreferencesString(getReplayRecordName(idx), replay_record);
+                idx++;
+            }
+            startReplay(current_activity);
         }
     }
 
@@ -532,11 +513,7 @@ public class GameHelper {
     private class ReplayTimerTask extends TimerTask {
         @Override
         public void run() {
-            if (replaySecondsCounter > 100) {
-                cancel();
-            } else {
-                replayHandler.sendEmptyMessage(0);
-            }
+            replayHandler.sendEmptyMessage(0);
         }
     }
 
@@ -559,10 +536,14 @@ public class GameHelper {
     public void removeReplayTimerTask()
     {
         Log.d("replay", "removeReplayTimerTask");
-        replayTimer.cancel();
-        replayTimer.purge();
         if (replayTimerTask != null) {
             replayTimerTask.cancel();
         }
+    }
+
+    public void removeReplayTimer()
+    {
+        replayTimer.cancel();
+        replayTimer.purge();
     }
 }

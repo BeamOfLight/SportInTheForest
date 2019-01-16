@@ -60,6 +60,8 @@ public class MainActivity extends Activity {
 
         initMenuButtons();
         checkVersion();
+
+        gameHelper.disableReplayMode();
     }
 
     private void showVersion()
@@ -182,6 +184,9 @@ public class MainActivity extends Activity {
 
         pbUpdate.setProgress(0);
 
+        //TODO: temporary fix
+        gameHelper.disableReplayMode();
+
         if (
                 ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED
@@ -216,6 +221,10 @@ public class MainActivity extends Activity {
             }
             Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
         }
+
+        gameHelper.removeReplayTimer();
+        gameHelper.removeReplayTimerTask();
+        gameHelper.disableReplayMode();
     }
 
     @Override
