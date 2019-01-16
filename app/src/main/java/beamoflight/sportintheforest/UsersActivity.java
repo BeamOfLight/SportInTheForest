@@ -33,7 +33,7 @@ public class UsersActivity extends Activity {
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.users);
+        setContentView(R.layout.menu_lists_std1);
 
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(this.getBaseContext());
@@ -46,6 +46,7 @@ public class UsersActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
+        ((TextView) findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.select_user_title));
         showNewUserList();
         showUsersList();
 
@@ -54,7 +55,7 @@ public class UsersActivity extends Activity {
 
     private void initUsersListView()
     {
-        lvUsers = findViewById(R.id.lvUsers);
+        lvUsers = findViewById(R.id.lvItems);
         if (!gameHelper.isReplayMode()) {
             lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -77,7 +78,7 @@ public class UsersActivity extends Activity {
 
     private void initNewUserListView()
     {
-        lvNewUser = findViewById(R.id.lvNewUser);
+        lvNewUser = findViewById(R.id.lvNewItem);
         if (!gameHelper.isReplayMode()) {
             lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,

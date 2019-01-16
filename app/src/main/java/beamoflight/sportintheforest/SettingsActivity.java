@@ -253,7 +253,7 @@ public class SettingsActivity extends Activity {
         btnTestReplay = findViewById(R.id.btnTestReplay);
         btnTestReplay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                gameHelper.enableReplayMode(SettingsActivity.this, "toast;Начинаем;long#activity;users;empty#bgcolor;lvNewUser;colorAccent#toast;Завершаем;long#exit;0;0");
+                gameHelper.enableReplayMode(SettingsActivity.this, "toast;Начинаем;long#activity;users;empty#bgcolor;lvNewItem;colorAccent#toast;Завершаем;long#exit;0;0");
             }
         });
     }

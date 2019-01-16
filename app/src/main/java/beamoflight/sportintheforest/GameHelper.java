@@ -432,8 +432,8 @@ public class GameHelper {
                 case "bgcolor":
                     int view_id = 0;
                     switch(arg1) {
-                        case "lvNewUser":
-                            view_id = R.id.lvNewUser;
+                        case "lvNewItem":
+                            view_id = R.id.lvNewItem;
                             break;
                     }
 
@@ -443,6 +443,8 @@ public class GameHelper {
                             color_id = R.color.colorAccent;
                             break;
                     }
+                    Log.d("replay", "view_id: " + view_id);
+                    Log.d("replay", "color_id: " + color_id);
                     current_activity.findViewById(view_id).setBackgroundColor(context.getResources().getColor(color_id, context.getTheme()));
                     break;
                 case "exit":
@@ -462,9 +464,11 @@ public class GameHelper {
 
     public void startReplay(final Activity current_activity)
     {
-        currentReplayActivity = current_activity;
-        initReplayHandler();
-        initReplayTimerTask();
+        if (isReplayMode()) {
+            currentReplayActivity = current_activity;
+            initReplayHandler();
+            initReplayTimerTask();
+        }
     }
 
     public boolean isReplayMode()

@@ -30,13 +30,12 @@ public class UserExercisesActivity extends Activity {
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_exercises);
+        setContentView(R.layout.menu_lists_std1);
 
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(this );
 
-        TextView tvUserName = findViewById(R.id.tvUserName);
-        tvUserName.setText(dbHelper.getUserNameById(gameHelper.getUserId()));
+        ((TextView) findViewById(R.id.tvTitle)).setText(dbHelper.getUserNameById(gameHelper.getUserId()));
 
         initNewUserListView();
         initExercisesListView();
@@ -52,7 +51,7 @@ public class UserExercisesActivity extends Activity {
 
     private void initNewUserListView()
     {
-        lvNewUserExercise = findViewById(R.id.lvNewUserExercise);
+        lvNewUserExercise = findViewById(R.id.lvNewItem);
         lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -106,7 +105,7 @@ public class UserExercisesActivity extends Activity {
 
     private void initExercisesListView()
     {
-        lvExercises = findViewById(R.id.lvExercises);
+        lvExercises = findViewById(R.id.lvItems);
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@mipmap/background_portrait_menu"
@@ -14,18 +13,18 @@
         android:layout_marginTop="2sp"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/tvUserName"
+            android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:minWidth="250sp"
             android:maxLines="1"
-            android:layout_gravity="center"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:singleLine="true"
+            android:layout_gravity="center"
+            android:text="Title"
             android:textColor="@color/titleColor"
-            android:text="@string/select_user_exercise"
             android:textAlignment="center"
             android:textSize="26sp">
         </TextView>
@@ -36,8 +35,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10sp"
         android:orientation="vertical">
+
         <ListView
-            android:id="@+id/lvNewUserExercise"
+            android:id="@+id/lvNewItem"
             android:padding="5sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,22 +45,12 @@
         </ListView>
 
         <ListView
-            android:id="@+id/lvExercises"
+            android:id="@+id/lvItems"
+            android:padding="5sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#99DDDDDD"
             android:footerDividersEnabled="true">
         </ListView>
-
-        <TextView
-            android:id= "@+id/tvExercisesListInfo"
-            android:layout_width= "wrap_content"
-            android:layout_height= "wrap_content"
-            android:text= ""
-            android:textColor="@color/titleColor"
-            android:textSize="20sp"
-            android:layout_marginLeft= "5dp"
-            android:layout_marginRight= "5dp" >
-        </TextView>
     </LinearLayout>
 </LinearLayout>
