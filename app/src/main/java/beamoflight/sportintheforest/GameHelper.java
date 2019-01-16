@@ -4,20 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -409,27 +400,84 @@ public class GameHelper {
         // Save new replay pos
         setSharedPreferencesInt("replay_pos", replayPos + 1);
 
-        switch(replayPos) {
-            case 0:
-                Toast.makeText(context, "Начинаем", Toast.LENGTH_LONG).show();
-                break;
-            case 1:
-                Intent intent = new Intent(current_activity, UsersActivity.class);
-                current_activity.startActivity(intent);
-                return false;
+        String replay_record = getSharedPreferencesString(getReplayRecordName(replayPos), "");
+        String[] replay_record_parts = replay_record.split(";");
+        String cmd, arg1, arg2;
+        if (replay_record_parts.length == 3) {
+            cmd = replay_record_parts[0];
+            arg1 = replay_record_parts[1];
+            arg2 = replay_record_parts[2];
+            switch(cmd) {
+                case "toast":
+                    int duration = Toast.LENGTH_SHORT;
+                    if (arg2.equals("long")) {
+                        duration = Toast.LENGTH_LONG;
+                    }
+                    Toast.makeText(context, arg1, duration).show();
+                    break;
+                case "activity":
+                    Class new_activity = current_activity.getClass();
+                    switch(arg1) {
+                        case "users":
+                            new_activity = UsersActivity.class;
+                            break;
+                    }
+                    Intent intent = new Intent(current_activity, new_activity);
+                    if (!arg2.equals("empty")) {
+                        intent.setAction(arg2);
+                    }
+                    current_activity.startActivity(intent);
+                    return false;
 
-            case 2:
-                ListView lvNewUser = current_activity.findViewById(R.id.lvNewUser);
-                lvNewUser.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+                case "bgcolor":
+                    int view_id = 0;
+                    switch(arg1) {
+                        case "lvNewUser":
+                            view_id = R.id.lvNewUser;
+                            break;
+                    }
 
-                break;
-            case 3:
-                Toast.makeText(context, "Завершаем", Toast.LENGTH_LONG).show();
-                break;
-            case 4:
-                disableReplayMode();
-                return false;
+                    int color_id = R.color.titleColor;
+                    switch(arg2) {
+                        case "colorAccent":
+                            color_id = R.color.colorAccent;
+                            break;
+                    }
+                    current_activity.findViewById(view_id).setBackgroundColor(context.getResources().getColor(color_id, context.getTheme()));
+                    break;
+                case "exit":
+                    disableReplayMode();
+                    return false;
+
+            }
+        } else {
+            Log.e("replay", "replay_record_parts.length: " + Integer.toString(replay_record_parts.length));
+            for (String replay_record_part : replay_record_parts) {
+                Log.e("replay", "=> " + replay_record_part);
+            }
         }
+
+//        switch(replayPos) {
+//            case 0:
+//                Toast.makeText(context, "Начинаем", Toast.LENGTH_LONG).show();
+//                break;
+//            case 1:
+//                Intent intent = new Intent(current_activity, UsersActivity.class);
+//                current_activity.startActivity(intent);
+//                return false;
+//
+//            case 2:
+//                ListView lvNewUser = current_activity.findViewById(R.id.lvNewUser);
+//                lvNewUser.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
+//
+//                break;
+//            case 3:
+//                Toast.makeText(context, "Завершаем", Toast.LENGTH_LONG).show();
+//                break;
+//            case 4:
+//                disableReplayMode();
+//                return false;
+//        }
 
         return true;
     }
@@ -443,19 +491,30 @@ public class GameHelper {
 
     public boolean isReplayMode()
     {
-        int replayIdx = getSharedPreferencesInt("replay_idx", 0);
+        int replayIdx = getSharedPreferencesInt("replay_enable", 0);
         return (replayIdx > 0);
     }
 
     public void disableReplayMode()
     {
-        setSharedPreferencesInt("replay_idx", 0);
+        setSharedPreferencesInt("replay_enable", 0);
     }
 
-    public void enableReplayMode(int replay_idx)
+    public void enableReplayMode(String replay_string)
     {
-        setSharedPreferencesInt("replay_idx", replay_idx);
+        setSharedPreferencesInt("replay_enable", 1);
         setSharedPreferencesInt("replay_pos", 0);
+        String[] replay_records = replay_string.split("#");
+        int idx = 0;
+        for (String replay_record : replay_records) {
+            setSharedPreferencesString(getReplayRecordName(idx), replay_record);
+            idx++;
+        }
+    }
+
+    private String getReplayRecordName(int idx)
+    {
+        return String.format(Locale.ROOT,"replay_record_%02d", idx);
     }
 
     private void initReplayTimerTask()
