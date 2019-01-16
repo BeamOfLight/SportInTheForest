@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by beamoflight on 30.05.17.
@@ -40,9 +42,17 @@ public class GameHelper {
     public static final int SPECIALISATION_REGENERATION = 3;
 
     private Context context;
+    private Timer replayTimer;
+    TimerTask replayTimerTask;
+    private Handler replayHandler;
+    private int replaySecondsCounter;
+    private Activity currentReplayActivity;
 
-    public GameHelper(Context current) {
+    public GameHelper(Context current)
+    {
         context = current;
+        replaySecondsCounter = 0;
+        replayTimer = new Timer(true);
     }
 
     public String getDateString(int field, int amount)
@@ -395,6 +405,7 @@ public class GameHelper {
     {
         int replayPos = getSharedPreferencesInt("replay_pos", 0);
         Log.d("replay", "replayPos: " + replayPos);
+
         // Save new replay pos
         setSharedPreferencesInt("replay_pos", replayPos + 1);
 
@@ -415,7 +426,8 @@ public class GameHelper {
             case 3:
                 Toast.makeText(context, "Завершаем", Toast.LENGTH_LONG).show();
                 break;
-            case 5:
+            case 4:
+                disableReplayMode();
                 return false;
         }
 
@@ -424,34 +436,74 @@ public class GameHelper {
 
     public void startReplay(final Activity current_activity)
     {
+        currentReplayActivity = current_activity;
+        initReplayHandler();
+        initReplayTimerTask();
+    }
+
+    public boolean isReplayMode()
+    {
         int replayIdx = getSharedPreferencesInt("replay_idx", 0);
-        Log.d("replay", "startReplay: " + replayIdx);
-        if (replayIdx > 0) {
-            int replayLastPos = getSharedPreferencesInt("replay_last_pos", 0);
+        return (replayIdx > 0);
+    }
 
-            while(startReplayLoop(current_activity)) {
-                Log.d("replay", "cycle");
+    public void disableReplayMode()
+    {
+        setSharedPreferencesInt("replay_idx", 0);
+    }
+
+    public void enableReplayMode(int replay_idx)
+    {
+        setSharedPreferencesInt("replay_idx", replay_idx);
+        setSharedPreferencesInt("replay_pos", 0);
+    }
+
+    private void initReplayTimerTask()
+    {
+        replaySecondsCounter = 0;
+        replayTimerTask = new GameHelper.ReplayTimerTask();
+        int replayPos = getSharedPreferencesInt("replay_pos", 0);
+        int delay = 500;
+        if (replayPos > 0) {
+            delay = 3000;
+        }
+        replayTimer.scheduleAtFixedRate(replayTimerTask, delay, 3000);
+    }
+
+    private class ReplayTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            if (replaySecondsCounter > 100) {
+                cancel();
+            } else {
+                replayHandler.sendEmptyMessage(0);
             }
+        }
+    }
 
-//            Runnable runnable = new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    startReplayLoop(current_activity);
-//                }
-//            };
-//
-//            Handler handler = new Handler();
-//
-//            // Execute the Runnable in 3000 milliseconds
-//            handler.postDelayed(runnable, 3000);
 
-            int replayPos = getSharedPreferencesInt("replay_pos", 0);
-            if (replayPos >= replayLastPos) {
-                setSharedPreferencesInt("replay_idx", 0);
-                setSharedPreferencesInt("replay_pos", 0);
-                setSharedPreferencesInt("replay_last_pos", 0);
-            }
+    private void initReplayHandler()
+    {
+        replayHandler = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                Log.d("replay", Integer.toString(replaySecondsCounter));
+                replaySecondsCounter++;
+
+                boolean res = startReplayLoop(currentReplayActivity);
+                if (!res) {
+                    removeReplayTimerTask();
+                }
+            };
+        };
+    }
+
+    public void removeReplayTimerTask()
+    {
+        Log.d("replay", "removeReplayTimerTask");
+        replayTimer.cancel();
+        replayTimer.purge();
+        if (replayTimerTask != null) {
+            replayTimerTask.cancel();
         }
     }
 }

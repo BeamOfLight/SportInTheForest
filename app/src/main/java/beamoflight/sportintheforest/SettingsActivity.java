@@ -253,9 +253,7 @@ public class SettingsActivity extends Activity {
         btnTestReplay = findViewById(R.id.btnTestReplay);
         btnTestReplay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                gameHelper.setSharedPreferencesInt("replay_idx", 1);
-                gameHelper.setSharedPreferencesInt("replay_pos", 0);
-                gameHelper.setSharedPreferencesInt("replay_last_pos", 3);
+                gameHelper.enableReplayMode(1);
                 gameHelper.startReplay(SettingsActivity.this);
             }
         });
@@ -263,6 +261,13 @@ public class SettingsActivity extends Activity {
 
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        gameHelper.removeReplayTimerTask();
     }
 
     private void prepareBackUpDir()

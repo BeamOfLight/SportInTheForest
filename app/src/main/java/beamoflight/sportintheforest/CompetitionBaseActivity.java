@@ -61,17 +61,17 @@ abstract public class CompetitionBaseActivity extends Activity {
         networkHelper = new NetworkHelper(getBaseContext());
         competitionView = new CompetitionView();
 
-        btCompetitionStart = (Button) findViewById(R.id.btCompetitionStart);
-        btCompetitionRestart = (Button) findViewById(R.id.btCompetitionRestart);
-        btInvite = (Button) findViewById(R.id.btInvite);
-        btNext = (Button) findViewById(R.id.btNextLocation);
-        btFinish = (Button) findViewById(R.id.btFinish);
-        btAddResult = (Button) findViewById(R.id.btAddResult);
-        btTranslation = (Button) findViewById(R.id.btTranslation);
-        lvCompetitionLog = (ListView) findViewById(R.id.lvCompetitionLog);
-        lvCompetitionTeamLeft = (ListView) findViewById(R.id.lvCompetitionTeamLeft);
-        lvCompetitionTeamRight = (ListView) findViewById(R.id.lvCompetitionTeamRight);
-        tvExerciseName = (TextView) findViewById(R.id.tvExerciseName);
+        btCompetitionStart = findViewById(R.id.btCompetitionStart);
+        btCompetitionRestart = findViewById(R.id.btCompetitionRestart);
+        btInvite = findViewById(R.id.btInvite);
+        btNext = findViewById(R.id.btNextLocation);
+        btFinish = findViewById(R.id.btFinish);
+        btAddResult = findViewById(R.id.btAddResult);
+        btTranslation = findViewById(R.id.btTranslation);
+        lvCompetitionLog = findViewById(R.id.lvCompetitionLog);
+        lvCompetitionTeamLeft = findViewById(R.id.lvCompetitionTeamLeft);
+        lvCompetitionTeamRight = findViewById(R.id.lvCompetitionTeamRight);
+        tvExerciseName = findViewById(R.id.tvExerciseName);
 
         inviteCode = "";
         setButtonsBeforeCompetitions();

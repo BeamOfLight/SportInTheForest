@@ -55,34 +55,38 @@ public class UsersActivity extends Activity {
     private void initUsersListView()
     {
         lvUsers = findViewById(R.id.lvUsers);
-        lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                int user_id = Integer.parseInt(usersData.get(position).get("user_id"));
-                gameHelper.saveUserId2Preferences(user_id);
-                Intent intent = new Intent(UsersActivity.this, UserExercisesActivity.class);
-                startActivity(intent);
-            }
-        });
+        if (!gameHelper.isReplayMode()) {
+            lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    int user_id = Integer.parseInt(usersData.get(position).get("user_id"));
+                    gameHelper.saveUserId2Preferences(user_id);
+                    Intent intent = new Intent(UsersActivity.this, UserExercisesActivity.class);
+                    startActivity(intent);
+                }
+            });
 
-        lvUsers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                initDialogSelectAction(position);
-                return true;
-            }
-        });
+            lvUsers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    initDialogSelectAction(position);
+                    return true;
+                }
+            });
+        }
     }
 
     private void initNewUserListView()
     {
         lvNewUser = findViewById(R.id.lvNewUser);
-        lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                initDialogAddOrEditUser(-1);
-                dialogAddOrEditUser.show();
-            }
-        });
+        if (!gameHelper.isReplayMode()) {
+            lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    initDialogAddOrEditUser(-1);
+                    dialogAddOrEditUser.show();
+                }
+            });
+        }
     }
 
     private void showUsersList()
@@ -243,6 +247,14 @@ public class UsersActivity extends Activity {
         });
 
         dialogUserDelete.show();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        gameHelper.removeReplayTimerTask();
     }
 
 }
