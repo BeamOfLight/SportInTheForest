@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <knowledge_category id="1" name="Общая информация"/>
+    <knowledge_category id="2" name="Характеристики персонажа"/>
+    <knowledge_category id="3" name="Специализация"/>
+    <knowledge_category id="4" name="Соревнования"/>
+    <knowledge_category id="5" name="Навыки"/>
+    <knowledge_category id="6" name="Часто задаваемые вопросы"/>
+</data>

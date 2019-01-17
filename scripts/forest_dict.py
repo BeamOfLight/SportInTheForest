@@ -222,3 +222,17 @@ def get_achievements():
 	achievements[10] = ("weekly_greater_300_periods_cnt", "Неделя с результатом больше 300")
 	achievements[11] = ("weekly_greater_700_periods_cnt", "Неделя с результатом больше 700")
 	return achievements
+
+def get_knowledge_categories():
+	arr = []
+	for i in xrange(6):
+		arr.append('')
+
+	arr[0]="Общая информация"
+	arr[1]="Характеристики персонажа"
+	arr[2]="Специализация"
+	arr[3]="Соревнования"
+	arr[4]="Навыки"
+	arr[5]="Часто задаваемые вопросы"
+
+	return arr
