@@ -2528,6 +2528,36 @@ class DBHelper extends DBHelperBaseLayer {
         return player_exp_data;
     }
 
+    public ArrayList<Map<String, String>> getKnowledgeCategoriesData()
+    {
+        ArrayList<Map<String, String>> data = new ArrayList<>();
+        Map<String, String> m;
+        Cursor cursor = db.query(
+                "knowledge_categories",
+                new String[]{"id", "name"},
+                null,
+                null,
+                null,
+                null,
+                "id ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("id", cursor.getString(cursor.getColumnIndex("id")));
+                    m.put("name", cursor.getString(cursor.getColumnIndex("name")));
+
+                    data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
     public void updateUserInfoWithLevelCheck()
     {
         int user_level_old = gameHelper.getCachedUserLevel();

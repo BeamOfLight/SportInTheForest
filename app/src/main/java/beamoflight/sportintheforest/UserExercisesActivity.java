@@ -131,7 +131,6 @@ public class UserExercisesActivity extends Activity {
             }
         });
 
-        lvExercises.setFooterDividersEnabled(true);
         showExercisesList();
         showNewUserExerciseList();
     }

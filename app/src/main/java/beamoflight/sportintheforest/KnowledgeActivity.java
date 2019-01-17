@@ -2,115 +2,73 @@ package beamoflight.sportintheforest;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
+import java.util.Map;
 
 public class KnowledgeActivity extends Activity {
-    int page = 0;
-    TextView tvKnowledgeGroupName, tvKnowledgeInfo;
-    Button btPrevKnowledge, btNextKnowledge;
-    ArrayList<KnowledgePage> pages;
 
-    private class KnowledgePage
-    {
-        private String groupName;
-        private String info;
-
-        KnowledgePage(String group_name, String info_)
-        {
-            groupName = group_name;
-            info = info_;
-        }
-    }
+    DBHelper dbHelper;
+    GameHelper gameHelper;
+    List<Map<String, String>> knowledgeCategoriesData;
+    ListView lvKnowledgeCategories;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.knowledge);
+        setContentView(R.layout.menu_lists_std1);
 
-        tvKnowledgeGroupName = findViewById(R.id.tvKnowledgeGroupName);
-        tvKnowledgeInfo = findViewById(R.id.tvKnowledgeInfo);
-        btPrevKnowledge = findViewById(R.id.btPrevKnowledge);
-        btNextKnowledge = findViewById(R.id.btNextKnowledge);
+        dbHelper = new DBHelper( this );
+        gameHelper = new GameHelper(this );
+    }
 
-        btPrevKnowledge.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (page > 0) {
-                    page--;
-                    loadCurrentKnowledgePage();
-                }
+    protected void onStart() {
+        super.onStart();
+
+        ((TextView) findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.main_menu_knowledge));
+
+        initExercisesListView();
+    }
+
+    private void initExercisesListView()
+    {
+        lvKnowledgeCategories = findViewById(R.id.lvItems);
+        lvKnowledgeCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+
             }
         });
 
-        btNextKnowledge.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (page < pages.size() - 1) {
-                    page++;
-                    loadCurrentKnowledgePage();
-                }
-            }
-        });
-
-        initKnowledgeBase();
-        loadCurrentKnowledgePage();
+        showExercisesList();
     }
 
-    private void loadCurrentKnowledgePage()
+    private void showExercisesList()
     {
-        tvKnowledgeGroupName.setText(pages.get(page).groupName);
-        tvKnowledgeInfo.setText(pages.get(page).info);
+        knowledgeCategoriesData = dbHelper.getKnowledgeCategoriesData();
+        lvKnowledgeCategories.invalidateViews();
+        SimpleAdapter exercisesAdapter = new SimpleAdapter(
+                this,
+                knowledgeCategoriesData,
+                android.R.layout.simple_list_item_1,
+                new String[] {"name", "id"},
+                new int[] {android.R.id.text1}
+        );
 
-        if (page > 0) {
-            btPrevKnowledge.setVisibility(View.VISIBLE);
-        } else {
-            btPrevKnowledge.setVisibility(View.INVISIBLE);
-        }
-
-        if (page < pages.size() - 1) {
-            btNextKnowledge.setVisibility(View.VISIBLE);
-        } else {
-            btNextKnowledge.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void initKnowledgeBase()
-    {
-        pages = new ArrayList<>();
-        try {
-            XmlPullParser xpp = getBaseContext().getResources().getXml(R.xml.knowledge);
-
-            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
-                switch (xpp.getEventType()) {
-                    case XmlPullParser.START_TAG:
-                        if (xpp.getName().equals("knowledge")) {
-                            pages.add(
-                                new KnowledgePage(
-                                    xpp.getAttributeValue(null, "group"),
-                                    xpp.getAttributeValue(null, "description")
-                                )
-                            );
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                // следующий элемент
-                xpp.next();
-            }
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        lvKnowledgeCategories.setAdapter(exercisesAdapter);
     }
 }

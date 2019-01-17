@@ -629,6 +629,49 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL(base_sql + sql.substring(1));
     }
 
+    protected void createTableKnowledgeCategories()
+    {
+        // создаем таблицу skill_groups
+        db.execSQL("DROP TABLE IF EXISTS knowledge_categories;");
+        db.execSQL("CREATE TABLE IF NOT EXISTS knowledge_categories ("
+                + "id integer primary key autoincrement,"
+                + "name text"
+                + ");");
+
+        String base_sql = "INSERT INTO knowledge_categories (id, name) VALUES";
+        String sql = "";
+        int id;
+        String name;
+
+        try {
+            XmlPullParser xpp = context.getResources().getXml(R.xml.knowledge_categories);
+
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                switch (xpp.getEventType()) {
+                    case XmlPullParser.START_TAG:
+                        if (xpp.getName().equals("knowledge_category")) {
+                            id = Integer.parseInt(xpp.getAttributeValue(null, "id"));
+                            name = xpp.getAttributeValue(null, "name");
+
+                            sql += ", (" + id + ", \"" + name + "\")";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                // следующий элемент
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sql += ";";
+        db.execSQL(base_sql + sql.substring(1));
+    }
+
     protected void createTableUserExerciseSkills() {
         // создаем таблицу user_exercise_skills
         db.execSQL("DROP TABLE IF EXISTS user_exercise_skills;");
@@ -696,6 +739,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         createTableSkills();
         createTableSkillGroups();
         createTableAchievements();
+        createTableKnowledgeCategories();
     }
 
     //importing database
