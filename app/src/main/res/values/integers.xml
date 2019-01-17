@@ -4,8 +4,8 @@
     <integer name="default_user_fitness_points">10</integer>
     <integer name="default_user_encoded_level">10000</integer>
     <integer name="default_user_exp">0</integer>
-    <integer name="default_user_id">1</integer>
-    <integer name="default_exercise_id">1</integer>
+    <integer name="default_user_id">0</integer>
+    <integer name="default_exercise_id">0</integer>
     <integer name="default_current_tab_id">0</integer>
     <integer name="default_last_selection">0</integer>
     <integer name="np_count_min">0</integer>

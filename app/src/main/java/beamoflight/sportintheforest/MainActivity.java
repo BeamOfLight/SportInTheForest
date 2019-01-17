@@ -157,7 +157,12 @@ public class MainActivity extends Activity {
         btMenuStart = findViewById(R.id.btMenuStart);
         btMenuStart.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UsersActivity.class);
+                Intent intent;
+                if (gameHelper.getUserId() == 0) {
+                    intent = new Intent(getBaseContext(), UsersActivity.class);
+                } else {
+                    intent = new Intent(getBaseContext(), UserExercisesActivity.class);
+                }
                 startActivity(intent);
             }
         });
@@ -165,7 +170,7 @@ public class MainActivity extends Activity {
         btMenuSettings = findViewById(R.id.btMenuSettings);
         btMenuSettings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
                 startActivity(intent);
             }
         });
@@ -173,7 +178,7 @@ public class MainActivity extends Activity {
         btMenuKnowledge = findViewById(R.id.btMenuKnowledge);
         btMenuKnowledge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, KnowledgeActivity.class);
+                Intent intent = new Intent(getBaseContext(), KnowledgeActivity.class);
                 startActivity(intent);
             }
         });

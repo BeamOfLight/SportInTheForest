@@ -34,16 +34,12 @@ public class UserExercisesActivity extends Activity {
 
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(this );
-
-        ((TextView) findViewById(R.id.tvTitle)).setText(dbHelper.getUserNameById(gameHelper.getUserId()));
-
-        initNewUserListView();
-        initExercisesListView();
-
     }
 
     protected void onStart() {
         super.onStart();
+
+        ((TextView) findViewById(R.id.tvTitle)).setText(dbHelper.getUserNameById(gameHelper.getUserId()));
 
         initNewUserListView();
         initExercisesListView();
@@ -55,8 +51,16 @@ public class UserExercisesActivity extends Activity {
         lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                initDialogAddUserExercise();
-                dialogAddUserExercise.show();
+                switch (position) {
+                    case 0:
+                        initDialogAddUserExercise();
+                        dialogAddUserExercise.show();
+                        break;
+                    case 1:
+                        Intent intent = new Intent(getBaseContext(), UsersActivity.class);
+                        startActivity(intent);
+                        break;
+                }
             }
         });
     }
@@ -150,7 +154,7 @@ public class UserExercisesActivity extends Activity {
     private void showNewUserExerciseList()
     {
         lvNewUserExercise.invalidateViews();
-        String[] items = {"Новое упражнение"};
+        String[] items = {"Новое упражнение", "Выбрать другого пользователя"};
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
 
         lvNewUserExercise.setAdapter(itemsAdapter);

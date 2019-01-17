@@ -24,6 +24,7 @@ public class StatYearsActivity extends Activity {
     TextView tvExerciseName, tvPosition;
     Spinner spinner;
     List<Stat> values = new ArrayList<>();
+    AlertDialog dialog;
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,8 @@ public class StatYearsActivity extends Activity {
 
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
+        alert_dialog_builder.setCancelable(true);
+        dialog = alert_dialog_builder.create();
 
         TextView tvTitle = prompts_view.findViewById(R.id.tvTitle);
         tvTitle.setText(current_year_str);
@@ -108,6 +111,7 @@ public class StatYearsActivity extends Activity {
                 Intent intent = new Intent(StatYearsActivity.this, StatMonthsActivity.class);
                 intent.setAction(current_year_str);
                 startActivity(intent);
+                dialog.cancel();
             }
         });
 
@@ -118,16 +122,11 @@ public class StatYearsActivity extends Activity {
                 Intent intent = new Intent(StatYearsActivity.this, StatWeeksActivity.class);
                 intent.setAction(current_year_str);
                 startActivity(intent);
+                dialog.cancel();
             }
         });
 
-        // set dialog message
-        alert_dialog_builder.setCancelable(true);
-
-        // create alert dialog
-        AlertDialog dialog = alert_dialog_builder.create();
         dialog.show();
-        //dialog.cancel();
     }
 
 }

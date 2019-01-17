@@ -61,9 +61,13 @@ public class UsersActivity extends Activity {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
                     int user_id = Integer.parseInt(usersData.get(position).get("user_id"));
+                    int prev_user_id = gameHelper.getUserId();
                     gameHelper.saveUserId2Preferences(user_id);
-                    Intent intent = new Intent(UsersActivity.this, UserExercisesActivity.class);
-                    startActivity(intent);
+                    if (prev_user_id == getResources().getInteger(R.integer.default_user_id)) {
+                        Intent intent = new Intent(UsersActivity.this, UserExercisesActivity.class);
+                        startActivity(intent);
+                    }
+                    finish();
                 }
             });
 
