@@ -178,7 +178,7 @@ public class MainActivity extends Activity {
         btMenuKnowledge = findViewById(R.id.btMenuKnowledge);
         btMenuKnowledge.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), KnowledgeActivity.class);
+                Intent intent = new Intent(getBaseContext(), KnowledgeCategoriesActivity.class);
                 startActivity(intent);
             }
         });

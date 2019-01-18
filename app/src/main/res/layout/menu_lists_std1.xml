@@ -37,7 +37,7 @@
         android:orientation="vertical">
 
         <ListView
-            android:id="@+id/lvNewItem"
+            android:id="@+id/lvItemsTop"
             android:padding="5sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
         </ListView>
 
         <ListView
-            android:id="@+id/lvItems"
+            android:id="@+id/lvItemsBottom"
             android:padding="5sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

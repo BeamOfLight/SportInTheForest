@@ -55,7 +55,7 @@ public class UsersActivity extends Activity {
 
     private void initUsersListView()
     {
-        lvUsers = findViewById(R.id.lvItems);
+        lvUsers = findViewById(R.id.lvItemsBottom);
         if (!gameHelper.isReplayMode()) {
             lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -82,7 +82,7 @@ public class UsersActivity extends Activity {
 
     private void initNewUserListView()
     {
-        lvNewUser = findViewById(R.id.lvNewItem);
+        lvNewUser = findViewById(R.id.lvItemsTop);
         if (!gameHelper.isReplayMode()) {
             lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,

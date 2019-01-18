@@ -433,7 +433,7 @@ public class GameHelper {
                     int view_id = 0;
                     switch(arg1) {
                         case "lvNewItem":
-                            view_id = R.id.lvNewItem;
+                            view_id = R.id.lvItemsTop;
                             break;
                     }
 

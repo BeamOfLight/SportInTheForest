@@ -47,7 +47,7 @@ public class UserExercisesActivity extends Activity {
 
     private void initNewUserListView()
     {
-        lvNewUserExercise = findViewById(R.id.lvNewItem);
+        lvNewUserExercise = findViewById(R.id.lvItemsTop);
         lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -109,7 +109,7 @@ public class UserExercisesActivity extends Activity {
 
     private void initExercisesListView()
     {
-        lvExercises = findViewById(R.id.lvItems);
+        lvExercises = findViewById(R.id.lvItemsBottom);
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {

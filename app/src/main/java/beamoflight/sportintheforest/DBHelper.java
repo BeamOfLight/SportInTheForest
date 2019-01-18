@@ -2539,7 +2539,7 @@ class DBHelper extends DBHelperBaseLayer {
                 null,
                 null,
                 null,
-                "id ASC"
+                "order_value ASC"
         );
 
         if (cursor != null) {
@@ -2557,6 +2557,63 @@ class DBHelper extends DBHelperBaseLayer {
 
         return data;
     }
+
+    public String getKnowledgeCategoryName(int category_id)
+    {
+        String name = "";
+        Cursor cursor = db.query(
+                "knowledge_categories",
+                new String[]{"name"},
+                "id = ?",
+                new String[]{Integer.toString(category_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex("name"));
+            }
+            cursor.close();
+        }
+
+        return name;
+    }
+
+    public ArrayList<Map<String, String>> getKnowledgeItemsData(int category_id)
+    {
+        ArrayList<Map<String, String>> data = new ArrayList<>();
+        Map<String, String> m;
+        Cursor cursor = db.query(
+                "knowledge_items",
+                new String[]{"id", "name", "category_id", "type", "text_value"},
+                "category_id = ?",
+                new String[]{Integer.toString(category_id)},
+                null,
+                null,
+                "id ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    m = new HashMap<>();
+                    m.put("id", cursor.getString(cursor.getColumnIndex("id")));
+                    m.put("name", cursor.getString(cursor.getColumnIndex("name")));
+                    m.put("category_id", cursor.getString(cursor.getColumnIndex("category_id")));
+                    m.put("type", cursor.getString(cursor.getColumnIndex("type")));
+                    m.put("text_value", cursor.getString(cursor.getColumnIndex("text_value")));
+
+                    data.add(m);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return data;
+    }
+
 
     public void updateUserInfoWithLevelCheck()
     {

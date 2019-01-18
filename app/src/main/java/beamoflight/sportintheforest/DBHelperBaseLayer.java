@@ -635,12 +635,13 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS knowledge_categories;");
         db.execSQL("CREATE TABLE IF NOT EXISTS knowledge_categories ("
                 + "id integer primary key autoincrement,"
-                + "name text"
+                + "name text,"
+                + "order_value integer"
                 + ");");
 
-        String base_sql = "INSERT INTO knowledge_categories (id, name) VALUES";
+        String base_sql = "INSERT INTO knowledge_categories (id, name, order_value) VALUES";
         String sql = "";
-        int id;
+        int id, order_value;
         String name;
 
         try {
@@ -652,8 +653,58 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                         if (xpp.getName().equals("knowledge_category")) {
                             id = Integer.parseInt(xpp.getAttributeValue(null, "id"));
                             name = xpp.getAttributeValue(null, "name");
+                            order_value = Integer.parseInt(xpp.getAttributeValue(null, "order_value"));
 
-                            sql += ", (" + id + ", \"" + name + "\")";
+                            sql += ", (" + id + ", \"" + name + "\", " + order_value + ")";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                // следующий элемент
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sql += ";";
+        db.execSQL(base_sql + sql.substring(1));
+    }
+
+    protected void createTableKnowledgeItems()
+    {
+        // создаем таблицу skill_groups
+        db.execSQL("DROP TABLE IF EXISTS knowledge_items;");
+        db.execSQL("CREATE TABLE IF NOT EXISTS knowledge_items ("
+                + "id integer primary key autoincrement,"
+                + "category_id integer,"
+                + "name text,"
+                + "type integer,"
+                + "text_value text,"
+                + "FOREIGN KEY(category_id) REFERENCES knowledge_categories(id)"
+                + ");");
+
+        String base_sql = "INSERT INTO knowledge_items (category_id, name, type, text_value) VALUES";
+        String sql = "";
+        int category_id, type;
+        String name, text_value;
+
+        try {
+            XmlPullParser xpp = context.getResources().getXml(R.xml.knowledge_items);
+
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                switch (xpp.getEventType()) {
+                    case XmlPullParser.START_TAG:
+                        if (xpp.getName().equals("knowledge_item")) {
+                            category_id = Integer.parseInt(xpp.getAttributeValue(null, "category_id"));
+                            name = xpp.getAttributeValue(null, "name");
+                            text_value = xpp.getAttributeValue(null, "text_value");
+                            type = Integer.parseInt(xpp.getAttributeValue(null, "type"));
+
+                            sql += ", (" + category_id + ", \"" + name + "\", " + type + ",\"" + text_value + "\")";
                         }
                         break;
                     default:
@@ -740,6 +791,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         createTableSkillGroups();
         createTableAchievements();
         createTableKnowledgeCategories();
+        createTableKnowledgeItems();
     }
 
     //importing database

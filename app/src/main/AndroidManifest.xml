@@ -52,6 +52,15 @@
         </activity>
 
         <activity
+            android:name=".KnowledgeCategoriesActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.KNOWLEDGE_CATEGORIES" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".KnowledgeActivity"
             android:screenOrientation="portrait"
             >
