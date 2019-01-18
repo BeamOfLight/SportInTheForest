@@ -57,12 +57,9 @@ public class KnowledgeCategoriesActivity extends Activity {
     {
         knowledgeCategoriesData = dbHelper.getKnowledgeCategoriesData();
         lvKnowledgeCategories.invalidateViews();
-        SimpleAdapter KnowledgeCategoriesAdapter = new SimpleAdapter(
+        KnowledgeCategoryArrayAdapter KnowledgeCategoriesAdapter = new KnowledgeCategoryArrayAdapter(
                 this,
-                knowledgeCategoriesData,
-                android.R.layout.simple_list_item_1,
-                new String[] {"name", "id"},
-                new int[] {android.R.id.text1}
+                knowledgeCategoriesData
         );
 
         lvKnowledgeCategories.setAdapter(KnowledgeCategoriesAdapter);
