@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +32,9 @@ public class GameHelper {
     public static final int SPECIALISATION_RESULT = 1;
     public static final int SPECIALISATION_RESISTANCE = 2;
     public static final int SPECIALISATION_REGENERATION = 3;
+
+    final int REPLAY_TIMER_TICK = 1000;
+    final int REPLAY_TIMER_FIRST_TICK = 500;
 
     private Context context;
     private Timer replayTimer;
@@ -391,7 +395,14 @@ public class GameHelper {
 
         return "";
     }
-
+/*
+toast_long;TEXT
+toast;TEXT
+activity;users
+activity;users;5
+pass
+exit
+ */
     private boolean startReplayLoop(Activity current_activity)
     {
         int replayPos = getSharedPreferencesInt("replay_pos", 0);
@@ -402,55 +413,81 @@ public class GameHelper {
 
         String replay_record = getSharedPreferencesString(getReplayRecordName(replayPos), "");
         String[] replay_record_parts = replay_record.split(";");
-        String cmd, arg1, arg2;
-        if (replay_record_parts.length == 3) {
+        String cmd;
+        if (replay_record_parts.length >= 1 && replay_record_parts.length <= 3) {
             cmd = replay_record_parts[0];
-            arg1 = replay_record_parts[1];
-            arg2 = replay_record_parts[2];
             switch(cmd) {
-                case "toast":
-                    int duration = Toast.LENGTH_SHORT;
-                    if (arg2.equals("long")) {
-                        duration = Toast.LENGTH_LONG;
+                case "toast_long":
+                    if (replay_record_parts.length == 2) {
+                        Toast.makeText(context, replay_record_parts[1], Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
-                    Toast.makeText(context, arg1, duration).show();
+                    break;
+                case "toast":
+                    Toast.makeText(context, replay_record_parts[1], Toast.LENGTH_SHORT).show();
                     break;
                 case "activity":
-                    Class new_activity = current_activity.getClass();
-                    switch(arg1) {
-                        case "users":
-                            new_activity = UsersActivity.class;
-                            break;
+                    setReplayBorder(false);
+                    setSharedPreferencesInt("close_last_activity", 1);
+                    if (replay_record_parts.length >= 2) {
+                        Class new_activity = current_activity.getClass();
+                        switch (replay_record_parts[1]) {
+                            case "users":
+                                new_activity = UsersActivity.class;
+                                break;
+                        }
+
+                        Intent intent = new Intent(current_activity, new_activity);
+                        if (replay_record_parts.length == 3) {
+                            intent.setAction(replay_record_parts[2]);
+                        }
+                        current_activity.startActivity(intent);
+                        return false;
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
-                    Intent intent = new Intent(current_activity, new_activity);
-                    if (!arg2.equals("empty")) {
-                        intent.setAction(arg2);
-                    }
-                    current_activity.startActivity(intent);
-                    return false;
 
                 case "bgcolor":
-                    int view_id = 0;
-                    switch(arg1) {
-                        case "lvNewItem":
-                            view_id = R.id.lvItemsTop;
-                            break;
-                    }
+                    if (replay_record_parts.length == 3) {
+                        int view_id = 0;
+                        switch (replay_record_parts[1]) {
+                            case "lvNewItem":
+                                view_id = R.id.lvItemsTop;
+                                break;
+                        }
 
-                    int color_id = R.color.titleColor;
-                    switch(arg2) {
-                        case "colorAccent":
-                            color_id = R.color.colorAccent;
-                            break;
+                        int color_id = R.color.titleColor;
+                        switch (replay_record_parts[2]) {
+                            case "colorAccent":
+                                color_id = R.color.colorAccent;
+                                break;
+                        }
+                        Log.d("replay", "view_id: " + view_id);
+                        Log.d("replay", "color_id: " + color_id);
+                        View view = current_activity.findViewById(view_id);
+                        if (view != null) {
+                            view.setBackgroundColor(context.getResources().getColor(color_id, context.getTheme()));
+                        } else {
+                            Log.d("replay", String.format("[%s] Empty view", cmd));
+                        }
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
-                    Log.d("replay", "view_id: " + view_id);
-                    Log.d("replay", "color_id: " + color_id);
-                    current_activity.findViewById(view_id).setBackgroundColor(context.getResources().getColor(color_id, context.getTheme()));
+                    break;
+                case "pass":
                     break;
                 case "exit":
+                    setReplayBorder(false);
+                    int close_last_activity = getSharedPreferencesInt("close_last_activity", 0);
+                    if (close_last_activity == 1) {
+                        current_activity.finish();
+                    }
                     disableReplayMode();
                     return false;
-
+                default:
+                    Log.d("replay", String.format("Wrong command: %s", cmd));
+                    break;
             }
         } else {
             Log.e("replay", "replay_record_parts.length: " + Integer.toString(replay_record_parts.length));
@@ -468,6 +505,21 @@ public class GameHelper {
             currentReplayActivity = current_activity;
             initReplayHandler();
             initReplayTimerTask();
+
+            setReplayBorder(true);
+        }
+    }
+
+    private void setReplayBorder(boolean visible)
+    {
+        int drawable_id = R.drawable.replay_border;
+        if (!visible) {
+            drawable_id = R.drawable.replay_border_invisible;
+        }
+
+        View view = currentReplayActivity.findViewById(R.id.llBorder);
+        if (view != null) {
+            view.setBackground(context.getDrawable(drawable_id));
         }
     }
 
@@ -485,9 +537,10 @@ public class GameHelper {
     public void enableReplayMode(final Activity current_activity, String replay_string)
     {
         if (!isReplayMode()) {
+            setSharedPreferencesInt("close_last_activity", 0);
             setSharedPreferencesInt("replay_enable", 1);
             setSharedPreferencesInt("replay_pos", 0);
-            String[] replay_records = replay_string.split("#");
+            String[] replay_records = replay_string.split(" # ");
             int idx = 0;
             for (String replay_record : replay_records) {
                 setSharedPreferencesString(getReplayRecordName(idx), replay_record);
@@ -507,11 +560,11 @@ public class GameHelper {
         replaySecondsCounter = 0;
         replayTimerTask = new GameHelper.ReplayTimerTask();
         int replayPos = getSharedPreferencesInt("replay_pos", 0);
-        int delay = 500;
+        int delay = REPLAY_TIMER_FIRST_TICK;
         if (replayPos > 0) {
-            delay = 3000;
+            delay = REPLAY_TIMER_TICK;
         }
-        replayTimer.scheduleAtFixedRate(replayTimerTask, delay, 3000);
+        replayTimer.scheduleAtFixedRate(replayTimerTask, delay, REPLAY_TIMER_TICK);
     }
 
     private class ReplayTimerTask extends TimerTask {
