@@ -33,8 +33,8 @@ public class GameHelper {
     public static final int SPECIALISATION_RESISTANCE = 2;
     public static final int SPECIALISATION_REGENERATION = 3;
 
-    final int REPLAY_TIMER_TICK = 1000;
-    final int REPLAY_TIMER_FIRST_TICK = 500;
+    final int REPLAY_TIMER_TICK = 100;
+    final int REPLAY_TIMER_FIRST_TICK = 100;
 
     private Context context;
     private Timer replayTimer;
@@ -395,6 +395,42 @@ public class GameHelper {
 
         return "";
     }
+
+    private Class getActivityByString(Activity default_activity, String str_id)
+    {
+        Class new_activity = default_activity.getClass();
+        switch (str_id) {
+            case "users":
+                new_activity = UsersActivity.class;
+                break;
+        }
+
+        return new_activity;
+    }
+
+    private int getResourceViewId(String str_id)
+    {
+        int view_id = 0;
+        switch (str_id) {
+            case "lvNewItem":
+                view_id = R.id.lvItemsTop;
+                break;
+        }
+
+        return view_id;
+    }
+
+    private int getResourceColorId(String str_id)
+    {
+        int color_id = R.color.titleColor;
+        switch (str_id) {
+            case "colorAccent":
+                color_id = R.color.colorAccent;
+                break;
+        }
+
+        return color_id;
+    }
 /*
 toast_long;TEXT
 toast;TEXT
@@ -405,64 +441,79 @@ exit
  */
     private boolean startReplayLoop(Activity current_activity)
     {
-        int replayPos = getSharedPreferencesInt("replay_pos", 0);
-        Log.d("replay", "replayPos: " + replayPos);
+        int replay_wait_ticks = getSharedPreferencesInt("replay_wait_ticks", 0);
+        Log.d("replay", "replay_wait_ticks: " + replay_wait_ticks);
+        if (replay_wait_ticks > 0) {
+            setSharedPreferencesInt("replay_wait_ticks", replay_wait_ticks - 1);
+            return true;
+        }
+
+        int replay_pos = getSharedPreferencesInt("replay_pos", 0);
+        Log.d("replay", "replay_pos: " + replay_pos);
 
         // Save new replay pos
-        setSharedPreferencesInt("replay_pos", replayPos + 1);
+        setSharedPreferencesInt("replay_pos", replay_pos + 1);
 
-        String replay_record = getSharedPreferencesString(getReplayRecordName(replayPos), "");
+        String replay_record = getSharedPreferencesString(getReplayRecordName(replay_pos), "");
         String[] replay_record_parts = replay_record.split(";");
         String cmd;
-        if (replay_record_parts.length >= 1 && replay_record_parts.length <= 3) {
+        if (replay_record_parts.length >= 1) {
             cmd = replay_record_parts[0];
             switch(cmd) {
-                case "toast_long":
-                    if (replay_record_parts.length == 2) {
+                case "toast-long":
+                    if (replay_record_parts.length == 3) {
                         Toast.makeText(context, replay_record_parts[1], Toast.LENGTH_LONG).show();
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[2]));
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                     break;
                 case "toast":
-                    Toast.makeText(context, replay_record_parts[1], Toast.LENGTH_SHORT).show();
+                    if (replay_record_parts.length == 3) {
+                        Toast.makeText(context, replay_record_parts[1], Toast.LENGTH_SHORT).show();
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[2]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
                     break;
                 case "activity":
                     setReplayBorder(false);
-                    setSharedPreferencesInt("close_last_activity", 1);
-                    if (replay_record_parts.length >= 2) {
-                        Class new_activity = current_activity.getClass();
-                        switch (replay_record_parts[1]) {
-                            case "users":
-                                new_activity = UsersActivity.class;
-                                break;
-                        }
+                    setSharedPreferencesInt("replay_close_last_activity", 1);
+                    if (replay_record_parts.length == 3) {
+                        Class new_activity = getActivityByString(
+                                current_activity,
+                                replay_record_parts[1]
+                        );
 
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[2]));
                         Intent intent = new Intent(current_activity, new_activity);
-                        if (replay_record_parts.length == 3) {
-                            intent.setAction(replay_record_parts[2]);
-                        }
                         current_activity.startActivity(intent);
                         return false;
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
+                case "activity-action":
+                    setReplayBorder(false);
+                    setSharedPreferencesInt("replay_close_last_activity", 1);
+                    if (replay_record_parts.length == 4) {
+                        Class new_activity = getActivityByString(
+                                current_activity,
+                                replay_record_parts[1]
+                        );
 
-                case "bgcolor":
-                    if (replay_record_parts.length == 3) {
-                        int view_id = 0;
-                        switch (replay_record_parts[1]) {
-                            case "lvNewItem":
-                                view_id = R.id.lvItemsTop;
-                                break;
-                        }
-
-                        int color_id = R.color.titleColor;
-                        switch (replay_record_parts[2]) {
-                            case "colorAccent":
-                                color_id = R.color.colorAccent;
-                                break;
-                        }
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[3]));
+                        Intent intent = new Intent(current_activity, new_activity);
+                        intent.setAction(replay_record_parts[2]);
+                        current_activity.startActivity(intent);
+                        return false;
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
+                case "bg-color":
+                    if (replay_record_parts.length == 4) {
+                        int view_id = getResourceViewId(replay_record_parts[1]);
+                        int color_id = getResourceColorId(replay_record_parts[2]);
                         Log.d("replay", "view_id: " + view_id);
                         Log.d("replay", "color_id: " + color_id);
                         View view = current_activity.findViewById(view_id);
@@ -471,16 +522,15 @@ exit
                         } else {
                             Log.d("replay", String.format("[%s] Empty view", cmd));
                         }
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[3]));
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                     break;
-                case "pass":
-                    break;
                 case "exit":
                     setReplayBorder(false);
-                    int close_last_activity = getSharedPreferencesInt("close_last_activity", 0);
-                    if (close_last_activity == 1) {
+                    int replay_close_last_activity = getSharedPreferencesInt("replay_close_last_activity", 0);
+                    if (replay_close_last_activity == 1) {
                         current_activity.finish();
                     }
                     disableReplayMode();
@@ -537,9 +587,10 @@ exit
     public void enableReplayMode(final Activity current_activity, String replay_string)
     {
         if (!isReplayMode()) {
-            setSharedPreferencesInt("close_last_activity", 0);
+            setSharedPreferencesInt("replay_close_last_activity", 0);
             setSharedPreferencesInt("replay_enable", 1);
             setSharedPreferencesInt("replay_pos", 0);
+            setSharedPreferencesInt("replay_wait_ticks", 0);
             String[] replay_records = replay_string.split(" # ");
             int idx = 0;
             for (String replay_record : replay_records) {
@@ -559,9 +610,9 @@ exit
     {
         replaySecondsCounter = 0;
         replayTimerTask = new GameHelper.ReplayTimerTask();
-        int replayPos = getSharedPreferencesInt("replay_pos", 0);
+        int replay_pos = getSharedPreferencesInt("replay_pos", 0);
         int delay = REPLAY_TIMER_FIRST_TICK;
-        if (replayPos > 0) {
+        if (replay_pos > 0) {
             delay = REPLAY_TIMER_TICK;
         }
         replayTimer.scheduleAtFixedRate(replayTimerTask, delay, REPLAY_TIMER_TICK);
