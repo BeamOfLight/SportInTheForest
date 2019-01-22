@@ -4,7 +4,6 @@ package beamoflight.sportintheforest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,10 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Map;
 
-public class UsersActivity extends Activity {
+public class UsersActivity extends ReplayActivity {
 
-    DBHelper dbHelper;
-    GameHelper gameHelper;
     List<Map<String, String>> usersData;
-
     ListView lvUsers, lvNewUser;
-
     AlertDialog dialogAddOrEditUser, dialogSelectAction, dialogUserDelete;
 
     /** Called when the activity is first created. */
@@ -35,8 +30,6 @@ public class UsersActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_lists_std1);
 
-        dbHelper = new DBHelper( this );
-        gameHelper = new GameHelper(this.getBaseContext());
         //dbHelper.onCreate(dbHelper.getWritableDatabase());
 
         initUsersListView();
@@ -49,8 +42,6 @@ public class UsersActivity extends Activity {
         ((TextView) findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.select_user_title));
         showNewUserList();
         showUsersList();
-
-        gameHelper.startReplay(this);
     }
 
     private void initUsersListView()
@@ -253,13 +244,4 @@ public class UsersActivity extends Activity {
 
         dialogUserDelete.show();
     }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        gameHelper.removeReplayTimerTask();
-    }
-
 }

@@ -528,11 +528,6 @@ exit
                     }
                     break;
                 case "exit":
-                    setReplayBorder(false);
-                    int replay_close_last_activity = getSharedPreferencesInt("replay_close_last_activity", 0);
-                    if (replay_close_last_activity == 1) {
-                        current_activity.finish();
-                    }
                     disableReplayMode();
                     return false;
                 default:
@@ -567,9 +562,11 @@ exit
             drawable_id = R.drawable.replay_border_invisible;
         }
 
-        View view = currentReplayActivity.findViewById(R.id.llBorder);
-        if (view != null) {
-            view.setBackground(context.getDrawable(drawable_id));
+        if (currentReplayActivity != null) {
+            View view = currentReplayActivity.findViewById(R.id.llBorder);
+            if (view != null) {
+                view.setBackground(context.getDrawable(drawable_id));
+            }
         }
     }
 
@@ -580,8 +577,15 @@ exit
 
     public void disableReplayMode()
     {
-        Log.d("replay", "disableReplayMode");
-        setSharedPreferencesInt("replay_enable", 0);
+        Log.d("replay", "disableReplayMode: " + isReplayMode());
+        if (isReplayMode()) {
+            setSharedPreferencesInt("replay_enable", 0);
+            setReplayBorder(false);
+            int replay_close_last_activity = getSharedPreferencesInt("replay_close_last_activity", 0);
+            if (replay_close_last_activity == 1) {
+                currentReplayActivity.finish();
+            }
+        }
     }
 
     public void enableReplayMode(final Activity current_activity, String replay_string)
@@ -630,9 +634,10 @@ exit
     {
         replayHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                Log.d("replay", Integer.toString(replaySecondsCounter));
+                Log.d("replay", "handleMessage " + Integer.toString(replaySecondsCounter));
                 replaySecondsCounter++;
 
+                Log.d("replay", "handleMessage.isReplayMode: " + (isReplayMode()? "true" : "false"));
                 boolean res = startReplayLoop(currentReplayActivity);
                 if (!res) {
                     removeReplayTimerTask();

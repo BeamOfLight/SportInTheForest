@@ -1,31 +1,21 @@
 package beamoflight.sportintheforest;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.List;
 import java.util.Map;
 
-public class KnowledgeActivity extends Activity {
-
-    DBHelper dbHelper;
-    GameHelper gameHelper;
+public class KnowledgeActivity extends ReplayActivity
+{
     List<Map<String, String>> knowledgeItemsData;
-    ListView lvKnowledgeCategories;
+    ListView lvKnowledgeItems;
     int categoryId;
     String categoryName;
     AlertDialog dialog;
@@ -34,9 +24,6 @@ public class KnowledgeActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_lists_std1);
-
-        dbHelper = new DBHelper( this );
-        gameHelper = new GameHelper(this );
     }
 
     protected void onStart() {
@@ -52,8 +39,8 @@ public class KnowledgeActivity extends Activity {
 
     private void initKnowledgeItemsListView()
     {
-        lvKnowledgeCategories = findViewById(R.id.lvItemsBottom);
-        lvKnowledgeCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvKnowledgeItems = findViewById(R.id.lvItemsBottom);
+        lvKnowledgeItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 int type = Integer.parseInt(knowledgeItemsData.get(position).get("type"));
@@ -73,13 +60,13 @@ public class KnowledgeActivity extends Activity {
     private void showKnowledgeItemsList()
     {
         knowledgeItemsData = dbHelper.getKnowledgeItemsData(categoryId);
-        lvKnowledgeCategories.invalidateViews();
+        lvKnowledgeItems.invalidateViews();
         KnowledgeItemArrayAdapter knowledgeItemsAdapter = new KnowledgeItemArrayAdapter(
                 this,
                 knowledgeItemsData
         );
 
-        lvKnowledgeCategories.setAdapter(knowledgeItemsAdapter);
+        lvKnowledgeItems.setAdapter(knowledgeItemsAdapter);
     }
 
     private void initDialogShowTextKnowledgeItem(String text_value)

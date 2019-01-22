@@ -227,9 +227,9 @@ public class MainActivity extends Activity {
             Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
         }
 
+        gameHelper.disableReplayMode();
         gameHelper.removeReplayTimer();
         gameHelper.removeReplayTimerTask();
-        gameHelper.disableReplayMode();
     }
 
     @Override
