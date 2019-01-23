@@ -2581,6 +2581,27 @@ class DBHelper extends DBHelperBaseLayer {
         return name;
     }
 
+
+    public int deleteUserByIdFromAllTables(int user_id)
+    {
+        int affectedRows = 0;
+        affectedRows += deleteDataByUserId("user_exercise_locations", user_id);
+        affectedRows += deleteDataByUserId("user_exercise_skills", user_id);
+        affectedRows += deleteDataByUserId("user_exercise_quests", user_id);
+        affectedRows += deleteDataByUserId("user_exercise_trainings", user_id);
+        affectedRows += deleteDataByUserId("user_exercises", user_id);
+        affectedRows += deleteDataByUserId("users", user_id);
+
+        return affectedRows;
+    }
+
+    public int deleteDataByUserId(String table, int user_id)
+    {
+        String[] whereArgs = new String[]{Integer.toString(user_id)};
+
+        return db.delete(table, "user_id = ?", whereArgs);
+    }
+
     public ArrayList<Map<String, String>> getKnowledgeItemsData(int category_id)
     {
         ArrayList<Map<String, String>> data = new ArrayList<>();

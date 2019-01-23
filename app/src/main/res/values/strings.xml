@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.13</string>
-    <string name="app_version_revision">6</string>
+    <string name="app_version_revision">7</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -152,6 +152,7 @@
     <string name="are_you_sure">Вы уверены?</string>
     <string name="prompt_delete_user">Удалить пользователя %s?</string>
     <string name="prompt_delete_user_success">Пользователь %s был успешно удалён</string>
+    <string name="prompt_delete_user_error">Не удалось удалить пользователя %s: что-то пошло не так</string>
     <string name="prompt_yes">Да</string>
     <string name="prompt_no">Нет</string>
     <string name="are_you_sure_learn_skill">Изучить навык %s уровня %s?</string>

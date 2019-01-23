@@ -217,10 +217,10 @@ public class UsersActivity extends ReplayActivity {
         alert_dialog_builder.setCancelable(true);
         dialogUserDelete = alert_dialog_builder.create();
 
+        final int final_user_id = Integer.parseInt(usersData.get(final_position).get("user_id"));
         final String final_username = usersData.get(final_position).get("name");
         TextView tvTitle = prompts_view.findViewById(R.id.tvTitle);
         tvTitle.setText(getResources().getString(R.string.prompt_delete_user, final_username));
-
 
         Button btTitleLeft = prompts_view.findViewById(R.id.btTitleLeft);
         btTitleLeft.setText(getResources().getString(R.string.prompt_no));
@@ -236,7 +236,13 @@ public class UsersActivity extends ReplayActivity {
             public void onClick(View v) {
                 dbHelper.exportDB("SportInTheForestDB_before_last_delete.db", false);
                 dbHelper.exportDB("SportInTheForestDB_before_last_delete_" + gameHelper.getTodayString() + ".db", false);
-                Toast.makeText(getBaseContext(), getResources().getString(R.string.prompt_delete_user_success, final_username), Toast.LENGTH_LONG).show();
+                int affectedRows = dbHelper.deleteUserByIdFromAllTables(final_user_id);
+                if (affectedRows > 0) {
+                    showUsersList();
+                    Toast.makeText(getBaseContext(), getResources().getString(R.string.prompt_delete_user_success, final_username), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getBaseContext(), getResources().getString(R.string.prompt_delete_user_error, final_username), Toast.LENGTH_LONG).show();
+                }
                 //TODO: delete user
                 dialogUserDelete.cancel();
             }
