@@ -113,6 +113,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "user_id integer primary key autoincrement,"
                 + "creation_date date,"
                 + "modification_date date,"
+                + "for_replay integer DEFAULT(0),"
                 + "name text" + ");");
     }
 

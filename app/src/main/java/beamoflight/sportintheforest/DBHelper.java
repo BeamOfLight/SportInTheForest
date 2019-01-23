@@ -33,12 +33,13 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ============== User
-    public long addUser(String user_name)
+    public long addUser(String user_name, boolean for_replay)
     {
         ContentValues values = new ContentValues();
         values.put("name", user_name);
         values.put("creation_date", gameHelper.getTodayString());
         values.put("modification_date", gameHelper.getTodayString());
+        values.put("for_replay", for_replay ? "1" : "0");
 
         return db.insert("users", null, values);
     }
@@ -54,7 +55,7 @@ class DBHelper extends DBHelperBaseLayer {
     public boolean isUserNameExist(String user_name, int excluded_user_id)
     {
         String[] columns = new String[] { "user_id" };
-        Cursor c = db.query("users", columns, "name = ?", new String[]{user_name}, null, null, null);
+        Cursor c = db.query("users", columns, "name = ? AND for_replay = 0", new String[]{user_name}, null, null, null);
         boolean is_exist = false;
         if (c != null) {
             if (c.moveToFirst()) {
@@ -66,15 +67,15 @@ class DBHelper extends DBHelperBaseLayer {
         return is_exist;
     }
 
-    public ArrayList<Map<String, String>> getUsersData()
+    public ArrayList<Map<String, String>> getUsersData(boolean for_replay)
     {
         ArrayList<Map<String, String>> users_data = new ArrayList<>();
         Map<String, String> m;
         Cursor cursor = db.query(
                 "users",
                 new String[]{"user_id", "name", "creation_date", "modification_date"},
-                null,
-                null,
+                "for_replay = ?",
+                new String[]{Integer.toString(for_replay ? 1 : 0)},
                 null,
                 null,
                 "name ASC"
@@ -107,14 +108,14 @@ class DBHelper extends DBHelperBaseLayer {
         return users_data;
     }
 
-    public ArrayList<UserEntity> getUsersWithExercise(int exercise_id)
+    public ArrayList<UserEntity> getUsersWithExercise(int exercise_id, boolean is_replay_mode)
     {
         ArrayList<UserEntity> users_entities = new ArrayList<>();
         Cursor cursor = db.query(
                 "users AS u INNER JOIN user_exercises AS ue ON u.user_id = ue.user_id AND ue.exercise_id = " + Integer.toString(exercise_id),
                 new String[]{"u.user_id", "u.name", "u.creation_date", "u.modification_date"},
-                null,
-                null,
+                "u.for_replay = ?",
+                new String[]{is_replay_mode ? "1" : "0"},
                 null,
                 null,
                 "u.name ASC"
@@ -355,7 +356,7 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ===============UserExercise
-    public void createUserExercise(int user_id, int exercise_id, int type)
+    public void addUserExercise(long user_id, int exercise_id, int type)
     {
         ContentValues values = new ContentValues();
         values.put("user_id", user_id);

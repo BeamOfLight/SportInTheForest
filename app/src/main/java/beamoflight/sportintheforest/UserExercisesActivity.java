@@ -90,7 +90,7 @@ public class UserExercisesActivity extends Activity {
                                 if (cbDailyStatOnly.isChecked()) {
                                     type = dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY;
                                 }
-                                dbHelper.createUserExercise(gameHelper.getUserId(), exerciseId, type);
+                                dbHelper.addUserExercise(gameHelper.getUserId(), exerciseId, type);
                                 dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
 
                                 showExercisesList();

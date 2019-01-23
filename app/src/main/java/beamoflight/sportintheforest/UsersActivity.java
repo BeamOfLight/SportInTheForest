@@ -87,7 +87,7 @@ public class UsersActivity extends ReplayActivity {
 
     private void showUsersList()
     {
-        usersData = dbHelper.getUsersData();
+        usersData = dbHelper.getUsersData(gameHelper.isReplayMode());
         lvUsers.invalidateViews();
         SimpleAdapter usersAdapter = new SimpleAdapter(
                 this,
@@ -138,7 +138,7 @@ public class UsersActivity extends ReplayActivity {
                     } else if (dbHelper.isUserNameExist(user_name, user_id)) {
                         Toast.makeText(getBaseContext(), R.string.msg_user_name_already_exists, Toast.LENGTH_SHORT).show();
                     } else if (user_id == -1) {
-                        long result = dbHelper.addUser(user_name);
+                        long result = dbHelper.addUser(user_name, false);
                         if (result > 0) {
                             showUsersList();
                             Toast.makeText(getBaseContext(), R.string.msg_user_add_success, Toast.LENGTH_SHORT).show();

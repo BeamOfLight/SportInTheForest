@@ -2,7 +2,7 @@
     <string name="app_name">SportInTheForest</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.13</string>
-    <string name="app_version_revision">7</string>
+    <string name="app_version_revision">8</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -47,7 +47,7 @@
     <string name="prompt_add_training_target">Цель</string>
     <string name="msg_location_not_found">Место не найдено</string>
     <string name="msg_user_need_name">У пользователя должно быть имя</string>
-    <string name="msg_user_name_already_exists">Пользователь с таким названием уже существует</string>
+    <string name="msg_user_name_already_exists">Пользователь с таким именем уже существует</string>
     <string name="msg_user_add_error">Не удалось создать пользователя</string>
     <string name="msg_user_add_success">Пользователь успешно создан</string>
     <string name="msg_user_edit_success">Пользователь успешно изменён</string>

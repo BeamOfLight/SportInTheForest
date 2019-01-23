@@ -34,7 +34,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btCompetitionStart.setVisibility(View.VISIBLE);
         btCompetitionRestart.setVisibility(View.INVISIBLE);
 
-        if (dbHelper.getUsersWithExercise(gameHelper.getExerciseId()).size() <= 1) {
+        if (dbHelper.getUsersWithExercise(gameHelper.getExerciseId(), gameHelper.isReplayMode()).size() <= 1) {
             btInvite.setVisibility(View.INVISIBLE);
         } else {
             btInvite.setVisibility(View.VISIBLE);
@@ -365,11 +365,14 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
         // адаптер PreActions
         int exercise_id = gameHelper.getExerciseId();
-        final List<UserEntity> invite_users = competitionEngine.filterUserList(dbHelper.getUsersWithExercise(exercise_id), exercise_id);
+        final List<UserEntity> invite_users = competitionEngine.filterUserList(
+                dbHelper.getUsersWithExercise(exercise_id, gameHelper.isReplayMode()),
+                exercise_id
+        );
         ArrayAdapter<UserEntity> adapter_invite_user = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, invite_users);
         adapter_invite_user.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        final Spinner spinner_invite_user = (Spinner) prompts_view.findViewById(R.id.spinnerInviteUser);
+        final Spinner spinner_invite_user = prompts_view.findViewById(R.id.spinnerInviteUser);
         spinner_invite_user.setAdapter(adapter_invite_user);
 
         // set dialog message
