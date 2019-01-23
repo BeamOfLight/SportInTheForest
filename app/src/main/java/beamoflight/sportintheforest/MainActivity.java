@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
         tvVersion = findViewById(R.id.tvVersion);
 
         pbUpdate = findViewById(R.id.pbUpdate);
+        pbUpdate.setProgress(0);
 
         errorHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -186,8 +187,6 @@ public class MainActivity extends Activity {
 
     protected void onStart() {
         super.onStart();
-
-        pbUpdate.setProgress(0);
 
         //TODO: temporary fix
         gameHelper.disableReplayMode();
