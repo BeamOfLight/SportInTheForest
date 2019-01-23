@@ -12,12 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-
-
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,9 +22,16 @@
         </activity>
 
         <activity
+            android:name=".Main4ReplayActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN4REPLAY" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".TabsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.TABS" />
             </intent-filter>
@@ -35,8 +39,7 @@
 
         <activity
             android:name=".TabsDailyStatOnlyActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.TABS_DAILY_STAT_ONLY" />
             </intent-filter>
@@ -44,8 +47,7 @@
 
         <activity
             android:name=".UsersActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.USERS" />
             </intent-filter>
@@ -53,8 +55,7 @@
 
         <activity
             android:name=".KnowledgeCategoriesActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE_CATEGORIES" />
             </intent-filter>
@@ -62,8 +63,7 @@
 
         <activity
             android:name=".KnowledgeActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE" />
             </intent-filter>
@@ -71,8 +71,7 @@
 
         <activity
             android:name=".UserExercisesActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.USER_EXERCISES" />
             </intent-filter>
@@ -80,8 +79,7 @@
 
         <activity
             android:name=".ExercisesActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.EXERCISES" />
             </intent-filter>
@@ -89,8 +87,7 @@
 
         <activity
             android:name=".LocationPositionsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.NPCS" />
             </intent-filter>
@@ -98,8 +95,7 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SETTINGS" />
             </intent-filter>
@@ -107,8 +103,7 @@
 
         <activity
             android:name=".CompetitionActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION" />
             </intent-filter>
@@ -116,8 +111,7 @@
 
         <activity
             android:name=".CompetitionViewerActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION_VIEWER" />
             </intent-filter>
@@ -125,8 +119,7 @@
 
         <activity
             android:name=".StatMyShadowsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MY_SHADOWS" />
             </intent-filter>
@@ -134,8 +127,7 @@
 
         <activity
             android:name=".StatYearsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_YEARS" />
             </intent-filter>
@@ -143,8 +135,7 @@
 
         <activity
             android:name=".StatMonthsActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MONTHS" />
             </intent-filter>
@@ -152,8 +143,7 @@
 
         <activity
             android:name=".StatWeeksActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_WEEKS" />
             </intent-filter>
@@ -161,8 +151,7 @@
 
         <activity
             android:name=".StatDaysActivity"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_DAYS" />
             </intent-filter>
@@ -170,8 +159,7 @@
 
         <activity
             android:name=".PlayerExpActivity"
-            android:screenOrientation="landscape"
-            >
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.PLAYER_EXP" />
             </intent-filter>

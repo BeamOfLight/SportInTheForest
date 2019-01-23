@@ -253,8 +253,11 @@ public class SettingsActivity extends Activity {
         btnTestReplay = findViewById(R.id.btnTestReplay);
         btnTestReplay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                turnOnOffButtons(false);
                 dbHelper.createTableKnowledgeCategories();
                 dbHelper.createTableKnowledgeItems();
+                turnOnOffButtons(true);
+                Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -42,5 +42,5 @@
     <knowledge_item category_id="6" name="Как создать нового пользователя?" type="1" text_value="toast-long;В основном меню нажимаем кнопку 'Старт';30 # activity;users;30 # bg-color;lvNewItem;colorAccent;30 # toast-long;Завершаем;30 # exit" />
     <knowledge_item category_id="6" name="Как добавить упражнение для пользователя?" type="1" text_value="toast-long;В разработке;50 # exit" />
     <knowledge_item category_id="6" name="Как добавить новый вид упражнения?" type="1" text_value="toast-long;В разработке;50 # exit" />
-    <knowledge_item category_id="6" name="Тест" type="1" text_value="activity;main;30 # exit" />
+    <knowledge_item category_id="6" name="Тест" type="1" text_value="activity;main;30 # bg-color;btMenuStart;mipmap/leaf_button_1_red;50 # bg-color;btMenuStart;mipmap/leaf_button_1;50 # exit" />
 </data>

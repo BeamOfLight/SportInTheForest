@@ -400,6 +400,9 @@ public class GameHelper {
     {
         Class new_activity = default_activity.getClass();
         switch (str_id) {
+            case "main":
+                new_activity = Main4ReplayActivity.class;
+                break;
             case "users":
                 new_activity = UsersActivity.class;
                 break;
@@ -415,28 +418,37 @@ public class GameHelper {
             case "lvNewItem":
                 view_id = R.id.lvItemsTop;
                 break;
+            case "btMenuStart":
+                view_id = R.id.btMenuStart;
+                break;
         }
 
         return view_id;
     }
 
-    private int getResourceColorId(String str_id)
+    private int getResourceDrawableId(String str_id)
     {
         int color_id = R.color.titleColor;
         switch (str_id) {
             case "colorAccent":
                 color_id = R.color.colorAccent;
                 break;
+            case "mipmap/leaf_button_1":
+                color_id = R.mipmap.leaf_button_1;
+                break;
+            case "mipmap/leaf_button_1_red":
+                color_id = R.mipmap.leaf_button_1_red;
+                break;
+
         }
 
         return color_id;
     }
 /*
-toast_long;TEXT
-toast;TEXT
-activity;users
-activity;users;5
-pass
+toast_long;TEXT;TICKS
+toast;TEXT;TICKS
+activity;users;TICKS
+activity;users;5;TICKS
 exit
  */
     private boolean startReplayLoop(Activity current_activity)
@@ -477,8 +489,6 @@ exit
                     }
                     break;
                 case "activity":
-                    setReplayBorder(false);
-                    setSharedPreferencesInt("replay_close_last_activity", 1);
                     if (replay_record_parts.length == 3) {
                         Class new_activity = getActivityByString(
                                 current_activity,
@@ -488,6 +498,8 @@ exit
                         setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[2]));
                         Intent intent = new Intent(current_activity, new_activity);
                         current_activity.startActivity(intent);
+                        setSharedPreferencesInt("replay_close_last_activity", 1);
+                        setReplayBorder(false);
                         return false;
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
@@ -513,12 +525,12 @@ exit
                 case "bg-color":
                     if (replay_record_parts.length == 4) {
                         int view_id = getResourceViewId(replay_record_parts[1]);
-                        int color_id = getResourceColorId(replay_record_parts[2]);
+                        int drawable_id = getResourceDrawableId(replay_record_parts[2]);
                         Log.d("replay", "view_id: " + view_id);
-                        Log.d("replay", "color_id: " + color_id);
+                        Log.d("replay", "drawable_id: " + drawable_id);
                         View view = current_activity.findViewById(view_id);
                         if (view != null) {
-                            view.setBackgroundColor(context.getResources().getColor(color_id, context.getTheme()));
+                            view.setBackground(context.getDrawable(drawable_id));
                         } else {
                             Log.d("replay", String.format("[%s] Empty view", cmd));
                         }
