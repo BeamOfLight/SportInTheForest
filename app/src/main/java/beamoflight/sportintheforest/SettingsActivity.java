@@ -253,7 +253,8 @@ public class SettingsActivity extends Activity {
         btnTestReplay = findViewById(R.id.btnTestReplay);
         btnTestReplay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                gameHelper.enableReplayMode(SettingsActivity.this, "toast-long;Режим обучения отмечен зелёной рамкой;30 # toast-long;Он позволяет разобраться в том, как работает приложение;30 # toast-long;Кнопка 'Назад' позволяет выйти из этого режима;30 # exit");
+                dbHelper.createTableKnowledgeCategories();
+                dbHelper.createTableKnowledgeItems();
             }
         });
     }
