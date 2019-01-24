@@ -39,4 +39,21 @@ public class Main4ReplayActivity extends ReplayActivity {
 
         showVersion();
     }
+
+    public void replayEvent1()
+    {
+
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
+    }
 }

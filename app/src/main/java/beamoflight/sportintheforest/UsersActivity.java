@@ -109,6 +109,25 @@ public class UsersActivity extends ReplayActivity {
         lvNewUser.setAdapter(itemsAdapter);
     }
 
+    @Override
+    public void replayEvent1()
+    {
+        initDialogAddOrEditUser(-1);
+        dialogAddOrEditUser.show();
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
+    }
+
     private void initDialogAddOrEditUser(int current_user_id)
     {
         // get prompt_add_group.xmlgroup.xml view

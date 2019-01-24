@@ -38,4 +38,8 @@ public abstract class ReplayActivity extends Activity {
         gameHelper.removeReplayTimer();
         gameHelper.removeReplayTimerTask();
     }
+
+    abstract public void replayEvent1();
+    abstract public void replayEvent2();
+    abstract public void replayEvent3();
 }

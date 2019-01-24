@@ -42,7 +42,7 @@ public class GameHelper {
     TimerTask replayTimerTask;
     private Handler replayHandler;
     private int replaySecondsCounter;
-    private Activity currentReplayActivity;
+    private ReplayActivity currentReplayActivity;
     private Drawable lastChangedDrawable;
     private View lastChangedView;
 
@@ -454,7 +454,7 @@ activity;users;TICKS
 activity;users;5;TICKS
 exit
  */
-    private boolean startReplayLoop(Activity current_activity)
+    private boolean startReplayLoop(ReplayActivity current_activity)
     {
         int replay_wait_ticks = getSharedPreferencesInt("replay_wait_ticks", 0);
         Log.d("replay", "replay_wait_ticks: " + replay_wait_ticks);
@@ -554,6 +554,30 @@ exit
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                     break;
+                case "event1":
+                    if (replay_record_parts.length == 2) {
+                        current_activity.replayEvent1();
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[1]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
+                case "event2":
+                    if (replay_record_parts.length == 2) {
+                        current_activity.replayEvent2();
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[1]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
+                case "event3":
+                    if (replay_record_parts.length == 2) {
+                        current_activity.replayEvent3();
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[1]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
                 case "exit":
                     disableReplayMode();
                     return false;
@@ -571,7 +595,7 @@ exit
         return true;
     }
 
-    public void startReplay(final Activity current_activity)
+    public void startReplay(final ReplayActivity current_activity)
     {
         if (isReplayMode()) {
             currentReplayActivity = current_activity;
@@ -615,7 +639,7 @@ exit
         }
     }
 
-    public void enableReplayMode(final Activity current_activity, String replay_string)
+    public void enableReplayMode(final ReplayActivity current_activity, String replay_string)
     {
         if (!isReplayMode()) {
             setSharedPreferencesInt("replay_close_last_activity", 0);
@@ -661,10 +685,10 @@ exit
     {
         replayHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                Log.d("replay", "handleMessage " + Integer.toString(replaySecondsCounter));
+                //Log.d("replay", "handleMessage " + Integer.toString(replaySecondsCounter));
                 replaySecondsCounter++;
 
-                Log.d("replay", "handleMessage.isReplayMode: " + (isReplayMode()? "true" : "false"));
+                //Log.d("replay", "handleMessage.isReplayMode: " + (isReplayMode()? "true" : "false"));
                 boolean res = startReplayLoop(currentReplayActivity);
                 if (!res) {
                     removeReplayTimerTask();

@@ -84,4 +84,21 @@ public class KnowledgeActivity extends ReplayActivity
 
         dialog.show();
     }
+
+    public void replayEvent1()
+    {
+
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
+    }
 }
