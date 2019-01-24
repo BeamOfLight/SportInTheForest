@@ -36,11 +36,11 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected int formatVersion = 6;
+    protected final static int formatVersion = 7;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
-        super (current, "SportInTheForestDB", null, 5);
+        super (current, "SportInTheForestDB", null, formatVersion);
         context = current;
         db = getWritableDatabase();
     }
@@ -977,7 +977,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
     private String[] getFieldsByTableName(String table_name, int format_version)
     {
         Map<String, String[]> m = new HashMap<>();
-        m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
+        if (format_version >= 7) {
+            m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name", "for_replay"});
+        } else {
+            m.put("users", new String[] {"user_id", "creation_date", "modification_date", "name"});
+        }
 
         if (format_version >= 6) {
             m.put("user_exercises", new String[]{"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation", "type"});
