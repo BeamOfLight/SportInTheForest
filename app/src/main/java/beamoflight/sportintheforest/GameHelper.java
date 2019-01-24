@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -42,6 +43,8 @@ public class GameHelper {
     private Handler replayHandler;
     private int replaySecondsCounter;
     private Activity currentReplayActivity;
+    private Drawable lastChangedDrawable;
+    private View lastChangedView;
 
     public GameHelper(Context current)
     {
@@ -522,7 +525,7 @@ exit
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                     break;
-                case "bg-color":
+                case "background":
                     if (replay_record_parts.length == 4) {
                         int view_id = getResourceViewId(replay_record_parts[1]);
                         int drawable_id = getResourceDrawableId(replay_record_parts[2]);
@@ -530,11 +533,23 @@ exit
                         Log.d("replay", "drawable_id: " + drawable_id);
                         View view = current_activity.findViewById(view_id);
                         if (view != null) {
+                            lastChangedView = view;
+                            lastChangedDrawable = view.getBackground();
                             view.setBackground(context.getDrawable(drawable_id));
                         } else {
                             Log.d("replay", String.format("[%s] Empty view", cmd));
                         }
                         setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[3]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
+                case "revert-background":
+                    if (replay_record_parts.length == 2) {
+                        if (lastChangedView != null && lastChangedDrawable != null) {
+                            lastChangedView.setBackground(lastChangedDrawable);
+                        }
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[1]));
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
