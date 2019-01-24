@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -574,6 +575,27 @@ exit
                     if (replay_record_parts.length == 2) {
                         current_activity.replayEvent3();
                         setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[1]));
+                    } else {
+                        Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
+                    }
+                    break;
+
+                case "lv-item-background":
+                    if (replay_record_parts.length == 4) {
+                        int view_id = getResourceViewId(replay_record_parts[1]);
+                        int drawable_id = getResourceDrawableId(replay_record_parts[2]);
+                        Log.d("replay", "view_id: " + view_id);
+                        Log.d("replay", "drawable_id: " + drawable_id);
+                        View view = current_activity.findViewById(view_id);
+                        if (view != null) {
+                            ListView lv_view = (ListView) view;
+                            lastChangedView = lv_view;
+                            lastChangedDrawable = lv_view.getBackground();
+                            lv_view.getChildAt(0).setBackground(context.getDrawable(drawable_id));
+                        } else {
+                            Log.d("replay", String.format("[%s] Empty view", cmd));
+                        }
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[3]));
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
