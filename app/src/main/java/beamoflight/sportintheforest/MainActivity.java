@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
     {
         try {
             dbHelper.customOnCreate();
-            dbHelper.loadFromFileWithProgress("autosave.sif", false, pbUpdate);
+            dbHelper.loadFromFileWithProgress("autosave.sif", false, pbUpdate, 500, 100);
             dbHelper.updateAppVersion(getResources().getString(R.string.app_version));
             updateStarted = false;
         } catch (Exception e){

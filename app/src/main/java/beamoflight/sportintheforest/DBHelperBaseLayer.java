@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -913,7 +914,43 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return sb.toString();
     }
 
-    public boolean setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version)
+    public int setTableData(String table_name, List<Map<String, String>> data, int old_format_version, boolean deleteOldData)
+    {
+        int cnt = 0;
+        String[] old_fields = getFieldsByTableName(table_name, old_format_version);
+        String[] new_fields = getFieldsByTableName(table_name, formatVersion);
+        String base_sql = "INSERT INTO " + table_name + " (" + implode(", ", new_fields) + ") VALUES";
+        String sql = "";
+        for (Map<String, String> row : data) {
+            cnt++;
+            sql += ", (";
+            for (int i = 0; i < new_fields.length; i++) {
+                if (i < old_fields.length) {
+                    if (!old_fields[i].equals("")) {
+                        sql += "\"" + row.get(old_fields[i]) + "\", ";
+                    }
+                } else {
+                    sql += "\"\", ";
+                }
+            }
+            sql = sql.substring(0, sql.length() - 2);
+            sql += ")";
+        }
+        sql += ";";
+        if (cnt > 0) {
+            db.beginTransaction();
+            if (deleteOldData) {
+                db.execSQL("DELETE FROM " + table_name + ";");
+            }
+            db.execSQL(base_sql + sql.substring(1));
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+
+        return cnt;
+    }
+
+    public boolean setTableData(String table_name, ArrayList<Map<String, String>> data, int old_format_version, boolean deleteOldData)
     {
         boolean status = false;
         String[] old_fields = getFieldsByTableName(table_name, old_format_version);
@@ -939,7 +976,9 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         sql += ";";
         if (cnt > 0) {
             db.beginTransaction();
-            db.execSQL("DELETE FROM " + table_name + ";");
+            if (deleteOldData) {
+                db.execSQL("DELETE FROM " + table_name + ";");
+            }
             db.execSQL(base_sql + sql.substring(1));
             db.setTransactionSuccessful();
             db.endTransaction();
@@ -1100,7 +1139,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             record = (new Gson()).fromJson(json_string, Record.class);
             String tables[] = getTables2Save(record.format_version);
             for (String table_name : tables) {
-                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version);
+                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version, true);
                 if (!local_status) {
                     status = false;
                 }
@@ -1117,8 +1156,11 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         return status;
     }
 
-    public boolean loadFromFileWithProgress(String filename, boolean toastOn, ProgressBar pbUpdate)
+    public boolean loadFromFileWithProgress(String filename, boolean toastOn, ProgressBar pbUpdate, int load_file_progress, int chunk_size)
     {
+        int progress = 0;
+        pbUpdate.setProgress(progress);
+
         boolean status = true;
         String json_string = "";
         try {
@@ -1149,20 +1191,40 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
             record = (new Gson()).fromJson(json_string, Record.class);
             String tables[] = getTables2Save(record.format_version);
 
-            int total_cnt = 0;
+            progress = load_file_progress;
+            int total_cnt = load_file_progress;
             for (String table_name : tables) {
                 total_cnt += record.tables.get(table_name).size();
             }
             pbUpdate.setMax(total_cnt);
+            pbUpdate.setProgress(progress);
 
-            int progress = 0;
             for (String table_name : tables) {
-                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version);
-                if (!local_status) {
-                    status = false;
+                int data_length = record.tables.get(table_name).size();
+                int chunks_cnt = (int) Math.ceil((double) data_length / chunk_size);
+                Log.d("update", String.format("[%s] Update data_length: %d  chunk_size: %d", table_name, data_length, chunk_size));
+                Log.d("update", String.format("Update chunks_cnt: %d", chunks_cnt));
+                for (int chunk_id = 0; chunk_id < chunks_cnt; chunk_id++) {
+                    Log.d("update", String.format("Update chunks_id: %d", chunk_id));
+                    List<Map<String, String>> chunk_data = record.tables.get(table_name).subList(chunk_id * chunk_size, Math.min((chunk_id + 1) * chunk_size, data_length));
+                    int local_cnt= setTableData(table_name, chunk_data, record.format_version, chunk_id == 0);
+                    if (local_cnt == 0) {
+                        status = false;
+                    }
+                    progress += local_cnt;
+                    pbUpdate.setProgress(progress);
+
+                    Log.d("update", String.format("Update progress: %d / %d", progress, total_cnt));
+                    Log.d("update", String.format("Update diff: %d", local_cnt));
                 }
-                progress += record.tables.get(table_name).size();
-                pbUpdate.setProgress(progress);
+
+
+//                boolean local_status = setTableData(table_name, record.tables.get(table_name), record.format_version, true);
+//                if (!local_status) {
+//                    status = false;
+//                }
+
+
             }
             if (record.format_version < 4 && formatVersion >= 4) {
                 db.execSQL("UPDATE user_exercise_trainings SET level=(SELECT non_player_characters.level FROM non_player_characters WHERE non_player_characters.npc_id = user_exercise_trainings.npc_id) WHERE user_exercise_trainings.npc_id IS NOT NULL");
