@@ -410,6 +410,12 @@ public class GameHelper {
             case "users":
                 new_activity = UsersActivity.class;
                 break;
+            case "exercises":
+                new_activity = UserExercisesActivity.class;
+                break;
+            case "settings":
+                new_activity = SettingsActivity.class;
+                break;
         }
 
         return new_activity;

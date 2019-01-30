@@ -102,6 +102,22 @@
         </activity>
 
         <activity
+            android:name=".ExtraSettingsActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.EXTRA_SETTINGS" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ReplayEditorActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.REPLAY_EDITOR" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".CompetitionActivity"
             android:screenOrientation="portrait">
             <intent-filter>

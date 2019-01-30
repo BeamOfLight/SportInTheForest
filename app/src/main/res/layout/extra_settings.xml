@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background_inv"
+    android:weightSum="1">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnImportDBAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto" />
+        <Button
+            android:id="@+id/btnImportDBAutoMon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mon" />
+        <Button
+            android:id="@+id/btnImportDBAutoTue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tue" />
+        <Button
+            android:id="@+id/btnImportDBAutoWed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wed" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnImportDBAutoThu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thu" />
+        <Button
+            android:id="@+id/btnImportDBAutoFri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fri" />
+        <Button
+            android:id="@+id/btnImportDBAutoSat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sat" />
+        <Button
+            android:id="@+id/btnImportDBAutoSun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sun" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnImportDBold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Загрузка данных old" />
+
+    <Button
+        android:id="@+id/btnExportDBold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранение данных old" />
+
+    <!--<Button-->
+        <!--android:id="@+id/btnImportDB"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Загрузка данных" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btnExportDB"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Сохранение данных" />-->
+
+    <Button
+        android:id="@+id/btnImportDBnew"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Загрузка данных new" />
+
+    <Button
+        android:id="@+id/btnExportDBnew"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранение данных new" />
+
+    <Button
+        android:id="@+id/btnWipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50sp"
+        android:text="Сброс данных в исходное состояние" />
+
+    <Button
+        android:id="@+id/btnWipeSaveUserProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сброс с сохранением прогресса" />
+
+
+    <!--<Button-->
+        <!--android:id="@+id/btnAction1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="test inet-connection" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/txtString"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="response"-->
+        <!--android:textAlignment="center" />-->
+
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Редактор роликов" />
+
+    <Button
+        android:id="@+id/btnAddExercise"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Настройка упражнений" />
+
+    <Button
+        android:id="@+id/btnTestReplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Обновить базу знаний" />
+
+</LinearLayout>
