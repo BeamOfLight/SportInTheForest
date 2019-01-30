@@ -11,13 +11,13 @@
         android:id="@+id/llBorder"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:padding="5dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="60sp"
-            android:layout_margin="5dp"
             android:orientation="horizontal">
 
             <TextView
