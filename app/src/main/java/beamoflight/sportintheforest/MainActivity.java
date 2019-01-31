@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
         dbHelper = new DBHelper( getBaseContext() );
         gameHelper = new GameHelper( getBaseContext() );
 
-        gameHelper.disableReplayMode();
+        gameHelper.disableReplayMode(false);
         gameHelper.setSharedPreferencesInt("replay_opened_activities", 0);
 
         app_version = dbHelper.getAppVersion();
@@ -190,7 +190,7 @@ public class MainActivity extends Activity {
         super.onStart();
 
         //TODO: temporary fix
-        gameHelper.disableReplayMode();
+        gameHelper.disableReplayMode(false);
 
         if (
                 ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -227,7 +227,7 @@ public class MainActivity extends Activity {
             Toast.makeText(getBaseContext(), "Автосохранение прошло успешно", Toast.LENGTH_LONG).show();
         }
 
-        gameHelper.disableReplayMode();
+        gameHelper.disableReplayMode(false);
         gameHelper.removeReplayTimer();
         gameHelper.removeReplayTimerTask();
     }

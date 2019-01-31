@@ -24,7 +24,7 @@ public abstract class ReplayActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (gameHelper.isReplayMode()) {
-            gameHelper.disableReplayMode();
+            gameHelper.disableReplayMode(true);
             gameHelper.removeReplayTimerTask();
         } else {
             finish();

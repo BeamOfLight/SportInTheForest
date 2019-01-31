@@ -635,7 +635,7 @@ exit
                     break;
                 default:
                 case "exit":
-                    disableReplayMode();
+                    disableReplayMode(false);
                     return false;
             }
         } else {
@@ -679,12 +679,16 @@ exit
         return (getSharedPreferencesInt("replay_enable", 0) > 0);
     }
 
-    public void disableReplayMode()
+    public void disableReplayMode(boolean backPressed)
     {
         Log.d("replay", "disableReplayMode: " + isReplayMode());
         if (isReplayMode()) {
             setSharedPreferencesInt("replay_enable", 0);
             setReplayBorder(false);
+            int replay_opened_activities = getSharedPreferencesInt("replay_opened_activities", 0);
+            if (backPressed && replay_opened_activities > 0) {
+                currentReplayActivity.finish();
+            }
         }
     }
 
