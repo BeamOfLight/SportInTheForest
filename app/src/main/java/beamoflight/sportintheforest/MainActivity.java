@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         gameHelper = new GameHelper( getBaseContext() );
 
         gameHelper.disableReplayMode();
-        gameHelper.setSharedPreferencesInt("replay_close_last_activity", 0);
+        gameHelper.setSharedPreferencesInt("replay_opened_activities", 0);
 
         app_version = dbHelper.getAppVersion();
         tvVersion = findViewById(R.id.tvVersion);

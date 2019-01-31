@@ -32,8 +32,8 @@ public class ReplayEditorActivity extends ReplayActivity {
             "exit\n" +
             "\n" +
             "ACTIVITY=[main|users|exercises|settings]\n" +
-            "RESOURCE_ID=[lvNewItem|btMenuStart]\n" +
-            "DRAWABLE_ID=[colorAccent|mipmap/leaf_button_1|mipmap/leaf_button_1_red]\n";
+            "RESOURCE_ID=[lvNewItem|btMenuStart|llMenuStart|llMenuSettings|llMenuKnowledge]\n" +
+            "DRAWABLE_ID=[colorAccent|mipmap/leaf_button_1|mipmap/leaf_button_1_red|replay_border|replay_border_inv]\n";
 
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +53,7 @@ public class ReplayEditorActivity extends ReplayActivity {
         btStart = findViewById(R.id.btStart);
         btStart.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                gameHelper.setSharedPreferencesString("replay_editor_last_string", etReplay.getText().toString());
                 gameHelper.enableReplayMode(ReplayEditorActivity.this, etReplay.getText().toString());
             }
         });
@@ -85,7 +86,7 @@ public class ReplayEditorActivity extends ReplayActivity {
                             Toast.makeText(getBaseContext(), "Нет прав", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "Ошибка: " + e.toString(), Toast.LENGTH_LONG).show();
                         Log.d("myLogs", e.toString());
                         Log.d("myLogs", e.getStackTrace().toString());
                     }
