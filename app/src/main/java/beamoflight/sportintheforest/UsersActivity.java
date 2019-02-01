@@ -78,8 +78,12 @@ public class UsersActivity extends ReplayActivity {
             lvNewUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-                    initDialogAddOrEditUser(-1);
-                    dialogAddOrEditUser.show();
+                    switch (position) {
+                        case 0:
+                            initDialogAddOrEditUser(-1);
+                            dialogAddOrEditUser.show();
+                            break;
+                    }
                 }
             });
         }

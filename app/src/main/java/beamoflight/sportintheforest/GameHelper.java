@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -38,11 +37,13 @@ public class GameHelper {
     final int REPLAY_TIMER_TICK = 100;
     final int REPLAY_TIMER_FIRST_TICK = 100;
 
+    final String REPLAY_CMD_DELIMITER = " # ";
+    final String REPLAY_ARG_DELIMITER = ";";
+
     private Context context;
     private Timer replayTimer;
     TimerTask replayTimerTask;
     private Handler replayHandler;
-    private int replaySecondsCounter;
     private ReplayActivity currentReplayActivity;
     private Drawable lastChangedDrawable;
     private View lastChangedView;
@@ -50,7 +51,6 @@ public class GameHelper {
     public GameHelper(Context current)
     {
         context = current;
-        replaySecondsCounter = 0;
         replayTimer = new Timer(true);
     }
 
@@ -177,19 +177,26 @@ public class GameHelper {
 
     public int getUserId()
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        int default_user_id = context.getResources().getInteger(R.integer.default_user_id);
+        int user_id = default_user_id;
+        if (isReplayMode()) {
+            user_id = getSharedPreferencesInt(
+                    "replay_user_id",
+                    default_user_id
+            );
+        } else {
+            user_id = getSharedPreferencesInt(
+                    context.getResources().getString(R.string.preference_name_user_id),
+                    default_user_id
+            );
+        }
 
-        return sPref.getInt(
-                context.getResources().getString(R.string.preference_name_user_id),
-                context.getResources().getInteger(R.integer.default_user_id)
-        );
+        return user_id;
     }
 
     public int getExerciseId()
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-
-        return sPref.getInt(
+        return getSharedPreferencesInt(
                 context.getResources().getString(R.string.preference_name_exercise_id),
                 context.getResources().getInteger(R.integer.default_exercise_id)
         );
@@ -197,13 +204,20 @@ public class GameHelper {
 
     public int getSharedPreferencesInt(String key, int default_value)
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getResources().getString(R.string.shared_preferences),
+                Context.MODE_PRIVATE
+        );
+
         return sPref.getInt(key, default_value);
     }
 
     public void setSharedPreferencesInt(String key, int value)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences s_pref = context.getSharedPreferences(
+                context.getResources().getString(R.string.shared_preferences),
+                Context.MODE_PRIVATE
+        );
         SharedPreferences.Editor editor = s_pref.edit();
         editor.putInt(key, value);
         editor.commit();
@@ -211,13 +225,20 @@ public class GameHelper {
 
     public String getSharedPreferencesString(String key, String default_value)
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getResources().getString(R.string.shared_preferences),
+                Context.MODE_PRIVATE
+        );
+
         return sPref.getString(key, default_value);
     }
 
     public void setSharedPreferencesString(String key, String value)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences s_pref = context.getSharedPreferences(
+                context.getResources().getString(R.string.shared_preferences),
+                Context.MODE_PRIVATE
+        );
         SharedPreferences.Editor editor = s_pref.edit();
         editor.putString(key, value);
         editor.commit();
@@ -225,18 +246,18 @@ public class GameHelper {
 
     public void saveUserId2Preferences(int user_id)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = s_pref.edit();
-        editor.putInt(context.getResources().getString(R.string.preference_name_user_id), user_id);
-        editor.commit();
+        setSharedPreferencesInt(
+                context.getResources().getString(R.string.preference_name_user_id),
+                user_id
+        );
     }
 
     public void saveExerciseId2Preferences(int exercise_id)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = s_pref.edit();
-        editor.putInt(context.getResources().getString(R.string.preference_name_exercise_id), exercise_id);
-        editor.commit();
+        setSharedPreferencesInt(
+                context.getResources().getString(R.string.preference_name_exercise_id),
+                exercise_id
+        );
     }
 
     private String getLastSelectionKey(int user_id, int exercise_id)
@@ -251,10 +272,10 @@ public class GameHelper {
     }
     public void saveLastSelection2Preferences(int user_id, int exercise_id, int result)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = s_pref.edit();
-        editor.putInt(getLastSelectionKey(user_id, exercise_id), result);
-        editor.commit();
+        setSharedPreferencesInt(
+                getLastSelectionKey(user_id, exercise_id),
+                result
+        );
     }
 
     public float getResistanceInPercents(int userResistance)
@@ -270,9 +291,7 @@ public class GameHelper {
 
     public int getLastSelectionFromPreferences(int user_id, int exercise_id)
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-
-        return sPref.getInt(
+        return getSharedPreferencesInt(
                 getLastSelectionKey(user_id, exercise_id),
                 context.getResources().getInteger(R.integer.default_last_selection)
         );
@@ -290,17 +309,15 @@ public class GameHelper {
 
     public void saveCurrentTabId2Preferences(int tab_id)
     {
-        SharedPreferences s_pref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = s_pref.edit();
-        editor.putInt(context.getResources().getString(R.string.preference_name_current_tab_id), tab_id);
-        editor.commit();
+        setSharedPreferencesInt(
+                context.getResources().getString(R.string.preference_name_current_tab_id),
+                tab_id
+        );
     }
 
     public int getCurrentTabIdFromPreferences()
     {
-        SharedPreferences sPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-
-        return sPref.getInt(
+        return getSharedPreferencesInt(
                 context.getResources().getString(R.string.preference_name_current_tab_id),
                 context.getResources().getInteger(R.integer.default_current_tab_id)
         );
@@ -355,17 +372,17 @@ public class GameHelper {
     }
 
     public String getDeviceIMEI() {
-        try {
-            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String imei = telephonyManager.getDeviceId();
-            if (imei != null && !imei.isEmpty()) {
-                return imei;
-            } else {
-                return android.os.Build.SERIAL;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+//            String imei = telephonyManager.getDeviceId();
+//            if (imei != null && !imei.isEmpty()) {
+//                return imei;
+//            } else {
+//                return android.os.Build.SERIAL;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return "not_found";
     }
 
@@ -492,7 +509,7 @@ exit
         setSharedPreferencesInt("replay_pos", replay_pos + 1);
 
         String replay_record = getSharedPreferencesString(getReplayRecordName(replay_pos), "");
-        String[] replay_record_parts = replay_record.split(";");
+        String[] replay_record_parts = replay_record.split(REPLAY_ARG_DELIMITER);
         String cmd;
         if (replay_record_parts.length >= 1) {
             cmd = replay_record_parts[0];
@@ -648,6 +665,52 @@ exit
         return true;
     }
 
+    private int getReplayDuration(String replay_string)
+    {
+        int duration = 0;
+        String[] replay_records = replay_string.split(REPLAY_CMD_DELIMITER);
+        for (String replay_record : replay_records) {
+            String[] replay_record_parts = replay_record.split(REPLAY_ARG_DELIMITER);
+            if (replay_record_parts.length >= 1) {
+                switch(replay_record_parts[0]) {
+                    case "toast-long":
+                    case "toast":
+                        if (replay_record_parts.length == 3) {
+                            try {
+                                duration += Integer.parseInt(replay_record_parts[replay_record_parts.length - 1]);
+                            } catch (Exception e){}
+                        }
+                        break;
+                    case "revert-background":
+                    case "event1":
+                    case "event2":
+                    case "event3":
+                        if (replay_record_parts.length == 2) {
+                            try {
+                                duration += Integer.parseInt(replay_record_parts[replay_record_parts.length - 1]);
+                            } catch (Exception e){}
+                        }
+                        break;
+                    case "activity":
+                    case "activity-action":
+                        duration++;
+                    case "background":
+                    case "lv-item-background":
+                        if (replay_record_parts.length == 4) {
+                            try {
+                                duration += Integer.parseInt(replay_record_parts[replay_record_parts.length - 1]);
+                            } catch (Exception e){}
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return duration;
+    }
+
     public void startReplay(final ReplayActivity current_activity)
     {
         if (isReplayMode()) {
@@ -695,11 +758,14 @@ exit
     public void enableReplayMode(final ReplayActivity current_activity, String replay_string)
     {
         if (!isReplayMode()) {
+            setSharedPreferencesInt("replay_user_id", 0);
             setSharedPreferencesInt("replay_opened_activities", 0);
             setSharedPreferencesInt("replay_enable", 1);
             setSharedPreferencesInt("replay_pos", 0);
             setSharedPreferencesInt("replay_wait_ticks", 0);
-            String[] replay_records = replay_string.split(" # ");
+            setSharedPreferencesInt("replay_ticks", 0);
+            setSharedPreferencesInt("replay_duration", getReplayDuration(replay_string));
+            String[] replay_records = replay_string.split(REPLAY_CMD_DELIMITER);
             int idx = 0;
             for (String replay_record : replay_records) {
                 setSharedPreferencesString(getReplayRecordName(idx), replay_record);
@@ -716,7 +782,6 @@ exit
 
     private void initReplayTimerTask()
     {
-        replaySecondsCounter = 0;
         replayTimerTask = new GameHelper.ReplayTimerTask();
         int replay_pos = getSharedPreferencesInt("replay_pos", 0);
         int delay = REPLAY_TIMER_FIRST_TICK;
@@ -739,7 +804,9 @@ exit
         replayHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 //Log.d("replay", "handleMessage " + Integer.toString(replaySecondsCounter));
-                replaySecondsCounter++;
+
+                int ticks = getSharedPreferencesInt("replay_ticks", 0);
+                setSharedPreferencesInt("replay_ticks", ticks + 1);
 
                 //Log.d("replay", "handleMessage.isReplayMode: " + (isReplayMode()? "true" : "false"));
                 boolean res = startReplayLoop(currentReplayActivity);

@@ -85,6 +85,7 @@ public class KnowledgeActivity extends ReplayActivity
         dialog.show();
     }
 
+    @Override
     public void replayEvent1()
     {
 

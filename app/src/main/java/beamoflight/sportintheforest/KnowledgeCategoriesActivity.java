@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class KnowledgeCategoriesActivity extends Activity {
+public class KnowledgeCategoriesActivity extends ReplayActivity {
 
     DBHelper dbHelper;
     GameHelper gameHelper;
@@ -72,5 +72,23 @@ public class KnowledgeCategoriesActivity extends Activity {
         );
 
         lvKnowledgeCategories.setAdapter(KnowledgeCategoriesAdapter);
+    }
+
+    @Override
+    public void replayEvent1()
+    {
+
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
     }
 }
