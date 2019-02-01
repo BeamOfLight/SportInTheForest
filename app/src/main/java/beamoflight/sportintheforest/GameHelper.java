@@ -37,8 +37,8 @@ public class GameHelper {
     final int REPLAY_TIMER_TICK = 100;
     final int REPLAY_TIMER_FIRST_TICK = 100;
 
-    final String REPLAY_CMD_DELIMITER = " # ";
-    final String REPLAY_ARG_DELIMITER = ";";
+    public static final String REPLAY_CMD_DELIMITER = " # ";
+    public static final String REPLAY_ARG_DELIMITER = ";";
 
     private Context context;
     private Timer replayTimer;
@@ -553,15 +553,15 @@ exit
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                 case "activity-action":
-                    setReplayBorder(false);
-                    setSharedPreferencesInt(
-                            "replay_opened_activities",
-                            getSharedPreferencesInt(
-                                    "replay_opened_activities",
-                                    0
-                            ) + 1
-                    );
                     if (replay_record_parts.length == 4) {
+                        setReplayBorder(false);
+                        setSharedPreferencesInt(
+                                "replay_opened_activities",
+                                getSharedPreferencesInt(
+                                        "replay_opened_activities",
+                                        0
+                                ) + 1
+                        );
                         Class new_activity = getActivityByString(
                                 current_activity,
                                 replay_record_parts[1]
@@ -641,11 +641,12 @@ exit
                             ListView lv_view = (ListView) view;
                             lastChangedView = lv_view;
                             lastChangedDrawable = lv_view.getBackground();
-                            lv_view.getChildAt(0).setBackground(context.getDrawable(drawable_id));
+                            int child_id = Integer.parseInt(replay_record_parts[3]);
+                            lv_view.getChildAt(child_id).setBackground(context.getDrawable(drawable_id));
                         } else {
                             Log.d("replay", String.format("[%s] Empty view", cmd));
                         }
-                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[3]));
+                        setSharedPreferencesInt("replay_wait_ticks", Integer.parseInt(replay_record_parts[4]));
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }

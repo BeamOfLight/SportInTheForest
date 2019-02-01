@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#AA333333"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/tvCommandType"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5sp"
+        android:textColor="@color/menuItemColor"
+        android:text="activity"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Spinner
+        android:id="@+id/spinnerCommandType"
+        android:layout_marginTop="20sp"
+        android:layout_marginBottom="15sp"
+        android:textColor="@color/menuItemColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>
+</LinearLayout>
