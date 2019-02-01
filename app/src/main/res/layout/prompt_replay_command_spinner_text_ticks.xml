@@ -10,9 +10,26 @@
 
     <Spinner
         android:id="@+id/spinnerCommandType"
-        android:layout_marginBottom="15sp"
+        android:layout_marginBottom="5sp"
         android:textColor="@color/menuItemColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </Spinner>
+
+    <EditText
+        android:id="@+id/etArg1"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5sp"
+        android:textColor="@color/menuItemColor"
+        android:lines="5"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
+    <NumberPicker
+        android:id="@+id/npTicks"
+        android:layout_width="100sp"
+        android:layout_height="80sp"
+        android:layout_gravity="center" />
 </LinearLayout>

@@ -12,8 +12,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -417,6 +420,12 @@ public class GameHelper {
         return "";
     }
 
+    public List<String> getActivityList()
+    {
+        String[] activities = {"main", "users", "exercises", "settings"};
+        return Arrays.asList(activities);
+    }
+
     private Class getActivityByString(Activity default_activity, String str_id)
     {
         Class new_activity = default_activity.getClass();
@@ -436,6 +445,12 @@ public class GameHelper {
         }
 
         return new_activity;
+    }
+
+    public List<String> getResourcesList()
+    {
+        String[] activities = {"lvNewItem", "btMenuStart", "llMenuStart", "llMenuSettings", "llMenuKnowledge"};
+        return Arrays.asList(activities);
     }
 
     private int getResourceViewId(String str_id)
@@ -460,6 +475,12 @@ public class GameHelper {
         }
 
         return view_id;
+    }
+
+    public List<String> getDrawableList()
+    {
+        String[] activities = {"colorAccent", "replay_border", "replay_border_inv", "mipmap/leaf_button_1", "mipmap/leaf_button_1_red"};
+        return Arrays.asList(activities);
     }
 
     private int getResourceDrawableId(String str_id)
