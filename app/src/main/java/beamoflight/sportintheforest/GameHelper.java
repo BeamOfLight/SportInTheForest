@@ -422,8 +422,8 @@ public class GameHelper {
 
     public List<String> getActivityList()
     {
-        String[] activities = {"main", "users", "exercises", "settings"};
-        return Arrays.asList(activities);
+        String[] values = {"main", "users", "exercises", "settings"};
+        return Arrays.asList(values);
     }
 
     private Class getActivityByString(Activity default_activity, String str_id)
@@ -449,8 +449,14 @@ public class GameHelper {
 
     public List<String> getResourcesList()
     {
-        String[] activities = {"lvNewItem", "btMenuStart", "llMenuStart", "llMenuSettings", "llMenuKnowledge"};
-        return Arrays.asList(activities);
+        String[] values = {"lvNewItem", "btMenuStart", "llMenuStart", "llMenuSettings", "llMenuKnowledge"};
+        return Arrays.asList(values);
+    }
+
+    public List<String> getResourcesListLV()
+    {
+        String[] values = {"lvNewItem"};
+        return Arrays.asList(values);
     }
 
     private int getResourceViewId(String str_id)
@@ -479,8 +485,8 @@ public class GameHelper {
 
     public List<String> getDrawableList()
     {
-        String[] activities = {"colorAccent", "replay_border", "replay_border_inv", "mipmap/leaf_button_1", "mipmap/leaf_button_1_red"};
-        return Arrays.asList(activities);
+        String[] values = {"colorAccent", "replay_border", "replay_border_inv", "mipmap/leaf_button_1", "mipmap/leaf_button_1_red"};
+        return Arrays.asList(values);
     }
 
     private int getResourceDrawableId(String str_id)

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ReplayEditorActivity extends ReplayActivity {
@@ -149,12 +150,12 @@ public class ReplayEditorActivity extends ReplayActivity {
         replayCommandLayouts.put("event2", R.layout.prompt_replay_command_spinner_ticks);
         replayCommandLayouts.put("event3", R.layout.prompt_replay_command_spinner_ticks);
         replayCommandLayouts.put("activity", R.layout.prompt_replay_command_spinner_activity_ticks);
-        replayCommandLayouts.put("activity-action", R.layout.prompt_replay_command_spinner);
+        replayCommandLayouts.put("activity-action", R.layout.prompt_replay_command_spinner_activity_text_ticks);
         replayCommandLayouts.put("toast", R.layout.prompt_replay_command_spinner_text_ticks);
         replayCommandLayouts.put("toast-long", R.layout.prompt_replay_command_spinner_text_ticks);
         replayCommandLayouts.put("background", R.layout.prompt_replay_command_spinner_resource_drawable_ticks);
         replayCommandLayouts.put("revert-background", R.layout.prompt_replay_command_spinner_ticks);
-        replayCommandLayouts.put("lv-item-background", R.layout.prompt_replay_command_spinner);
+        replayCommandLayouts.put("lv-item-background", R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks);
         replayCommandLayouts.put("exit", R.layout.prompt_replay_command_spinner);
     }
 
@@ -232,11 +233,58 @@ public class ReplayEditorActivity extends ReplayActivity {
         spinner.setSelection(commandsList.indexOf(cmd_str));
 
         final NumberPicker finalNpTicks = prompts_view.findViewById(R.id.npTicks);
+        final NumberPicker finalNpChildId = prompts_view.findViewById(R.id.npChildId);
         final EditText finalEtArg1 = prompts_view.findViewById(R.id.etArg1);
+        final EditText finalEtArg2 = prompts_view.findViewById(R.id.etArg2);
         final Spinner finalSpinnerArg1 = prompts_view.findViewById(R.id.spinnerArg1);
         final Spinner finalSpinnerArg2 = prompts_view.findViewById(R.id.spinnerArg2);
         final Spinner finalSpinner = spinner;
         final int finalLayoutId = layout_id;
+
+        // Activities
+        List<String> activitiesList = gameHelper.getActivityList();
+        java.util.Collections.sort(activitiesList);
+
+        ArrayAdapter<String> activitiesAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                activitiesList
+        );
+        activitiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Resources
+        List<String> resourcesList = gameHelper.getResourcesList();
+        java.util.Collections.sort(resourcesList);
+
+        ArrayAdapter<String> resourcesAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                resourcesList
+        );
+        resourcesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Resources - ListViews
+        List<String> resourcesListLV = gameHelper.getResourcesListLV();
+        java.util.Collections.sort(resourcesListLV);
+
+        ArrayAdapter<String> resourcesAdapterLV = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                resourcesListLV
+        );
+        resourcesAdapterLV.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Drawable
+        List<String> drawableList = gameHelper.getDrawableList();
+        java.util.Collections.sort(drawableList);
+
+        ArrayAdapter<String> drawablesAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                drawableList
+        );
+        drawablesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
 
         switch (layout_id) {
             case R.layout.prompt_replay_command_spinner:
@@ -253,15 +301,6 @@ public class ReplayEditorActivity extends ReplayActivity {
                 finalNpTicks.setValue(replayCommands.get(position).ticks);
                 break;
             case R.layout.prompt_replay_command_spinner_activity_ticks:
-                List<String> activitiesList = gameHelper.getActivityList();
-                java.util.Collections.sort(activitiesList);
-
-                ArrayAdapter<String> activitiesAdapter = new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        activitiesList
-                );
-                activitiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 finalSpinnerArg1.setAdapter(activitiesAdapter);
                 finalSpinnerArg1.setSelection(activitiesList.indexOf(replayCommands.get(position).arg1));
 
@@ -269,33 +308,42 @@ public class ReplayEditorActivity extends ReplayActivity {
                 finalNpTicks.setMaxValue(50);
                 finalNpTicks.setValue(replayCommands.get(position).ticks);
                 break;
-
             case R.layout.prompt_replay_command_spinner_resource_drawable_ticks:
-                // Resources
-                List<String> resourcesList = gameHelper.getResourcesList();
-                java.util.Collections.sort(resourcesList);
 
-                ArrayAdapter<String> resourcesAdapter = new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        resourcesList
-                );
-                resourcesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 finalSpinnerArg1.setAdapter(resourcesAdapter);
                 finalSpinnerArg1.setSelection(resourcesList.indexOf(replayCommands.get(position).arg1));
 
-                // Drawable
-                List<String> drawableList = gameHelper.getDrawableList();
-                java.util.Collections.sort(drawableList);
-
-                ArrayAdapter<String> drawablesAdapter = new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        drawableList
-                );
-                drawablesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 finalSpinnerArg2.setAdapter(drawablesAdapter);
                 finalSpinnerArg2.setSelection(drawableList.indexOf(replayCommands.get(position).arg2));
+
+                finalNpTicks.setMinValue(0);
+                finalNpTicks.setMaxValue(50);
+                finalNpTicks.setValue(replayCommands.get(position).ticks);
+                break;
+            case R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks:
+                finalSpinnerArg1.setAdapter(resourcesAdapterLV);
+                finalSpinnerArg1.setSelection(resourcesListLV.indexOf(replayCommands.get(position).arg1));
+
+                finalSpinnerArg2.setAdapter(drawablesAdapter);
+                finalSpinnerArg2.setSelection(drawableList.indexOf(replayCommands.get(position).arg2));
+
+                finalNpChildId.setMinValue(0);
+                finalNpChildId.setMaxValue(50);
+                try {
+                    finalNpChildId.setValue(Integer.parseInt(replayCommands.get(position).arg3));
+                } catch (Exception e) {
+                    finalNpChildId.setValue(0);
+                }
+
+                finalNpTicks.setMinValue(0);
+                finalNpTicks.setMaxValue(50);
+                finalNpTicks.setValue(replayCommands.get(position).ticks);
+                break;
+            case R.layout.prompt_replay_command_spinner_activity_text_ticks:
+                finalSpinnerArg1.setAdapter(activitiesAdapter);
+                finalSpinnerArg1.setSelection(activitiesList.indexOf(replayCommands.get(position).arg1));
+
+                finalEtArg2.setText(replayCommands.get(position).arg2);
 
                 finalNpTicks.setMinValue(0);
                 finalNpTicks.setMaxValue(50);
@@ -325,21 +373,45 @@ public class ReplayEditorActivity extends ReplayActivity {
                         replayCommands.get(position).cmd = new_cmd_str;
                         switch (finalLayoutId) {
                             case R.layout.prompt_replay_command_spinner:
+                                replayCommands.get(position).ticks = 0;
+                                replayCommands.get(position).arg1 = "";
+                                replayCommands.get(position).arg2 = "";
+                                replayCommands.get(position).arg3 = "";
                                 break;
                             case R.layout.prompt_replay_command_spinner_ticks:
                                 replayCommands.get(position).ticks = finalNpTicks.getValue();
+                                replayCommands.get(position).arg1 = "";
+                                replayCommands.get(position).arg2 = "";
+                                replayCommands.get(position).arg3 = "";
                                 break;
                             case R.layout.prompt_replay_command_spinner_text_ticks:
                                 replayCommands.get(position).arg1 = finalEtArg1.getText().toString();
+                                replayCommands.get(position).arg2 = "";
+                                replayCommands.get(position).arg3 = "";
                                 replayCommands.get(position).ticks = finalNpTicks.getValue();
                                 break;
                             case R.layout.prompt_replay_command_spinner_activity_ticks:
                                 replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                                replayCommands.get(position).arg2 = "";
+                                replayCommands.get(position).arg3 = "";
                                 replayCommands.get(position).ticks = finalNpTicks.getValue();
                                 break;
                             case R.layout.prompt_replay_command_spinner_resource_drawable_ticks:
                                 replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
                                 replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
+                                replayCommands.get(position).arg3 = "";
+                                replayCommands.get(position).ticks = finalNpTicks.getValue();
+                                break;
+                            case R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks:
+                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                                replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
+                                replayCommands.get(position).arg3 = String.format(Locale.ROOT, "%d", finalNpChildId.getValue());
+                                replayCommands.get(position).ticks = finalNpTicks.getValue();
+                                break;
+                            case R.layout.prompt_replay_command_spinner_activity_text_ticks:
+                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                                replayCommands.get(position).arg2 = finalEtArg2.getText().toString();
+                                replayCommands.get(position).arg3 = "";
                                 replayCommands.get(position).ticks = finalNpTicks.getValue();
                                 break;
                         }

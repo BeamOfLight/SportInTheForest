@@ -16,14 +16,22 @@
         android:layout_height="wrap_content">
     </Spinner>
 
+    <Spinner
+        android:id="@+id/spinnerArg1"
+        android:layout_marginBottom="5sp"
+        android:textColor="@color/menuItemColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>
+
     <EditText
-        android:id="@+id/etArg1"
+        android:id="@+id/etArg2"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5sp"
         android:textColor="@color/menuItemColor"
-        android:lines="5"
+        android:lines="1"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <NumberPicker
