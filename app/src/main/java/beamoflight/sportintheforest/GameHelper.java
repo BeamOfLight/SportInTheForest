@@ -658,7 +658,7 @@ exit
                     break;
 
                 case "lv-item-background":
-                    if (replay_record_parts.length == 4) {
+                    if (replay_record_parts.length == 5) {
                         int view_id = getResourceViewId(replay_record_parts[1]);
                         int drawable_id = getResourceDrawableId(replay_record_parts[2]);
                         Log.d("replay", "view_id: " + view_id);

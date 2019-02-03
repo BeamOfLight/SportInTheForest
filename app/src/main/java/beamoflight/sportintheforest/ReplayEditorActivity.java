@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,12 +33,34 @@ public class ReplayEditorActivity extends ReplayActivity {
             this.arg3 = "";
             this.ticks = 0;
         }
-        ReplayCommand(String cmd, String arg1, String arg2, String arg3, int ticks) {
-            this.cmd = cmd;
-            this.arg1 = arg1;
-            this.arg2 = arg2;
-            this.arg3 = arg3;
-            this.ticks = ticks;
+
+        @Override
+        public String toString() {
+            String result = "";
+            switch(cmd) {
+                case "event1":
+                case "event2":
+                case "event3":
+                case "revert-background":
+                    result = String.format(Locale.ROOT, "%s;%d", cmd, ticks);
+                    break;
+                case "toast-long":
+                case "toast":
+                case "activity":
+                    result = String.format(Locale.ROOT, "%s;%s;%d", cmd, arg1, ticks);
+                    break;
+                case "activity-action":
+                case "background":
+                    result = String.format(Locale.ROOT, "%s;%s;%s;%d", cmd, arg1, arg2, ticks);
+                    break;
+                case "lv-item-background":
+                    result = String.format(Locale.ROOT, "%s;%s;%s;%s;%d", cmd, arg1, arg2, arg3, ticks);
+                    break;
+                case "exit":
+                    result = String.format(Locale.ROOT, "%s", cmd);
+                    break;
+            }
+            return result;
         }
     }
 
@@ -434,7 +457,19 @@ public class ReplayEditorActivity extends ReplayActivity {
                                     int position, long id) {
                 switch (position) {
                     case 0:
-
+                        StringBuilder strBuilder = new StringBuilder("");
+                        int idx = 0;
+                        for (ReplayCommand replayCommand : replayCommands) {
+                            if (idx > 0) {
+                                strBuilder.append(GameHelper.REPLAY_CMD_DELIMITER);
+                            }
+                            strBuilder.append(replayCommand);
+                            idx++;
+                        }
+                        String replayStr = strBuilder.toString();
+                        //Toast.makeText(getBaseContext(), replayStr, Toast.LENGTH_LONG).show();
+                        gameHelper.setSharedPreferencesString("replay_editor_last_string", replayStr);
+                        gameHelper.enableReplayMode(ReplayEditorActivity.this, replayStr);
                         break;
                     case 1:
 
