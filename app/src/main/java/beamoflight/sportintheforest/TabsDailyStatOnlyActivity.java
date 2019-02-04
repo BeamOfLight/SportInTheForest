@@ -18,10 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,12 +32,14 @@ public class TabsDailyStatOnlyActivity extends Activity {
 
     // Titles of the individual pages (displayed in tabs)
     private final String[] PAGE_TITLES = new String[] {
-            "Статистика"
+            "Статистика",
+            "Данные"
     };
 
     // The fragments that are used as the individual pages
     private final Fragment[] PAGES = new Fragment[] {
-            new PageFragmentStat()
+            new PageFragmentStat(),
+            new PageFragmentData()
     };
 
     // The ViewPager is responsible for sliding pages (fragments) in and out upon user input
@@ -44,9 +49,8 @@ public class TabsDailyStatOnlyActivity extends Activity {
     DBHelper dbHelper;
     GameHelper gameHelper;
 
-
     TextView tvExerciseName;
-    Button btAddTraining;
+    ListView lvStatDays;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class TabsDailyStatOnlyActivity extends Activity {
 
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(getBaseContext());
+
+        lvStatDays = findViewById(R.id.lvStatDays);
 
         // Set the Toolbar as the activity's app bar (instead of the default ActionBar)
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -75,87 +81,86 @@ public class TabsDailyStatOnlyActivity extends Activity {
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         tvExerciseName = findViewById(R.id.tvExerciseName);
-        btAddTraining = findViewById(R.id.btAddTraining);
-
-        btAddTraining.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                initDialogAddDayInfo();
-            }
-        });
     }
 
-    private void initDialogAddDayInfo()
-    {
-        LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_add_day_info, null);
-
-        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
-        alert_dialog_builder.setView(prompts_view);
-
-        final NumberPicker npSaladsCount = prompts_view.findViewById(R.id.npSaladsCount);
-        final CalendarView cvDate = prompts_view.findViewById(R.id.cvDate);
-        final Calendar calendar = new GregorianCalendar();
-
-        cvDate.setOnDateChangeListener( new CalendarView.OnDateChangeListener() {
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                calendar.set(year, month, dayOfMonth);
-
-                SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
-                String selectedDate = date_format.format(calendar.getTime());
-
-                Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), selectedDate);
-                int sum_result = Integer.parseInt(m.get("sum_result"));
-                npSaladsCount.setValue(sum_result);
-            }
-        });
-
-        Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), gameHelper.getTodayString());
-        int sum_result = Integer.parseInt(m.get("sum_result"));
-
-        npSaladsCount.setMinValue(0);
-        npSaladsCount.setMaxValue(100);
-        npSaladsCount.setValue(sum_result);
-
-        // set dialog message
-        alert_dialog_builder
-                .setCancelable(false)
-                .setPositiveButton(R.string.btn_save_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
-                                String selectedDate = date_format.format(calendar.getTime());
-
-                                int result = npSaladsCount.getValue();
-                                Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), selectedDate);
-                                int training_id = Integer.parseInt(m.get("training_id"));
-                                if (training_id == 0) {
-                                    dbHelper.addTraining(gameHelper.getUserId(), gameHelper.getExerciseId(), 0, result, result, 0, 1, GameHelper.RESULT_STATE_WIN, 0,0, 0, false, 0, 0, selectedDate);
-                                } else {
-                                    dbHelper.updateTrainingResult(
-                                            training_id,
-                                            gameHelper.getUserId(),
-                                            gameHelper.getExerciseId(),
-                                            result
-                                    );
-                                }
-                            }
-                        })
-                .setNegativeButton(R.string.btn_cancel_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        dialogAddDayInfo = alert_dialog_builder.create();
-        dialogAddDayInfo.show();
-    }
+//    private void initDialogAddDayInfo()
+//    {
+//        LayoutInflater li = LayoutInflater.from(this);
+//        View prompts_view = li.inflate(R.layout.prompt_add_day_info, null);
+//
+//        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+//        alert_dialog_builder.setView(prompts_view);
+//
+//        final NumberPicker npCount = prompts_view.findViewById(R.id.npSaladsCount);
+//        final CalendarView cvDate = prompts_view.findViewById(R.id.cvDate);
+//        final Calendar calendar = new GregorianCalendar();
+//
+//        cvDate.setOnDateChangeListener( new CalendarView.OnDateChangeListener() {
+//            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+//                calendar.set(year, month, dayOfMonth);
+//
+//                SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+//                String selectedDate = date_format.format(calendar.getTime());
+//
+//                Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), selectedDate);
+//                int sum_result = Integer.parseInt(m.get("sum_result"));
+//                npCount.setValue(sum_result);
+//            }
+//        });
+//
+//        Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), gameHelper.getTodayString());
+//        int sum_result = Integer.parseInt(m.get("sum_result"));
+//
+//        npCount.setMinValue(0);
+//        npCount.setMaxValue(100);
+//        npCount.setValue(sum_result);
+//
+//        // set dialog message
+//        alert_dialog_builder
+//                .setCancelable(false)
+//                .setPositiveButton(R.string.btn_save_text,
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+//                                String selectedDate = date_format.format(calendar.getTime());
+//
+//                                int result = npCount.getValue();
+//                                Map<String, String> m = dbHelper.getFirstTrainingByDate(gameHelper.getUserId(), gameHelper.getExerciseId(), selectedDate);
+//                                int training_id = Integer.parseInt(m.get("training_id"));
+//                                if (training_id == 0) {
+//                                    dbHelper.addTraining(gameHelper.getUserId(), gameHelper.getExerciseId(), 0, result, result, 0, 1, GameHelper.RESULT_STATE_WIN, 0,0, 0, false, 0, 0, selectedDate);
+//                                } else {
+//                                    dbHelper.updateTrainingResult(
+//                                            training_id,
+//                                            gameHelper.getUserId(),
+//                                            gameHelper.getExerciseId(),
+//                                            result
+//                                    );
+//                                }
+//                            }
+//                        })
+//                .setNegativeButton(R.string.btn_cancel_text,
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog,int id) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//
+//        // create alert dialog
+//        dialogAddDayInfo = alert_dialog_builder.create();
+//        dialogAddDayInfo.show();
+//    }
 
     protected void onStart() {
         super.onStart();
 
         tvExerciseName.setText(dbHelper.getExerciseName(gameHelper.getExerciseId()));
+
+        int max_result = dbHelper.getCurrentUserExerciseMaxDaySumValue4Period("2019-01-29", "2019-02-04");
+        List<Stat> values = dbHelper.getCurrentUserExerciseStatDays4Period("2019-01-29", "2019-02-04");
+        StatDayArrayAdapter statAdapter;
+        statAdapter = new StatDayArrayAdapter(getBaseContext(), values, max_result);
+        lvStatDays.setAdapter(statAdapter);
     }
 
     /* PagerAdapter for supplying the ViewPager with the pages (fragments) to display. */

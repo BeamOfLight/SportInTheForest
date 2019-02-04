@@ -9,7 +9,10 @@ import android.icu.util.TimeZone;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -2321,6 +2324,43 @@ class DBHelper extends DBHelperBaseLayer {
         return max_value;
     }
 
+    public int getCurrentUserExerciseMaxDaySumValue4Period(String date_from, String date_to)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseMaxDaySumValue4Period(user_id, exercise_id, "sum_result", date_from, date_to);
+    }
+
+    // TODO: rewrite SQL query
+    private int getUserExerciseMaxDaySumValue4Period(int user_id, int exercise_id, String field, String date_from, String date_to)
+    {
+        int max_value= 0;
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(" + field + ") AS sum_value, date(event_timestamp) AS event_date, strftime('%d', event_timestamp) AS day"},
+                "user_id = ? AND exercise_id = ? AND event_date >= ? AND event_date <= ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), date_from, date_to},
+                "user_id, exercise_id, day",
+                null,
+                null
+        );
+
+        int sum_value;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    sum_value = cursor.getInt(cursor.getColumnIndex("sum_value"));
+                    if (sum_value > max_value) {
+                        max_value = sum_value;
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return max_value;
+    }
+
     public ArrayList<Stat> getCurrentUserExerciseStatDaysSumResult(int year, int month)
     {
         int user_id = gameHelper.getUserId();
@@ -2378,6 +2418,141 @@ class DBHelper extends DBHelperBaseLayer {
                     int value = cursor.getInt(cursor.getColumnIndex("value"));
 
                     stat_entities.get(day - 1).setValue(value);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return stat_entities;
+    }
+
+    private final static long SECONDS_PER_DAY = 24 * 60 * 60;
+
+    /**
+     * Returns the number of days between two dates. The time part of the
+     * days is ignored in this calculation, so 2007-01-01 13:00 and 2007-01-02 05:00
+     * have one day inbetween.
+     */
+    public static int daysBetween(Date firstDate, Date secondDate) {
+        // We only use the date part of the given dates
+        long firstSeconds = truncateToDate(firstDate).getTime()/1000;
+        long secondSeconds = truncateToDate(secondDate).getTime()/1000;
+        // Just taking the difference of the millis.
+        // These will not be exactly multiples of 24*60*60, since there
+        // might be daylight saving time somewhere inbetween. However, we can
+        // say that by adding a half day and rounding down afterwards, we always
+        // get the full days.
+        long difference = secondSeconds-firstSeconds;
+        // Adding half a day
+        if( difference >= 0 ) {
+            difference += SECONDS_PER_DAY/2; // plus half a day in seconds
+        } else {
+            difference -= SECONDS_PER_DAY/2; // minus half a day in seconds
+        }
+        // Rounding down to days
+        difference /= SECONDS_PER_DAY;
+
+        return (int) difference;
+    }
+
+    /**
+     * Truncates a date to the date part alone.
+     */
+    @SuppressWarnings("deprecation")
+    public static Date truncateToDate(Date d) {
+        if( d instanceof java.sql.Date ) {
+            return d; // java.sql.Date is already truncated to date. And raises an
+            // Exception if we try to set hours, minutes or seconds.
+        }
+        d = (Date)d.clone();
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        d.setTime(((d.getTime()/1000)*1000));
+        return d;
+    }
+
+    public ArrayList<Stat> getCurrentUserExerciseStatDays4Period(String date_from, String date_to)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        return getUserExerciseStatDays4Period(user_id, exercise_id, "sum_result", date_from, date_to);
+    }
+
+    private ArrayList<Stat> getUserExerciseStatDays4Period(int user_id, int exercise_id, String field, String date_from_str, String date_to_str)
+    {
+        Calendar today = Calendar.getInstance();
+        int current_year = today.get(Calendar.YEAR);
+        int current_month = today.get(Calendar.MONTH) + 1;
+        int current_day = today.get(Calendar.DAY_OF_MONTH);
+
+        Calendar first_day = Calendar.getInstance();
+        first_day.set(current_year, Calendar.JANUARY, 1);
+        int first_day_of_week = first_day.get(Calendar.DAY_OF_WEEK);
+
+        int days_diff = 0;
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date_from = new Date();
+        Date date_to;
+        try {
+            date_from = date_format.parse(date_from_str);
+            date_to = date_format.parse(date_to_str);
+            days_diff = daysBetween(date_from, date_to);
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        Calendar that_day = Calendar.getInstance();
+        that_day.setFirstDayOfWeek(first_day_of_week);
+        that_day.setTime(date_from);
+
+        Calendar first_day_of_week_calendar = Calendar.getInstance();
+        first_day_of_week_calendar.setTime(date_from);
+
+        boolean current_period;
+        ArrayList<Stat> stat_entities = new ArrayList<>();
+        for (int day_idx = 0; day_idx <= days_diff; day_idx++) {
+            int year = that_day.get(Calendar.YEAR);
+            int month = that_day.get(Calendar.MONTH) + 1;
+            int day = that_day.get(Calendar.DAY_OF_MONTH);
+            current_period = current_day == day && current_year == year && current_month == month;
+            stat_entities.add(
+                    new Stat(
+                            year,
+                            month,
+                            day,
+                            0,
+                            0,
+                            day_idx + 1,
+                            current_period
+                    )
+            );
+            that_day.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(" + field + ") AS value, date(event_timestamp) AS event_date, strftime('%Y', event_timestamp) AS year, strftime('%m', event_timestamp) AS month, strftime('%d', event_timestamp) AS day, strftime('%j', event_timestamp) AS day_of_year"},
+                "user_id = ? AND exercise_id = ? AND event_date >= ? AND event_date <= ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), date_from_str, date_to_str},
+                "user_id, exercise_id, day",
+                null,
+                "event_date ASC"
+        );
+
+        int idx = 0;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+//                    int year = Integer.parseInt(cursor.getString(cursor.getColumnIndex("year")));
+//                    int month = Integer.parseInt(cursor.getString(cursor.getColumnIndex("month")));
+//                    int day = Integer.parseInt(cursor.getString(cursor.getColumnIndex("day")));
+                    int value = cursor.getInt(cursor.getColumnIndex("value"));
+                    int day_of_year = Integer.parseInt(cursor.getString(cursor.getColumnIndex("day_of_year")));
+
+                    stat_entities.get(day_of_year - first_day_of_week_calendar.get(Calendar.DAY_OF_YEAR)).setValue(value);
+                    idx++;
                 } while (cursor.moveToNext());
             }
             cursor.close();
