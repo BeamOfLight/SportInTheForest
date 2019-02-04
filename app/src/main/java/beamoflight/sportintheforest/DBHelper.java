@@ -2721,4 +2721,18 @@ class DBHelper extends DBHelperBaseLayer {
         values.put("app_version", app_version);
         return db.update("parameters", values, null, null);
     }
+
+    public boolean isUserExerciseTypeStatOnly()
+    {
+        Map<String, String> user_exercise_data = getUserExerciseData(gameHelper.getUserId(), gameHelper.getExerciseId());
+        int type = Integer.parseInt(user_exercise_data.get("type"));
+        return type == USER_EXERCISE_TYPE_DAILY_STAT_ONLY;
+    }
+
+    public boolean isUserExerciseTypeRPG()
+    {
+        Map<String, String> user_exercise_data = getUserExerciseData(gameHelper.getUserId(), gameHelper.getExerciseId());
+        int type = Integer.parseInt(user_exercise_data.get("type"));
+        return type == USER_EXERCISE_TYPE_RPG;
+    }
 }

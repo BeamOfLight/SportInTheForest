@@ -56,7 +56,9 @@ public class StatMonthsActivity extends Activity {
 
         List<StatTypeOption> typeList = new ArrayList<>();
         typeList.add(new StatTypeOption("Суммарный результат", StatTypeOption.TYPE_RESULT));
-        typeList.add(new StatTypeOption("Суммарный опыт", StatTypeOption.TYPE_EXP));
+        if (dbHelper.isUserExerciseTypeRPG()) {
+            typeList.add(new StatTypeOption("Суммарный опыт", StatTypeOption.TYPE_EXP));
+        }
 
         ArrayAdapter<StatTypeOption> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, typeList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

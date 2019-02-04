@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,15 +38,15 @@ public class GameHelper {
     public static final int SPECIALISATION_RESISTANCE = 2;
     public static final int SPECIALISATION_REGENERATION = 3;
 
-    final int REPLAY_TIMER_TICK = 100;
-    final int REPLAY_TIMER_FIRST_TICK = 100;
+    private static final int REPLAY_TIMER_TICK = 100;
+    private static final int REPLAY_TIMER_FIRST_TICK = 100;
 
     public static final String REPLAY_CMD_DELIMITER = " # ";
     public static final String REPLAY_ARG_DELIMITER = ";";
 
     private Context context;
     private Timer replayTimer;
-    TimerTask replayTimerTask;
+    private TimerTask replayTimerTask;
     private Handler replayHandler;
     private ReplayActivity currentReplayActivity;
     private Drawable lastChangedDrawable;
