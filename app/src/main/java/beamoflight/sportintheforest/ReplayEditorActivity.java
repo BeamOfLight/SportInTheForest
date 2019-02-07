@@ -25,13 +25,14 @@ public class ReplayEditorActivity extends ReplayActivity {
 
     class ReplayCommand {
         String cmd, arg1, arg2, arg3;
-        int ticks;
+        int ticks, position;
         ReplayCommand() {
             this.cmd = "";
             this.arg1 = "";
             this.arg2 = "";
             this.arg3 = "";
             this.ticks = 0;
+            this.position = 0;
         }
 
         @Override
@@ -179,12 +180,14 @@ public class ReplayEditorActivity extends ReplayActivity {
         replayCommandLayouts.put("background", R.layout.prompt_replay_command_spinner_resource_drawable_ticks);
         replayCommandLayouts.put("revert-background", R.layout.prompt_replay_command_spinner_ticks);
         replayCommandLayouts.put("lv-item-background", R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks);
+        replayCommandLayouts.put("empty", R.layout.prompt_replay_command_spinner);
         replayCommandLayouts.put("exit", R.layout.prompt_replay_command_spinner);
     }
 
     protected void setReplayCommands(String replay_string) {
         replayCommands.clear();
 
+        int position = 1;
         String cmd_str;
         String[] replay_records = replay_string.split(GameHelper.REPLAY_CMD_DELIMITER);
         for (String replay_record : replay_records) {
@@ -230,7 +233,9 @@ public class ReplayEditorActivity extends ReplayActivity {
                     case "exit":
                         cmd.cmd = "exit";
                 }
+                cmd.position = position;
                 replayCommands.add(cmd);
+                position++;
             }
         }
     }
@@ -472,17 +477,68 @@ public class ReplayEditorActivity extends ReplayActivity {
                         gameHelper.enableReplayMode(ReplayEditorActivity.this, replayStr);
                         break;
                     case 1:
-
+                        Toast.makeText(getBaseContext(), "Не реализовано", Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        Toast.makeText(getBaseContext(), "Не реализовано", Toast.LENGTH_LONG).show();
+                        break;
+                    case 3:
+                        initDialogAddReplayCommand();
                         break;
                 }
             }
         });
     }
 
+    private void initDialogAddReplayCommand() {
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_replay_command_add, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+
+        Spinner spinner = prompts_view.findViewById(R.id.spinnerCommandNumber);
+        List<String> spinnerData = new ArrayList<>();
+        for (ReplayCommand cmd : replayCommands) {
+            spinnerData.add(String.format(Locale.ROOT, "%d", cmd.position));
+        }
+        spinnerData.add(getResources().getString(R.string.spinner_end_of_list));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                spinnerData
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        final Spinner finalSpinner = spinner;
+
+        alert_dialog_builder.setView(prompts_view)
+                .setMessage("Укажите позицию новой команды")
+                .setCancelable(true)
+                .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ReplayCommand replayCommand = new ReplayCommand();
+                        replayCommand.cmd = "empty";
+                        String command_position_str = (String) finalSpinner.getSelectedItem();
+                        if (command_position_str.equals(getResources().getString(R.string.spinner_end_of_list))) {
+                            replayCommands.add(replayCommand);
+                        } else {
+                            int command_position = Integer.parseInt(command_position_str);
+                            replayCommands.add(command_position - 1, replayCommand);
+                        }
+                        showCommandsListView();
+                    }
+                });
+
+        dialog = alert_dialog_builder.create();
+
+        dialog.show();
+    }
+
     private void showMenuListView()
     {
         lvMenu.invalidateViews();
-        String[] items = {"Просмотр", "Сохранить"};
+        String[] items = {"Просмотр", "Сохранить", "Импорт строки", "Добавить элемент"};
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
 
         lvMenu.setAdapter(itemsAdapter);
@@ -503,6 +559,12 @@ public class ReplayEditorActivity extends ReplayActivity {
 
     private void showCommandsListView()
     {
+        int position = 1;
+        for (ReplayCommand replayCommand : replayCommands) {
+            replayCommand.position = position;
+            position++;
+        }
+
         lvCommands.invalidateViews();
         ReplayCommandItemArrayAdapter itemsAdapter = new ReplayCommandItemArrayAdapter(this, replayCommands);
         lvCommands.setAdapter(itemsAdapter);

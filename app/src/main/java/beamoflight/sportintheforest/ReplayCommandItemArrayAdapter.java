@@ -35,7 +35,14 @@ public class ReplayCommandItemArrayAdapter extends ArrayAdapter<ReplayEditorActi
 
         String cmd_str = values.get(position).cmd;
         TextView tvTitle = rowView.findViewById(R.id.tvTitle);
-        tvTitle.setText(String.format(Locale.ROOT, "%s", cmd_str));
+        tvTitle.setText(
+                String.format(
+                        Locale.ROOT,
+                        "%d. %s",
+                        values.get(position).position,
+                        cmd_str
+                )
+        );
 
         String info;
         switch (cmd_str) {
