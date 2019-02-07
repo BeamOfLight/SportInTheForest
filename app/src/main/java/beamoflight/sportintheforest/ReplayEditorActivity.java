@@ -3,6 +3,8 @@ package beamoflight.sportintheforest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +16,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -454,33 +459,58 @@ public class ReplayEditorActivity extends ReplayActivity {
         dialog.show();
     }
 
+    private String getCurrentReplayString()
+    {
+        StringBuilder strBuilder = new StringBuilder("");
+        int idx = 0;
+        for (ReplayCommand replayCommand : replayCommands) {
+            if (idx > 0) {
+                strBuilder.append(GameHelper.REPLAY_CMD_DELIMITER);
+            }
+            strBuilder.append(replayCommand);
+            idx++;
+        }
+        return strBuilder.toString();
+    }
+
     private void initMenuListView()
     {
         lvMenu = findViewById(R.id.lvItemsTop);
         lvMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                String replayStr = getCurrentReplayString();
                 switch (position) {
                     case 0:
-                        StringBuilder strBuilder = new StringBuilder("");
-                        int idx = 0;
-                        for (ReplayCommand replayCommand : replayCommands) {
-                            if (idx > 0) {
-                                strBuilder.append(GameHelper.REPLAY_CMD_DELIMITER);
-                            }
-                            strBuilder.append(replayCommand);
-                            idx++;
-                        }
-                        String replayStr = strBuilder.toString();
-                        //Toast.makeText(getBaseContext(), replayStr, Toast.LENGTH_LONG).show();
                         gameHelper.setSharedPreferencesString("replay_editor_last_string", replayStr);
                         gameHelper.enableReplayMode(ReplayEditorActivity.this, replayStr);
                         break;
                     case 1:
-                        Toast.makeText(getBaseContext(), "Не реализовано", Toast.LENGTH_LONG).show();
+                        try {
+                            File sd = Environment.getExternalStorageDirectory();
+
+                            if (sd.canWrite()) {
+                                File myFile = new File(sd,"/SportInTheForest/replay_string.txt");
+                                myFile.createNewFile();
+                                FileOutputStream fOut = new FileOutputStream(myFile);
+                                OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+                                myOutWriter.append(replayStr);
+                                myOutWriter.close();
+                                fOut.close();
+
+                                Toast.makeText(getBaseContext(), "Сохранено", Toast.LENGTH_LONG).show();
+
+                            } else {
+                                Toast.makeText(getBaseContext(), "Нет прав", Toast.LENGTH_LONG).show();
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(getBaseContext(), "Ошибка: " + e.toString(), Toast.LENGTH_LONG).show();
+                            Log.d("myLogs", e.toString());
+                            Log.d("myLogs", e.getStackTrace().toString());
+                        }
                         break;
                     case 2:
-                        Toast.makeText(getBaseContext(), "Не реализовано", Toast.LENGTH_LONG).show();
+                        initDialogImportString();
                         break;
                     case 3:
                         initDialogAddReplayCommand();
@@ -488,6 +518,29 @@ public class ReplayEditorActivity extends ReplayActivity {
                 }
             }
         });
+    }
+
+    private void initDialogImportString() {
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_replay_command_import_string, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+
+        final EditText finalEtImportString = prompts_view.findViewById(R.id.etImportString);
+
+        alert_dialog_builder.setView(prompts_view)
+                .setMessage("Введите строчку для импорта")
+                .setCancelable(true)
+                .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String import_string = finalEtImportString.getText().toString();
+                        setReplayCommands(import_string);
+                        showCommandsListView();
+                    }
+                });
+
+        dialog = alert_dialog_builder.create();
+        dialog.show();
     }
 
     private void initDialogAddReplayCommand() {
@@ -531,7 +584,6 @@ public class ReplayEditorActivity extends ReplayActivity {
                 });
 
         dialog = alert_dialog_builder.create();
-
         dialog.show();
     }
 
@@ -574,7 +626,8 @@ public class ReplayEditorActivity extends ReplayActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        //gameHelper.setSharedPreferencesString("replay_editor_last_string", etReplay.getText().toString());
+        String replayStr = getCurrentReplayString();
+        gameHelper.setSharedPreferencesString("replay_editor_last_string", replayStr);
     }
 
     @Override
