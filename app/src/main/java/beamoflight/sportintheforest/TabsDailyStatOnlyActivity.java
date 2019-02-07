@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -156,8 +157,20 @@ public class TabsDailyStatOnlyActivity extends Activity {
 
         tvExerciseName.setText(dbHelper.getExerciseName(gameHelper.getExerciseId()));
 
-        int max_result = dbHelper.getCurrentUserExerciseMaxDaySumValue4Period("2019-01-29", "2019-02-04");
-        List<Stat> values = dbHelper.getCurrentUserExerciseStatDays4Period("2019-01-29", "2019-02-04");
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        int day_of_year = calendar.get(Calendar.DAY_OF_YEAR);
+        int first_day_of_week = 7 * ((day_of_year - 1) / 7) + 1;
+        int diff = first_day_of_week - day_of_year;
+
+        java.text.SimpleDateFormat date_format = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+        calendar.add(Calendar.DAY_OF_YEAR, diff);
+        String date_from = date_format.format(calendar.getTime());
+
+        calendar.add(Calendar.DAY_OF_YEAR, 6);
+        String date_to = date_format.format(calendar.getTime());
+
+        int max_result = dbHelper.getCurrentUserExerciseMaxDaySumValue4Period(date_from, date_to);
+        List<Stat> values = dbHelper.getCurrentUserExerciseStatDays4Period(date_from, date_to);
         StatDayArrayAdapter statAdapter;
         statAdapter = new StatDayArrayAdapter(getBaseContext(), values, max_result);
         lvStatDays.setAdapter(statAdapter);
