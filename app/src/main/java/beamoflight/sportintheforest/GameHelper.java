@@ -423,7 +423,7 @@ public class GameHelper {
 
     public List<String> getActivityList()
     {
-        String[] values = {"main", "users", "exercises", "settings"};
+        String[] values = {"main", "users", "user-exercises", "settings"};
         return Arrays.asList(values);
     }
 
@@ -437,7 +437,7 @@ public class GameHelper {
             case "users":
                 new_activity = UsersActivity.class;
                 break;
-            case "exercises":
+            case "user-exercises":
                 new_activity = UserExercisesActivity.class;
                 break;
             case "settings":

@@ -35,49 +35,51 @@ public class SettingsActivity extends ReplayActivity {
         lvSettings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent;
-                switch(position) {
-                    case 0:
-                        dbHelper.exportDB("SportInTheForestDB.db", false);
-                        dbHelper.exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", false);
-                        dbHelper.save2file("SportInTheForest.sif");
-                        dbHelper.save2file("SportInTheForest_" + gameHelper.getTodayStringWithHours() + ".sif");
-                        dbHelper.save2file("SportInTheForest_" + gameHelper.getTodayString() + ".sif");
-                        Toast.makeText(getBaseContext(), "Сохранено!", Toast.LENGTH_LONG).show();
-                        break;
-                    case 1:
-                        new AlertDialog.Builder(SettingsActivity.this)
-                                .setMessage(R.string.are_you_sure)
-                                .setCancelable(false)
-                                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dbHelper.importDB("SportInTheForestDB.db", true);
-                                    }
-                                })
-                                .setNegativeButton("Нет", null)
-                                .show();
-                        break;
-                    case 2:
-                        intent = new Intent(SettingsActivity.this, ExercisesActivity.class);
-                        startActivity(intent);
-                        break;
-                    case 3:
-                        new AlertDialog.Builder(SettingsActivity.this)
-                                .setMessage(R.string.are_you_sure)
-                                .setCancelable(false)
-                                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dbHelper.recreateCommonTable();
-                                        Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                .setNegativeButton("Нет", null)
-                                .show();
-                        break;
-                    case 4:
-                        intent = new Intent(getBaseContext(), ExtraSettingsActivity.class);
-                        startActivity(intent);
-                        break;
+                if (!gameHelper.isReplayMode()) {
+                    Intent intent;
+                    switch (position) {
+                        case 0:
+                            dbHelper.exportDB("SportInTheForestDB.db", false);
+                            dbHelper.exportDB("SportInTheForestDB_" + gameHelper.getTodayString() + ".db", false);
+                            dbHelper.save2file("SportInTheForest.sif");
+                            dbHelper.save2file("SportInTheForest_" + gameHelper.getTodayStringWithHours() + ".sif");
+                            dbHelper.save2file("SportInTheForest_" + gameHelper.getTodayString() + ".sif");
+                            Toast.makeText(getBaseContext(), "Сохранено!", Toast.LENGTH_LONG).show();
+                            break;
+                        case 1:
+                            new AlertDialog.Builder(SettingsActivity.this)
+                                    .setMessage(R.string.are_you_sure)
+                                    .setCancelable(false)
+                                    .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dbHelper.importDB("SportInTheForestDB.db", true);
+                                        }
+                                    })
+                                    .setNegativeButton("Нет", null)
+                                    .show();
+                            break;
+                        case 2:
+                            intent = new Intent(SettingsActivity.this, ExercisesActivity.class);
+                            startActivity(intent);
+                            break;
+                        case 3:
+                            new AlertDialog.Builder(SettingsActivity.this)
+                                    .setMessage(R.string.are_you_sure)
+                                    .setCancelable(false)
+                                    .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dbHelper.recreateCommonTable();
+                                            Toast.makeText(getBaseContext(), "Выполнено", Toast.LENGTH_LONG).show();
+                                        }
+                                    })
+                                    .setNegativeButton("Нет", null)
+                                    .show();
+                            break;
+                        case 4:
+                            intent = new Intent(getBaseContext(), ExtraSettingsActivity.class);
+                            startActivity(intent);
+                            break;
+                    }
                 }
             }
         });

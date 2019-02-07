@@ -19,10 +19,7 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Map;
 
-public class UserExercisesActivity extends Activity {
-
-    DBHelper dbHelper;
-    GameHelper gameHelper;
+public class UserExercisesActivity extends ReplayActivity {
     List<Map<String, String>> exercisesData;
     ListView lvExercises, lvNewUserExercise;
     AlertDialog dialogAddUserExercise;
@@ -31,9 +28,6 @@ public class UserExercisesActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_lists_std1);
-
-        dbHelper = new DBHelper( this );
-        gameHelper = new GameHelper(this );
     }
 
     protected void onStart() {
@@ -51,15 +45,17 @@ public class UserExercisesActivity extends Activity {
         lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                switch (position) {
-                    case 0:
-                        initDialogAddUserExercise();
-                        dialogAddUserExercise.show();
-                        break;
-                    case 1:
-                        Intent intent = new Intent(getBaseContext(), UsersActivity.class);
-                        startActivity(intent);
-                        break;
+                if (!gameHelper.isReplayMode()) {
+                    switch (position) {
+                        case 0:
+                            initDialogAddUserExercise();
+                            dialogAddUserExercise.show();
+                            break;
+                        case 1:
+                            Intent intent = new Intent(getBaseContext(), UsersActivity.class);
+                            startActivity(intent);
+                            break;
+                    }
                 }
             }
         });
@@ -85,21 +81,25 @@ public class UserExercisesActivity extends Activity {
                 .setPositiveButton(R.string.btn_save_text,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
-                                int exerciseId = ((ExerciseEntity) spinnerAddUserExercise.getSelectedItem()).getId();
-                                int type = dbHelper.USER_EXERCISE_TYPE_RPG;
-                                if (cbDailyStatOnly.isChecked()) {
-                                    type = dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY;
-                                }
-                                dbHelper.addUserExercise(gameHelper.getUserId(), exerciseId, type);
-                                dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
+                                if (!gameHelper.isReplayMode()) {
+                                    int exerciseId = ((ExerciseEntity) spinnerAddUserExercise.getSelectedItem()).getId();
+                                    int type = dbHelper.USER_EXERCISE_TYPE_RPG;
+                                    if (cbDailyStatOnly.isChecked()) {
+                                        type = dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY;
+                                    }
+                                    dbHelper.addUserExercise(gameHelper.getUserId(), exerciseId, type);
+                                    dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
 
-                                showExercisesList();
+                                    showExercisesList();
+                                }
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel_text,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
+                                if (!gameHelper.isReplayMode()) {
+                                    dialog.cancel();
+                                }
                             }
                         });
 
@@ -113,21 +113,22 @@ public class UserExercisesActivity extends Activity {
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
-                gameHelper.saveExerciseId2Preferences(exercise_id);
+                if (!gameHelper.isReplayMode()) {
+                    int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
+                    gameHelper.saveExerciseId2Preferences(exercise_id);
 
-                Intent intent = null;
-                Map<String, String> data = dbHelper.getCurrentUserExerciseData();
-                if (data != null) {
-                    int user_exercise_type = Integer.parseInt(data.get("type"));
-                    if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
-                        intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
-                    } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
-                        intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
+                    Intent intent = null;
+                    Map<String, String> data = dbHelper.getCurrentUserExerciseData();
+                    if (data != null) {
+                        int user_exercise_type = Integer.parseInt(data.get("type"));
+                        if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
+                            intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
+                        } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
+                            intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
+                        }
+                        startActivity(intent);
                     }
-                    startActivity(intent);
                 }
-
             }
         });
 
@@ -157,5 +158,22 @@ public class UserExercisesActivity extends Activity {
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
 
         lvNewUserExercise.setAdapter(itemsAdapter);
+    }
+
+    @Override
+    public void replayEvent1()
+    {
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
     }
 }

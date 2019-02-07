@@ -155,34 +155,38 @@ public class UsersActivity extends ReplayActivity {
             .setPositiveButton(R.string.btn_save_text,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
-                    String user_name = et_input_user_name.getText().toString();
-                    if (user_name.trim().length() == 0) {
-                        Toast.makeText(getBaseContext(), R.string.msg_user_need_name, Toast.LENGTH_SHORT).show();
-                    } else if (dbHelper.isUserNameExist(user_name, user_id)) {
-                        Toast.makeText(getBaseContext(), R.string.msg_user_name_already_exists, Toast.LENGTH_SHORT).show();
-                    } else if (user_id == -1) {
-                        long result = dbHelper.addUser(user_name, false);
-                        if (result > 0) {
-                            showUsersList();
-                            Toast.makeText(getBaseContext(), R.string.msg_user_add_success, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getBaseContext(), R.string.msg_user_add_error, Toast.LENGTH_SHORT).show();
+                        if (!gameHelper.isReplayMode()) {
+                            String user_name = et_input_user_name.getText().toString();
+                            if (user_name.trim().length() == 0) {
+                                Toast.makeText(getBaseContext(), R.string.msg_user_need_name, Toast.LENGTH_SHORT).show();
+                            } else if (dbHelper.isUserNameExist(user_name, user_id)) {
+                                Toast.makeText(getBaseContext(), R.string.msg_user_name_already_exists, Toast.LENGTH_SHORT).show();
+                            } else if (user_id == -1) {
+                                long result = dbHelper.addUser(user_name, false);
+                                if (result > 0) {
+                                    showUsersList();
+                                    Toast.makeText(getBaseContext(), R.string.msg_user_add_success, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getBaseContext(), R.string.msg_user_add_error, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                long result = dbHelper.updateUser(user_id, user_name);
+                                if (result > 0) {
+                                    showUsersList();
+                                    Toast.makeText(getBaseContext(), R.string.msg_user_edit_success, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getBaseContext(), R.string.msg_user_edit_error, Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
-                    } else {
-                        long result = dbHelper.updateUser(user_id, user_name);
-                        if (result > 0) {
-                            showUsersList();
-                            Toast.makeText(getBaseContext(), R.string.msg_user_edit_success, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getBaseContext(), R.string.msg_user_edit_error, Toast.LENGTH_SHORT).show();
-                        }
-                    }
                     }
                 })
             .setNegativeButton(R.string.btn_cancel_text,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
-                    dialog.cancel();
+                        if (!gameHelper.isReplayMode()) {
+                            dialog.cancel();
+                        }
                     }
                 });
 
