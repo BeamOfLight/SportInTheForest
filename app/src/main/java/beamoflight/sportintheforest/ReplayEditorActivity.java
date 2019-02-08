@@ -73,9 +73,7 @@ public class ReplayEditorActivity extends ReplayActivity {
     ArrayList<ReplayCommand> replayCommands;
 
     AlertDialog dialog;
-//    EditText etReplay;
-//    Button btStart, btSave, btInfo;
-    ListView lvMenu, lvCommands;
+    ListView lvMenuLeft, lvMenuRight, lvCommands;
 
     final String info="toast_long;TEXT;TICKS\n" +
             "toast;TEXT;TICKS\n" +
@@ -96,66 +94,15 @@ public class ReplayEditorActivity extends ReplayActivity {
     /** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu_lists_std1);
+        setContentView(R.layout.menu_lists_std2);
 
         ((TextView) findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.extra_settings_menu_replay_editor));
 
         initReplayCommandsDict();
         replayCommands = new ArrayList<>();
-        initMenuListView();
+        initMenuLeft();
+        initMenuRight();
         initCommandsListView();
-
-//        etReplay = findViewById(R.id.etReplay);
-//        etReplay.setText(
-//                gameHelper.getSharedPreferencesString(
-//                        "replay_editor_last_string",
-//                        "toast-long;В разработке;50 # exit"
-//                )
-//        );
-//
-//        btStart = findViewById(R.id.btStart);
-//        btStart.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                //gameHelper.setSharedPreferencesString("replay_editor_last_string", etReplay.getText().toString());
-//                gameHelper.enableReplayMode(ReplayEditorActivity.this, etReplay.getText().toString());
-//            }
-//        });
-//
-//        btInfo = findViewById(R.id.btInfo);
-//        btInfo.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                initDialogShowTextKnowledgeItem(info);
-//            }
-//        });
-//
-//        btSave = findViewById(R.id.btSave);
-//        btSave.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                    try {
-//                        File sd = Environment.getExternalStorageDirectory();
-//
-//                        if (sd.canWrite()) {
-//                            File myFile = new File(sd,"/SportInTheForest/replay_string.txt");
-//                            myFile.createNewFile();
-//                            FileOutputStream fOut = new FileOutputStream(myFile);
-//                            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-//                            myOutWriter.append(etReplay.getText().toString());
-//                            myOutWriter.close();
-//                            fOut.close();
-//
-//                            Toast.makeText(getBaseContext(), "Сохранено", Toast.LENGTH_LONG).show();
-//
-//                        } else {
-//                            Toast.makeText(getBaseContext(), "Нет прав", Toast.LENGTH_LONG).show();
-//                        }
-//                    } catch (Exception e) {
-//                        Toast.makeText(getBaseContext(), "Ошибка: " + e.toString(), Toast.LENGTH_LONG).show();
-//                        Log.d("myLogs", e.toString());
-//                        Log.d("myLogs", e.getStackTrace().toString());
-//                    }
-//            }
-//        });
-
     }
 
     protected void onStart() {
@@ -473,10 +420,31 @@ public class ReplayEditorActivity extends ReplayActivity {
         return strBuilder.toString();
     }
 
-    private void initMenuListView()
+    private void initMenuLeft()
     {
-        lvMenu = findViewById(R.id.lvItemsTop);
-        lvMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvMenuLeft = findViewById(R.id.lvItemsTopLeft);
+        lvMenuLeft.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                switch (position) {
+                    case 0:
+                        initDialogAddReplayCommand();
+                        break;
+                    case 1:
+                        initDialogMoveReplayCommand();
+                        break;
+                    case 2:
+                        initDialogRemoveReplayCommand();
+                        break;
+                }
+            }
+        });
+    }
+
+    private void initMenuRight()
+    {
+        lvMenuRight = findViewById(R.id.lvItemsTopRight);
+        lvMenuRight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 String replayStr = getCurrentReplayString();
@@ -512,9 +480,6 @@ public class ReplayEditorActivity extends ReplayActivity {
                     case 2:
                         initDialogImportString();
                         break;
-                    case 3:
-                        initDialogAddReplayCommand();
-                        break;
                 }
             }
         });
@@ -545,7 +510,7 @@ public class ReplayEditorActivity extends ReplayActivity {
 
     private void initDialogAddReplayCommand() {
         LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_replay_command_add, null);
+        View prompts_view = li.inflate(R.layout.prompt_replay_command_add_or_del, null);
 
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
 
@@ -587,13 +552,125 @@ public class ReplayEditorActivity extends ReplayActivity {
         dialog.show();
     }
 
+    private void initDialogRemoveReplayCommand() {
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_replay_command_add_or_del, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+
+        Spinner spinner = prompts_view.findViewById(R.id.spinnerCommandNumber);
+        List<String> spinnerData = new ArrayList<>();
+        for (ReplayCommand cmd : replayCommands) {
+            spinnerData.add(String.format(Locale.ROOT, "%d", cmd.position));
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                spinnerData
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        final Spinner finalSpinner = spinner;
+
+        alert_dialog_builder.setView(prompts_view)
+                .setMessage("Укажите позицию удаляемой команды")
+                .setCancelable(true)
+                .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String command_position_str = (String) finalSpinner.getSelectedItem();
+                        int command_position = Integer.parseInt(command_position_str);
+                        replayCommands.remove(command_position - 1);
+                        showCommandsListView();
+                    }
+                });
+
+        dialog = alert_dialog_builder.create();
+        dialog.show();
+    }
+
+    private void initDialogMoveReplayCommand() {
+        LayoutInflater li = LayoutInflater.from(this);
+        View prompts_view = li.inflate(R.layout.prompt_replay_command_move, null);
+
+        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
+
+        Spinner spinnerFrom = prompts_view.findViewById(R.id.spinnerCommandNumberFrom);
+        Spinner spinnerTo = prompts_view.findViewById(R.id.spinnerCommandNumberTo);
+        List<String> spinnerFromData = new ArrayList<>();
+        List<String> spinnerToData = new ArrayList<>();
+        for (ReplayCommand cmd : replayCommands) {
+            spinnerFromData.add(String.format(Locale.ROOT, "%d", cmd.position));
+            spinnerToData.add(String.format(Locale.ROOT, "%d", cmd.position));
+        }
+        ArrayAdapter<String> adapterFrom = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                spinnerFromData
+        );
+        adapterFrom.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFrom.setAdapter(adapterFrom);
+
+        spinnerToData.add(getResources().getString(R.string.spinner_end_of_list));
+        ArrayAdapter<String> adapterTo = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                spinnerToData
+        );
+        adapterTo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTo.setAdapter(adapterTo);
+
+
+        final Spinner finalSpinnerFrom = spinnerFrom;
+        final Spinner finalSpinnerTo = spinnerTo;
+
+        alert_dialog_builder.setView(prompts_view)
+                .setMessage("Укажите позицию удаляемой команды")
+                .setCancelable(true)
+                .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String command_position_from_str = (String) finalSpinnerFrom.getSelectedItem();
+                        int command_position_from = Integer.parseInt(command_position_from_str);
+
+                        String command_position_to_str = (String) finalSpinnerTo.getSelectedItem();
+                        int command_position_to = Integer.parseInt(command_position_to_str);
+
+                        if (command_position_from != command_position_to) {
+                            ReplayCommand replay_cmd = replayCommands.get(command_position_from - 1);
+                            if (command_position_to_str.equals(getResources().getString(R.string.spinner_end_of_list))) {
+                                replayCommands.add(replay_cmd);
+                                replayCommands.remove(command_position_from - 1);
+                            } else {
+                                replayCommands.add(command_position_to - 1, replay_cmd);
+                                if (command_position_from > command_position_to) {
+                                    replayCommands.remove(command_position_from - 2);
+                                } else {
+                                    replayCommands.remove(command_position_from - 1);
+                                }
+                            }
+                        }
+
+                        showCommandsListView();
+                    }
+                });
+
+        dialog = alert_dialog_builder.create();
+        dialog.show();
+    }
+
     private void showMenuListView()
     {
-        lvMenu.invalidateViews();
-        String[] items = {"Просмотр", "Сохранить", "Импорт строки", "Добавить элемент"};
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+        lvMenuLeft.invalidateViews();
+        String[] itemsLeft = {"Добавить", "Переместить", "Удалить"};
+        ArrayAdapter<String> itemsAdapterLeft = new ArrayAdapter<>(this, R.layout.new_user_list_item, itemsLeft);
 
-        lvMenu.setAdapter(itemsAdapter);
+        lvMenuLeft.setAdapter(itemsAdapterLeft);
+
+        lvMenuRight.invalidateViews();
+        String[] itemsRight = {"Просмотр", "Сохранить", "Импорт строки"};
+        ArrayAdapter<String> itemsAdapterRight = new ArrayAdapter<>(this, R.layout.new_user_list_item, itemsRight);
+
+        lvMenuRight.setAdapter(itemsAdapterRight);
     }
 
     private void initCommandsListView()
