@@ -450,7 +450,7 @@ public class GameHelper {
 
     public List<String> getResourcesList()
     {
-        String[] values = {"lvNewItem", "btMenuStart", "llMenuStart", "llMenuSettings", "llMenuKnowledge"};
+        String[] values = {"lvNewItem", "llMenuStart", "llMenuSettings", "llMenuKnowledge"};
         return Arrays.asList(values);
     }
 
@@ -486,7 +486,7 @@ public class GameHelper {
 
     public List<String> getDrawableList()
     {
-        String[] values = {"colorAccent", "replay_border", "replay_border_inv", "mipmap/leaf_button_1", "mipmap/leaf_button_1_red"};
+        String[] values = {"colorAccent", "replay_border", "replay_border_inv"};
         return Arrays.asList(values);
     }
 
@@ -681,7 +681,7 @@ exit
                     break;
                 default:
                 case "exit":
-                    disableReplayMode(false);
+                    disableReplayMode();
                     return false;
             }
         } else {
@@ -771,14 +771,14 @@ exit
         return (getSharedPreferencesInt("replay_enable", 0) > 0);
     }
 
-    public void disableReplayMode(boolean backPressed)
+    public void disableReplayMode()
     {
         Log.d("replay", "disableReplayMode: " + isReplayMode());
         if (isReplayMode()) {
             setSharedPreferencesInt("replay_enable", 0);
             setReplayBorder(false);
             int replay_opened_activities = getSharedPreferencesInt("replay_opened_activities", 0);
-            if (backPressed && replay_opened_activities > 0) {
+            if (replay_opened_activities > 0) {
                 currentReplayActivity.finish();
             }
         }
