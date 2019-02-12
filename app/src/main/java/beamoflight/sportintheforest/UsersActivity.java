@@ -16,6 +16,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,8 +108,9 @@ public class UsersActivity extends ReplayActivity {
     private void showNewUserList()
     {
         lvNewUser.invalidateViews();
-        String[] items = {"Новый пользователь"};
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+        List<String> items = new ArrayList<>();
+        items.add("Новый пользователь");
+        SingleLineItemArrayAdapter itemsAdapter = new SingleLineItemArrayAdapter(this,items);
 
         lvNewUser.setAdapter(itemsAdapter);
     }

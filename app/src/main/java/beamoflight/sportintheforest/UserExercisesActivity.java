@@ -1,7 +1,6 @@
 package beamoflight.sportintheforest;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +15,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -154,8 +154,10 @@ public class UserExercisesActivity extends ReplayActivity {
     private void showNewUserExerciseList()
     {
         lvNewUserExercise.invalidateViews();
-        String[] items = {"Новое упражнение", "Выбрать другого пользователя"};
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+        List<String> items = new ArrayList<>();
+        items.add("Новое упражнение");
+        items.add("Выбрать другого пользователя");
+        SingleLineItemArrayAdapter itemsAdapter = new SingleLineItemArrayAdapter(this, items);
 
         lvNewUserExercise.setAdapter(itemsAdapter);
     }

@@ -11,6 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SettingsActivity extends ReplayActivity {
     ListView lvSettings;
 
@@ -88,8 +91,13 @@ public class SettingsActivity extends ReplayActivity {
     private void showTopList()
     {
         lvSettings.invalidateViews();
-        String[] items = {"Сохранить", "Загрузить", "Настройка упражнений", "Сброс данных с сохранением прогресса", "Дополнительные настройки"};
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, R.layout.new_user_list_item, items);
+        List<String> items = new ArrayList<>();
+        items.add("Сохранить");
+        items.add("Загрузить");
+        items.add("Настройка упражнений");
+        items.add("Сброс данных с сохранением прогресса");
+        items.add("Дополнительные настройки");
+        SingleLineItemArrayAdapter itemsAdapter = new SingleLineItemArrayAdapter(this,items);
 
         lvSettings.setAdapter(itemsAdapter);
     }

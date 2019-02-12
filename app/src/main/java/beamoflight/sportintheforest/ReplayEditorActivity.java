@@ -670,15 +670,19 @@ public class ReplayEditorActivity extends ReplayActivity {
     private void showMenuListView()
     {
         lvMenuLeft.invalidateViews();
-        String[] itemsLeft = {"Добавить", "Переместить", "Удалить"};
-        ArrayAdapter<String> itemsAdapterLeft = new ArrayAdapter<>(this, R.layout.new_user_list_item, itemsLeft);
-
+        List<String> itemsLeft = new ArrayList<>();
+        itemsLeft.add("Добавить");
+        itemsLeft.add("Переместить");
+        itemsLeft.add("Удалить");
+        SingleLineItemArrayAdapter itemsAdapterLeft = new SingleLineItemArrayAdapter(this, itemsLeft);
         lvMenuLeft.setAdapter(itemsAdapterLeft);
 
         lvMenuRight.invalidateViews();
-        String[] itemsRight = {"Просмотр", "Сохранить", "Импорт строки"};
-        ArrayAdapter<String> itemsAdapterRight = new ArrayAdapter<>(this, R.layout.new_user_list_item, itemsRight);
-
+        List<String> itemsRight = new ArrayList<>();
+        itemsRight.add("Просмотр");
+        itemsRight.add("Сохранить");
+        itemsRight.add("Импорт строки");
+        SingleLineItemArrayAdapter itemsAdapterRight = new SingleLineItemArrayAdapter(this, itemsRight);
         lvMenuRight.setAdapter(itemsAdapterRight);
     }
 
