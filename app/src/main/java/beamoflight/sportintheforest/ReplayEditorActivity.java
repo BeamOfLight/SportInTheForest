@@ -40,6 +40,18 @@ public class ReplayEditorActivity extends ReplayActivity {
             this.position = 0;
         }
 
+        public ReplayCommand clone() {
+            ReplayCommand newReplayCommand = new ReplayCommand();
+            newReplayCommand.cmd = cmd;
+            newReplayCommand.arg1 = arg1;
+            newReplayCommand.arg2 = arg2;
+            newReplayCommand.arg3 = arg3;
+            newReplayCommand.ticks = ticks;
+            newReplayCommand.position = position;
+
+            return newReplayCommand;
+        }
+
         @Override
         public String toString() {
             String result = "";
@@ -62,6 +74,7 @@ public class ReplayEditorActivity extends ReplayActivity {
                 case "lv-item-background":
                     result = String.format(Locale.ROOT, "%s;%s;%s;%s;%d", cmd, arg1, arg2, arg3, ticks);
                     break;
+                case "empty":
                 case "exit":
                     result = String.format(Locale.ROOT, "%s", cmd);
                     break;
@@ -611,7 +624,7 @@ public class ReplayEditorActivity extends ReplayActivity {
         adapterFrom.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFrom.setAdapter(adapterFrom);
 
-        spinnerToData.add(getResources().getString(R.string.spinner_end_of_list));
+        //spinnerToData.add(getResources().getString(R.string.spinner_end_of_list));
         ArrayAdapter<String> adapterTo = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -625,7 +638,7 @@ public class ReplayEditorActivity extends ReplayActivity {
         final Spinner finalSpinnerTo = spinnerTo;
 
         alert_dialog_builder.setView(prompts_view)
-                .setMessage("Укажите позицию удаляемой команды")
+                .setMessage("Укажите позицию перемещаемой команды")
                 .setCancelable(true)
                 .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -636,17 +649,13 @@ public class ReplayEditorActivity extends ReplayActivity {
                         int command_position_to = Integer.parseInt(command_position_to_str);
 
                         if (command_position_from != command_position_to) {
-                            ReplayCommand replay_cmd = replayCommands.get(command_position_from - 1);
-                            if (command_position_to_str.equals(getResources().getString(R.string.spinner_end_of_list))) {
-                                replayCommands.add(replay_cmd);
+                            ReplayCommand replay_cmd = replayCommands.get(command_position_from - 1).clone();
+                            if (command_position_from > command_position_to) {
                                 replayCommands.remove(command_position_from - 1);
-                            } else {
                                 replayCommands.add(command_position_to - 1, replay_cmd);
-                                if (command_position_from > command_position_to) {
-                                    replayCommands.remove(command_position_from - 2);
-                                } else {
-                                    replayCommands.remove(command_position_from - 1);
-                                }
+                            } else {
+                                replayCommands.add(command_position_to, replay_cmd);
+                                replayCommands.remove(command_position_from - 1);
                             }
                         }
 
