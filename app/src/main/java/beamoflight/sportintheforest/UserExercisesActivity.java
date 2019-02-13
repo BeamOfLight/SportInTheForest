@@ -165,6 +165,8 @@ public class UserExercisesActivity extends ReplayActivity {
     @Override
     public void replayEvent1()
     {
+        initDialogAddUserExercise();
+        dialogAddUserExercise.show();
     }
 
     @Override

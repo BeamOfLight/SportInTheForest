@@ -32,6 +32,7 @@ public class KnowledgeCategoriesActivity extends ReplayActivity {
         if (usersData.size() == 0) {
             long user_id1 = dbHelper.addUser("Иван Иванович", true);
             long user_id2 = dbHelper.addUser("Пётр Петрович", true);
+            gameHelper.setSharedPreferencesInt("default_replay_user_id", (int) user_id1);
             int exercise_id = 1;
             dbHelper.addUserExercise(user_id1, exercise_id, dbHelper.USER_EXERCISE_TYPE_RPG);
             dbHelper.addUserExercise(user_id2, exercise_id, dbHelper.USER_EXERCISE_TYPE_RPG);

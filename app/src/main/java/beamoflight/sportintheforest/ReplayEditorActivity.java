@@ -146,6 +146,8 @@ public class ReplayEditorActivity extends ReplayActivity {
         replayCommandLayouts.put("revert-background", R.layout.prompt_replay_command_spinner_ticks);
         replayCommandLayouts.put("lv-item-background", R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks);
         replayCommandLayouts.put("empty", R.layout.prompt_replay_command_spinner);
+        replayCommandLayouts.put("login", R.layout.prompt_replay_command_spinner);
+        replayCommandLayouts.put("unlogin", R.layout.prompt_replay_command_spinner);
         replayCommandLayouts.put("exit", R.layout.prompt_replay_command_spinner);
     }
 
@@ -193,6 +195,9 @@ public class ReplayEditorActivity extends ReplayActivity {
                             cmd.arg3 = replay_record_parts[3];
                             cmd.ticks = Integer.parseInt(replay_record_parts[4]);
                         }
+                        break;
+                    case "login":
+                    case "unlogin":
                         break;
                     default:
                     case "exit":

@@ -181,17 +181,16 @@ public class GameHelper {
 
     public int getUserId()
     {
-        int default_user_id = context.getResources().getInteger(R.integer.default_user_id);
-        int user_id = default_user_id;
+        int user_id;
         if (isReplayMode()) {
             user_id = getSharedPreferencesInt(
                     "replay_user_id",
-                    default_user_id
+                    context.getResources().getInteger(R.integer.default_user_id)
             );
         } else {
             user_id = getSharedPreferencesInt(
                     context.getResources().getString(R.string.preference_name_user_id),
-                    default_user_id
+                    context.getResources().getInteger(R.integer.default_user_id)
             );
         }
 
@@ -423,7 +422,7 @@ public class GameHelper {
 
     public List<String> getActivityList()
     {
-        String[] values = {"main", "users", "user-exercises", "settings"};
+        String[] values = {"main", "users", "user-exercises", "exercises", "settings"};
         return Arrays.asList(values);
     }
 
@@ -442,6 +441,9 @@ public class GameHelper {
                 break;
             case "settings":
                 new_activity = SettingsActivity.class;
+                break;
+            case "exercises":
+                new_activity = ExercisesActivity.class;
                 break;
         }
 
@@ -679,6 +681,12 @@ exit
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                     break;
+                case "login":
+                    setSharedPreferencesInt("replay_user_id", getSharedPreferencesInt("default_replay_user_id", 0));
+                    break;
+                case "unlogin":
+                    setSharedPreferencesInt("replay_user_id", 0);
+                    break;
                 default:
                 case "exit":
                     disableReplayMode();
@@ -787,7 +795,7 @@ exit
     public void enableReplayMode(final ReplayActivity current_activity, String replay_string)
     {
         if (!isReplayMode()) {
-            setSharedPreferencesInt("replay_user_id", 0);
+            setSharedPreferencesInt("replay_user_id", getSharedPreferencesInt("default_replay_user_id", 0));
             setSharedPreferencesInt("replay_opened_activities", 0);
             setSharedPreferencesInt("replay_enable", 1);
             setSharedPreferencesInt("replay_pos", 0);

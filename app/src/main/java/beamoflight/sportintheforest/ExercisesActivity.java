@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ExercisesActivity extends Activity {
+public class ExercisesActivity extends ReplayActivity {
 
     DBHelper dbHelper;
     GameHelper gameHelper;
@@ -56,8 +55,10 @@ public class ExercisesActivity extends Activity {
         lvNewUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                initDialogAddOrEditUser(-1);
-                dialogAddOrEditExercise.show();
+                if (!gameHelper.isReplayMode()) {
+                    initDialogAddOrEditExercise(-1);
+                    dialogAddOrEditExercise.show();
+                }
             }
         });
     }
@@ -68,9 +69,11 @@ public class ExercisesActivity extends Activity {
         lvExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
-                initDialogAddOrEditUser(exercise_id);
-                dialogAddOrEditExercise.show();
+                if (!gameHelper.isReplayMode()) {
+                    int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
+                    initDialogAddOrEditExercise(exercise_id);
+                    dialogAddOrEditExercise.show();
+                }
             }
         });
     }
@@ -100,7 +103,7 @@ public class ExercisesActivity extends Activity {
         lvNewUserExercise.setAdapter(itemsAdapter);
     }
 
-    private void initDialogAddOrEditUser(int current_exercise_id)
+    private void initDialogAddOrEditExercise(int current_exercise_id)
     {
         // get prompt_add_group.xmlgroup.xml view
         LayoutInflater li = LayoutInflater.from(this);
@@ -123,38 +126,61 @@ public class ExercisesActivity extends Activity {
             .setPositiveButton(R.string.btn_save_text,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
-                    String exercise_name = et_input_exercise_name.getText().toString();
-                    if (exercise_name.trim().length() == 0) {
-                        Toast.makeText(getBaseContext(), R.string.msg_exercise_need_name, Toast.LENGTH_SHORT).show();
-                    } else if (dbHelper.checkExerciseExist(exercise_name)) {
-                        Toast.makeText(getBaseContext(), R.string.msg_exercise_name_already_exists, Toast.LENGTH_SHORT).show();
-                    } else if (exercise_id == -1) {
-                        long result = dbHelper.addExercise(exercise_name);
-                        if (result > 0) {
-                            showExercisesList();
-                            Toast.makeText(getBaseContext(), R.string.msg_exercise_add_success, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getBaseContext(), R.string.msg_exercise_add_error, Toast.LENGTH_SHORT).show();
+                        if (!gameHelper.isReplayMode()) {
+                            String exercise_name = et_input_exercise_name.getText().toString();
+                            if (exercise_name.trim().length() == 0) {
+                                Toast.makeText(getBaseContext(), R.string.msg_exercise_need_name, Toast.LENGTH_SHORT).show();
+                            } else if (dbHelper.checkExerciseExist(exercise_name)) {
+                                Toast.makeText(getBaseContext(), R.string.msg_exercise_name_already_exists, Toast.LENGTH_SHORT).show();
+                            } else if (exercise_id == -1) {
+                                long result = dbHelper.addExercise(exercise_name);
+                                if (result > 0) {
+                                    showExercisesList();
+                                    Toast.makeText(getBaseContext(), R.string.msg_exercise_add_success, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getBaseContext(), R.string.msg_exercise_add_error, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                long result = dbHelper.updateExercise(exercise_id, exercise_name);
+                                if (result > 0) {
+                                    showExercisesList();
+                                    Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_success, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_error, Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
-                    } else {
-                        long result = dbHelper.updateExercise(exercise_id, exercise_name);
-                        if (result > 0) {
-                            showExercisesList();
-                            Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_success, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_error, Toast.LENGTH_SHORT).show();
-                        }
-                    }
                     }
                 })
             .setNegativeButton(R.string.btn_cancel_text,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
-                    dialog.cancel();
+                        if (!gameHelper.isReplayMode()) {
+                            dialog.cancel();
+                        }
                     }
                 });
 
         // create alert dialog
         dialogAddOrEditExercise = alert_dialog_builder.create();
+    }
+
+    @Override
+    public void replayEvent1()
+    {
+        initDialogAddOrEditExercise(-1);
+        dialogAddOrEditExercise.show();
+    }
+
+    @Override
+    public void replayEvent2()
+    {
+
+    }
+
+    @Override
+    public void replayEvent3()
+    {
+
     }
 }

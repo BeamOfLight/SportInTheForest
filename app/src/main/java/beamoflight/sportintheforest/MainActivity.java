@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -205,6 +206,11 @@ public class MainActivity extends Activity {
         }
         if (!updateStarted) {
             showVersion();
+
+            ArrayList<Map<String, String>> usersData = dbHelper.getUsersData(true);
+            if (usersData.size() > 0) {
+                gameHelper.setSharedPreferencesInt("default_replay_user_id", Integer.parseInt(usersData.get(0).get("user_id")));
+            }
         }
     }
 
