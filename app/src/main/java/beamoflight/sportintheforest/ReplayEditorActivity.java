@@ -215,7 +215,6 @@ public class ReplayEditorActivity extends ReplayActivity {
         Spinner spinner = prompts_view.findViewById(R.id.spinnerCommandType);
         List<String> commandsList = new ArrayList<>(replayCommandLayouts.keySet());
         java.util.Collections.sort(commandsList);
-        commandsList.add("DELETE");
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -349,65 +348,50 @@ public class ReplayEditorActivity extends ReplayActivity {
             .setCancelable(true)
             .setPositiveButton("Сохранить", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    String new_cmd_str = (String) finalSpinner.getSelectedItem();
-                    if (new_cmd_str.equals("DELETE")) {
-                        new AlertDialog.Builder(ReplayEditorActivity.this)
-                                .setMessage("Вы уверены?")
-                                .setCancelable(false)
-                                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        replayCommands.remove(position);
-                                        showCommandsListView();
-                                    }
-                                })
-                                .setNegativeButton("Нет", null)
-                                .show();
-                    } else {
-                        replayCommands.get(position).cmd = new_cmd_str;
-                        switch (finalLayoutId) {
-                            case R.layout.prompt_replay_command_spinner:
-                                replayCommands.get(position).ticks = 0;
-                                replayCommands.get(position).arg1 = "";
-                                replayCommands.get(position).arg2 = "";
-                                replayCommands.get(position).arg3 = "";
-                                break;
-                            case R.layout.prompt_replay_command_spinner_ticks:
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                replayCommands.get(position).arg1 = "";
-                                replayCommands.get(position).arg2 = "";
-                                replayCommands.get(position).arg3 = "";
-                                break;
-                            case R.layout.prompt_replay_command_spinner_text_ticks:
-                                replayCommands.get(position).arg1 = finalEtArg1.getText().toString();
-                                replayCommands.get(position).arg2 = "";
-                                replayCommands.get(position).arg3 = "";
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                break;
-                            case R.layout.prompt_replay_command_spinner_activity_ticks:
-                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
-                                replayCommands.get(position).arg2 = "";
-                                replayCommands.get(position).arg3 = "";
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                break;
-                            case R.layout.prompt_replay_command_spinner_resource_drawable_ticks:
-                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
-                                replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
-                                replayCommands.get(position).arg3 = "";
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                break;
-                            case R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks:
-                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
-                                replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
-                                replayCommands.get(position).arg3 = String.format(Locale.ROOT, "%d", finalNpChildId.getValue());
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                break;
-                            case R.layout.prompt_replay_command_spinner_activity_text_ticks:
-                                replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
-                                replayCommands.get(position).arg2 = finalEtArg2.getText().toString();
-                                replayCommands.get(position).arg3 = "";
-                                replayCommands.get(position).ticks = finalNpTicks.getValue();
-                                break;
-                        }
+                    replayCommands.get(position).cmd = (String) finalSpinner.getSelectedItem();
+                    switch (finalLayoutId) {
+                        case R.layout.prompt_replay_command_spinner:
+                            replayCommands.get(position).ticks = 0;
+                            replayCommands.get(position).arg1 = "";
+                            replayCommands.get(position).arg2 = "";
+                            replayCommands.get(position).arg3 = "";
+                            break;
+                        case R.layout.prompt_replay_command_spinner_ticks:
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            replayCommands.get(position).arg1 = "";
+                            replayCommands.get(position).arg2 = "";
+                            replayCommands.get(position).arg3 = "";
+                            break;
+                        case R.layout.prompt_replay_command_spinner_text_ticks:
+                            replayCommands.get(position).arg1 = finalEtArg1.getText().toString();
+                            replayCommands.get(position).arg2 = "";
+                            replayCommands.get(position).arg3 = "";
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            break;
+                        case R.layout.prompt_replay_command_spinner_activity_ticks:
+                            replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                            replayCommands.get(position).arg2 = "";
+                            replayCommands.get(position).arg3 = "";
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            break;
+                        case R.layout.prompt_replay_command_spinner_resource_drawable_ticks:
+                            replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                            replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
+                            replayCommands.get(position).arg3 = "";
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            break;
+                        case R.layout.prompt_replay_command_spinner_resource_drawable_number_ticks:
+                            replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                            replayCommands.get(position).arg2 = (String) finalSpinnerArg2.getSelectedItem();
+                            replayCommands.get(position).arg3 = String.format(Locale.ROOT, "%d", finalNpChildId.getValue());
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            break;
+                        case R.layout.prompt_replay_command_spinner_activity_text_ticks:
+                            replayCommands.get(position).arg1 = (String) finalSpinnerArg1.getSelectedItem();
+                            replayCommands.get(position).arg2 = finalEtArg2.getText().toString();
+                            replayCommands.get(position).arg3 = "";
+                            replayCommands.get(position).ticks = finalNpTicks.getValue();
+                            break;
                     }
 
                     showCommandsListView();
