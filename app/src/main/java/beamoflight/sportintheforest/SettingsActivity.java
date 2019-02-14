@@ -96,7 +96,7 @@ public class SettingsActivity extends ReplayActivity {
         List<String> items = new ArrayList<>();
         items.add("Сохранить");
         items.add("Загрузить");
-        items.add("Настройка упражнений");
+        items.add("Упражнения");
         items.add("Сброс данных с сохранением прогресса");
 
         if (dbHelper.getUserNameById(gameHelper.getUserId()).hashCode() == -999619808) {

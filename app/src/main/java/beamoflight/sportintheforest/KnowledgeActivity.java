@@ -3,6 +3,7 @@ package beamoflight.sportintheforest;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,7 +33,9 @@ public class KnowledgeActivity extends ReplayActivity
         categoryId = Integer.parseInt(this.getIntent().getAction());
         categoryName = dbHelper.getKnowledgeCategoryName(categoryId);
 
-        ((TextView) findViewById(R.id.tvTitle)).setText(categoryName);
+        TextView tvTitle = findViewById(R.id.tvTitle);
+        tvTitle.setText(categoryName);
+        tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP,22);
 
         initKnowledgeItemsListView();
     }

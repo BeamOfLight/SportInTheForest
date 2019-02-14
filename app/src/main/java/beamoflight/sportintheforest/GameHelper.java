@@ -577,14 +577,14 @@ exit
                                         0
                                 ) + 1
                         );
-                        setReplayBorder(false);
+                        //setReplayBorder(false);
                         return false;
                     } else {
                         Log.d("replay", String.format("[%s] Wrong arguments count", cmd));
                     }
                 case "activity-action":
                     if (replay_record_parts.length == 4) {
-                        setReplayBorder(false);
+                        //setReplayBorder(false);
                         setSharedPreferencesInt(
                                 "replay_opened_activities",
                                 getSharedPreferencesInt(
@@ -784,10 +784,11 @@ exit
         Log.d("replay", "disableReplayMode: " + isReplayMode());
         if (isReplayMode()) {
             setSharedPreferencesInt("replay_enable", 0);
-            setReplayBorder(false);
             int replay_opened_activities = getSharedPreferencesInt("replay_opened_activities", 0);
             if (replay_opened_activities > 0) {
                 currentReplayActivity.finish();
+            } else {
+                setReplayBorder(false);
             }
         }
     }
