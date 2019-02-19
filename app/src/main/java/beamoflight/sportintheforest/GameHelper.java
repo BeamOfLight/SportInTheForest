@@ -759,7 +759,7 @@ exit
         }
     }
 
-    private void setReplayBorder(boolean visible)
+    public void setReplayBorder(boolean visible)
     {
         int drawable_id = R.drawable.replay_border;
         if (!visible) {
@@ -854,6 +854,7 @@ exit
                     if (replay_opened_activities > 1) {
                         currentReplayActivity.finish();
                     }
+                    //setReplayBorder(false);
                 }
             };
         };

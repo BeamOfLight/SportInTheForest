@@ -39,6 +39,13 @@ public abstract class ReplayActivity extends Activity {
         gameHelper.removeReplayTimerTask();
     }
 
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        gameHelper.setReplayBorder(false);
+    }
+
     abstract public void replayEvent1();
     abstract public void replayEvent2();
     abstract public void replayEvent3();
