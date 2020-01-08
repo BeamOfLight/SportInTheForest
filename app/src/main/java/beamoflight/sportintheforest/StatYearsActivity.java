@@ -70,11 +70,11 @@ public class StatYearsActivity extends Activity {
                 int max_result = 0;
                 switch (type_option.type) {
                     case StatTypeOption.TYPE_RESULT:
-                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumResult();
+                        max_result = dbHelper.getCurrentUserExerciseTotalYearSumResult();
                         values = dbHelper.getCurrentUserExerciseStatYearsSumResult();
                         break;
                     case StatTypeOption.TYPE_EXP:
-                        max_result = dbHelper.getCurrentUserExerciseMaxYearSumExp();
+                        max_result = dbHelper.getCurrentUserExerciseTotalYearSumExp();
                         values = dbHelper.getCurrentUserExerciseStatYearsSumExp();
                         break;
                 }
@@ -94,6 +94,10 @@ public class StatYearsActivity extends Activity {
 
     private void initDialogSelectStatType(int year)
     {
+        if (year == -1) {
+            return;
+        }
+
         final String current_year_str = Integer.toString(year);
         LayoutInflater li = LayoutInflater.from(this);
         View prompts_view = li.inflate(R.layout.prompt_select_from_two_variants, null);

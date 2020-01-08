@@ -36,17 +36,18 @@ public class StatYearArrayAdapter extends ArrayAdapter<Stat> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.stat_year_list_item, parent, false);
+        String startOfLine = "      ";
 
         TextView tvStatYear = rowView.findViewById(R.id.tvStatYear);
-        tvStatYear.setText(
-                String.format(
-                        Locale.ROOT,
-                        "%d",
-                        values.get(position).getYear()
-                )
-        );
+        int year = values.get(position).getYear();
+        String tv_stat_year_text = "Итого:";
+        if (year != -1) {
+            tv_stat_year_text = String.format(Locale.ROOT,"%d", year);
+        } else {
+            startOfLine = "   ";
+        }
+        tvStatYear.setText(tv_stat_year_text);
 
-        String startOfLine = "      ";
         if (values.get(position).isCurrentPeriod()) {
             startOfLine = "=> ";
             tvStatYear.setTypeface(null, Typeface.BOLD);

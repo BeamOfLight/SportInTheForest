@@ -2020,12 +2020,15 @@ class DBHelper extends DBHelperBaseLayer {
         boolean needCurrentStat = true;
 
         int position = 1;
+        int total_value = 0;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
+                    int value = cursor.getInt(cursor.getColumnIndex("value"));
+                    total_value += value;
                     Stat stat_entity = new Stat();
                     stat_entity.setYear(Integer.parseInt(cursor.getString(cursor.getColumnIndex("year"))))
-                        .setValue(cursor.getInt(cursor.getColumnIndex("value")))
+                        .setValue(value)
                         .setPosition(position)
                         .setCurrentPeriod(false)
                         .setMonth(0)
@@ -2043,32 +2046,34 @@ class DBHelper extends DBHelperBaseLayer {
 
         if (needCurrentStat) {
             stat_entities.add(new Stat(year, 0, 0, 0, 0, position, false));
+            position++;
         }
+        stat_entities.add(new Stat(-1, 0, 0, 0, total_value, position, false));
 
         return stat_entities;
     }
 
-    public int getCurrentUserExerciseMaxYearSumResult()
+    public int getCurrentUserExerciseTotalYearSumResult()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxYearSum(user_id, exercise_id, "sum_result");
+        return getUserExerciseTotalYearSum(user_id, exercise_id, "sum_result");
     }
 
-    public int getCurrentUserExerciseMaxYearSumExp()
+    public int getCurrentUserExerciseTotalYearSumExp()
     {
         int user_id = gameHelper.getUserId();
         int exercise_id = gameHelper.getExerciseId();
-        return getUserExerciseMaxYearSum(user_id, exercise_id, "exp");
+        return getUserExerciseTotalYearSum(user_id, exercise_id, "exp");
     }
 
     // TODO: rewrite SQL query
-    private int getUserExerciseMaxYearSum(int user_id, int exercise_id, String field)
+    private int getUserExerciseTotalYearSum(int user_id, int exercise_id, String field)
     {
-        int max_value= 0;
+        int total_value= 0;
         Cursor cursor = db.query(
                 "user_exercise_trainings",
-                new String[]{"SUM(" + field + ") AS sum_value, strftime('%Y', event_timestamp) AS year"},
+                new String[]{"SUM(" + field + ") AS value, strftime('%Y', event_timestamp) AS year"},
                 "user_id = ? AND exercise_id = ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id)},
                 "user_id, exercise_id, year",
@@ -2076,20 +2081,18 @@ class DBHelper extends DBHelperBaseLayer {
                 null
         );
 
-        int sum_value;
+        int value;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    sum_value = cursor.getInt(cursor.getColumnIndex("sum_value"));
-                    if (sum_value > max_value) {
-                        max_value = sum_value;
-                    }
+                    value = cursor.getInt(cursor.getColumnIndex("value"));
+                    total_value += value;
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
 
-        return max_value;
+        return total_value;
     }
 
     public int getCurrentUserExerciseMaxMonthSumResult(int year)
