@@ -9,34 +9,34 @@ import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.Calendar;
 import java.util.Locale;
 
 public class TabsActivity extends Activity {
 
     // Titles of the individual pages (displayed in tabs)
     private final String[] PAGE_TITLES = new String[] {
+            "Отчёты",
             "Статистика",
-            "Соревнования",
             "Навыки",
             "Достижения",
             "История",
-            "Места"
+            "Места",
+            "Тренировки"
     };
 
     // The fragments that are used as the individual pages
     private final Fragment[] PAGES = new Fragment[] {
+            new PageFragmentReports(),
             new PageFragmentStat(),
-            new PageFragmentCompetitions(),
             new PageFragmentSkills(),
             new PageFragmentAchievements(),
             new PageFragmentHistory(),
-            new PageFragmentLocations()
+            new PageFragmentLocations(),
+            new PageFragmentTrainings()
     };
 
     // The ViewPager is responsible for sliding pages (fragments) in and out upon user input
@@ -64,7 +64,7 @@ public class TabsActivity extends Activity {
 
         // Connect the ViewPager to our custom PagerAdapter. The PagerAdapter supplies the pages
         // (fragments) to the ViewPager, which the ViewPager needs to display.
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        mViewPager = findViewById(R.id.viewpager);
         mViewPager.setAdapter(new MyPagerAdapter(getFragmentManager()));
         mViewPager.setCurrentItem(gameHelper.getCurrentTabIdFromPreferences());
         gameHelper.saveCurrentTabId2Preferences(0);
@@ -72,7 +72,7 @@ public class TabsActivity extends Activity {
         // Connect the tabs with the ViewPager (the setupWithViewPager method does this for us in
         // both directions, i.e. when a new tab is selected, the ViewPager switches to this page,
         // and when the ViewPager switches to a new page, the corresponding tab is selected)
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
@@ -158,6 +158,5 @@ public class TabsActivity extends Activity {
         public CharSequence getPageTitle(int position) {
             return PAGE_TITLES[position];
         }
-
     }
 }

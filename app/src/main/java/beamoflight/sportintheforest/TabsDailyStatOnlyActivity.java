@@ -4,30 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
-import android.icu.util.GregorianCalendar;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.ListView;
-import android.widget.NumberPicker;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class TabsDailyStatOnlyActivity extends Activity {
 
@@ -39,7 +25,7 @@ public class TabsDailyStatOnlyActivity extends Activity {
 
     // The fragments that are used as the individual pages
     private final Fragment[] PAGES = new Fragment[] {
-            new PageFragmentStat(),
+            new PageFragmentReports(),
             new PageFragmentData()
     };
 

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/spinnerFragmentPageStatTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </Spinner>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40sp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_training_days"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_total_count"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_max_competition_result"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_max_result"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_total_number_of_moves"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/fragment_page_stat_average_result"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatTrainingDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatTotalCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatMaxCompetitionResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatMaxResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatTotalNumberOfMoves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/tvFragmentPageStatAverageResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="10dp"
+                android:text="0"
+                android:textAlignment="center"
+                android:textColor="@color/fragmentTextColor"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200sp"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btStatCharts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@mipmap/leaf_button_1"
+            android:width="180sp"
+            android:height="70sp"
+            android:text="Диаграммы"
+            android:textColor="@color/menuItemColor" />
+
+        <Button
+            android:id="@+id/btStatMyShadows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@mipmap/leaf_button_1"
+            android:width="180sp"
+            android:height="70sp"
+            android:text="Мои тени"
+            android:textColor="@color/menuItemColor" />
+    </LinearLayout>
+</FrameLayout>
