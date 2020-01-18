@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.icu.util.Calendar;
+import android.icu.util.TimeZone;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -12,13 +14,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -67,6 +66,22 @@ public class GameHelper {
         return date_format.format(calendar.getTime());
     }
 
+    public String getCurrentYearString()
+    {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy", Locale.ROOT);
+
+        return date_format.format(calendar.getTime());
+    }
+
+    public String getCurrentMonthString()
+    {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM", Locale.ROOT);
+
+        return date_format.format(calendar.getTime());
+    }
+
     public String getTodayString()
     {
         Calendar calendar = Calendar.getInstance();
@@ -109,6 +124,37 @@ public class GameHelper {
     {
         Calendar calendar = Calendar.getInstance();
         return getDayInWeekString(calendar.getTime());
+    }
+
+    public int getCurrentWeekResult()
+    {
+        return 0;
+    }
+
+    public String getCurrentWeekString()
+    {
+        Calendar first_january = Calendar.getInstance();
+        first_january.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        first_january.set(Integer.parseInt(getCurrentYearString()), Calendar.JANUARY, 1, 0, 0, 0);
+        String result = "";
+
+        Calendar that_day = Calendar.getInstance();
+        that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        that_day.set(Calendar.DAY_OF_WEEK, that_day.getFirstDayOfWeek());
+        that_day.add(Calendar.DATE, first_january.getFirstDayOfWeek());
+
+        // date from
+        int day_from = that_day.get(Calendar.DAY_OF_MONTH);
+        String month_from = getMonthName(that_day.get(Calendar.MONTH) + 1);
+        result += Integer.toString(day_from) + " " + month_from;
+
+        // date to
+        that_day.add(Calendar.DAY_OF_YEAR, 6);
+        int day_to = that_day.get(Calendar.DAY_OF_MONTH);
+        String month_to = getMonthName(that_day.get(Calendar.MONTH) + 1);
+        result += " - " + Integer.toString(day_to) + " " + month_to;
+
+        return result;
     }
 
     public String getTodayStringWithHours()

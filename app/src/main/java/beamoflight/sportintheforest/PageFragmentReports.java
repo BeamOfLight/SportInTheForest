@@ -84,21 +84,6 @@ public class PageFragmentReports extends Fragment {
     public void onStart() {
         super.onStart();
 
-//        List<Stat> values = new ArrayList<>();
-//        values.add(new Stat(2018, 6, 30));
-//        values.add(new Stat(2018, 7, 120));
-//        values.add(new Stat(2018, 8, 160));
-//        values.add(new Stat(2018, 9, 200));
-//        values.add(new Stat(2018, 10, 220));
-//        values.add(new Stat(2018, 11, 20));
-//        values.add(new Stat(2018, 12, 320));
-//        values.add(new Stat(2019, 1, 100));
-//
-//        StatArrayAdapter statAdapter;
-//        statAdapter = new StatArrayAdapter(getContext(), values, 500);
-//        lvStat.setAdapter(statAdapter);
-
-
         List<UserExerciseTrainingStatTimeOption> timeList = new ArrayList<>();
         timeList.add(new UserExerciseTrainingStatTimeOption("Сегодня", Calendar.DAY_OF_YEAR, -1, Calendar.DAY_OF_YEAR , 0));
         timeList.add(new UserExerciseTrainingStatTimeOption("Вчера", Calendar.DAY_OF_YEAR, -2, Calendar.DAY_OF_YEAR , -1));

@@ -22,7 +22,8 @@ public class PageFragmentStat extends Fragment {
     GameHelper gameHelper;
 
     TextView tvUserCompetitionWins, tvUserCompetitionDefeats, tvUserCompetitionDraws;
-    TextView tvUserCompetitions, tvUserSpecialisation;
+    TextView tvUserCompetitions, tvUserSpecialisation, tvUserCurrentYearResult;
+    TextView tvUserCurrentWeek, tvUserCurrentWeekResult, tvUserCurrentMonthResult;
     Button btSelectSpecialisation;
     AlertDialog dialogSelectSpecialisation;
     Context mContext;
@@ -37,12 +38,16 @@ public class PageFragmentStat extends Fragment {
         gameHelper = new GameHelper(mContext);
         mSpecialisationId = 0;
 
-        tvUserSpecialisation = (TextView) rootView.findViewById(R.id.tvUserSpecialisation);
-        tvUserCompetitionWins = (TextView) rootView.findViewById(R.id.tvUserCompetitionWins);
-        tvUserCompetitionDefeats = (TextView) rootView.findViewById(R.id.tvUserCompetitionDefeats);
-        tvUserCompetitionDraws = (TextView) rootView.findViewById(R.id.tvUserCompetitionDraws);
-        tvUserCompetitions = (TextView) rootView.findViewById(R.id.tvUserCompetitions);
-        btSelectSpecialisation = (Button) rootView.findViewById(R.id.btSelectSpecialisation);
+        tvUserSpecialisation = rootView.findViewById(R.id.tvUserSpecialisation);
+        tvUserCompetitionWins = rootView.findViewById(R.id.tvUserCompetitionWins);
+        tvUserCompetitionDefeats = rootView.findViewById(R.id.tvUserCompetitionDefeats);
+        tvUserCompetitionDraws = rootView.findViewById(R.id.tvUserCompetitionDraws);
+        tvUserCompetitions = rootView.findViewById(R.id.tvUserCompetitions);
+        tvUserCurrentWeek = rootView.findViewById(R.id.tvUserCurrentWeek);
+        tvUserCurrentWeekResult = rootView.findViewById(R.id.tvUserCurrentWeekResult);
+        tvUserCurrentMonthResult = rootView.findViewById(R.id.tvUserCurrentMonthResult);
+        tvUserCurrentYearResult = rootView.findViewById(R.id.tvUserCurrentYearResult);
+        btSelectSpecialisation = rootView.findViewById(R.id.btSelectSpecialisation);
 
         return rootView;
     }
@@ -55,9 +60,9 @@ public class PageFragmentStat extends Fragment {
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(mContext);
         alert_dialog_builder.setView(prompts_view);
 
-        final Button btSelectSpecialisationResult = (Button) prompts_view.findViewById(R.id.btSelectSpecialisationResult);
-        final Button btSelectSpecialisationResistance = (Button) prompts_view.findViewById(R.id.btSelectSpecialisationResistance);
-        final Button btSelectSpecialisationRegeneration = (Button) prompts_view.findViewById(R.id.btSelectSpecialisationRegeneration);
+        final Button btSelectSpecialisationResult = prompts_view.findViewById(R.id.btSelectSpecialisationResult);
+        final Button btSelectSpecialisationResistance = prompts_view.findViewById(R.id.btSelectSpecialisationResistance);
+        final Button btSelectSpecialisationRegeneration = prompts_view.findViewById(R.id.btSelectSpecialisationRegeneration);
 
         btSelectSpecialisationResult.setEnabled(true);
         btSelectSpecialisationResistance.setEnabled(true);
@@ -139,10 +144,16 @@ public class PageFragmentStat extends Fragment {
         int wins = Integer.parseInt(user_exercise_data.get("wins"));
         int draws = Integer.parseInt(user_exercise_data.get("draws"));
         int defeats = competitions - wins - draws;
+        UserExerciseTrainingStat month_stat = dbHelper.getUserExerciseTrainingStat4CurrentMonth();
+        UserExerciseTrainingStat year_stat = dbHelper.getUserExerciseTrainingStat4CurrentYear();
         tvUserCompetitionWins.setText(String.format(Locale.ROOT, "%d", wins));
         tvUserCompetitionDefeats.setText(String.format(Locale.ROOT, "%d", defeats));
         tvUserCompetitionDraws.setText(String.format(Locale.ROOT, "%d", draws));
         tvUserCompetitions.setText(String.format(Locale.ROOT, "%d", competitions));
+        tvUserCurrentWeek.setText(gameHelper.getCurrentWeekString());
+        tvUserCurrentWeekResult.setText(String.format(Locale.ROOT, "%d", gameHelper.getCurrentWeekResult()));
+        tvUserCurrentMonthResult.setText(String.format(Locale.ROOT, "%d", month_stat.total_cnt));
+        tvUserCurrentYearResult.setText(String.format(Locale.ROOT, "%d", year_stat.total_cnt));
 
         btSelectSpecialisation.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

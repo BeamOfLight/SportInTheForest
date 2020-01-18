@@ -71,6 +71,46 @@
                     android:textColor="@color/fragmentCompetitionsTextColor"
                     android:textSize="17sp"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/txt_main_user_stat_current_week"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/txt_main_user_stat_current_week_result"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/txt_main_user_stat_current_month_result"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/txt_main_user_stat_current_year_result"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -134,6 +174,58 @@
 
                 <TextView
                     android:id="@+id/tvUserCompetitions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="10dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/tvUserCurrentWeek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="10dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/tvUserCurrentWeekResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="10dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/tvUserCurrentMonthResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="10dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/fragmentCompetitionsTextColor"
+                    android:textSize="17sp"/>
+
+                <TextView
+                    android:id="@+id/tvUserCurrentYearResult"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"

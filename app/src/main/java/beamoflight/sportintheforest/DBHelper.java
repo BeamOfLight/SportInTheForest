@@ -1576,6 +1576,68 @@ class DBHelper extends DBHelperBaseLayer {
         return count;
     }
 
+    UserExerciseTrainingStat getUserExerciseTrainingStat4CurrentYear()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        UserExerciseTrainingStat stat = new UserExerciseTrainingStat();
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_cnt, MAX(sum_result) AS max_competition_result, MAX(max_result) AS max_result, SUM(number_of_moves) AS total_number_of_moves, COUNT(DISTINCT(date(event_timestamp))) as training_days"},
+                "user_id = ? AND exercise_id = ? AND strftime('%Y', event_timestamp) == ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getCurrentYearString()},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                stat.total_cnt = cursor.getInt(cursor.getColumnIndex("total_cnt"));
+                stat.max_competition_result = cursor.getInt(cursor.getColumnIndex("max_competition_result"));
+                stat.max_result = cursor.getInt(cursor.getColumnIndex("max_result"));
+                stat.total_number_of_moves = cursor.getInt(cursor.getColumnIndex("total_number_of_moves"));
+                stat.training_days = cursor.getInt(cursor.getColumnIndex("training_days"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat4CurrentYear: " + stat.toString());
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat4CurrentYear: Cursor is null");
+
+        return stat;
+    }
+
+    UserExerciseTrainingStat getUserExerciseTrainingStat4CurrentMonth()
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        UserExerciseTrainingStat stat = new UserExerciseTrainingStat();
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_cnt, MAX(sum_result) AS max_competition_result, MAX(max_result) AS max_result, SUM(number_of_moves) AS total_number_of_moves, COUNT(DISTINCT(date(event_timestamp))) as training_days"},
+                "user_id = ? AND exercise_id = ? AND strftime('%Y-%m', event_timestamp) == ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), gameHelper.getCurrentMonthString()},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                stat.total_cnt = cursor.getInt(cursor.getColumnIndex("total_cnt"));
+                stat.max_competition_result = cursor.getInt(cursor.getColumnIndex("max_competition_result"));
+                stat.max_result = cursor.getInt(cursor.getColumnIndex("max_result"));
+                stat.total_number_of_moves = cursor.getInt(cursor.getColumnIndex("total_number_of_moves"));
+                stat.training_days = cursor.getInt(cursor.getColumnIndex("training_days"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat4CurrentMonth: " + stat.toString());
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat4CurrentMonth: Cursor is null");
+
+        return stat;
+    }
+
     UserExerciseTrainingStat getUserExerciseTrainingStat(int from_field, int from_amount, int to_field, int to_amount)
     {
         int user_id = gameHelper.getUserId();
