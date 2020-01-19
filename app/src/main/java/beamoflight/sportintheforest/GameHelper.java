@@ -66,6 +66,13 @@ public class GameHelper {
         return date_format.format(calendar.getTime());
     }
 
+    public String getDateString(Calendar calendar)
+    {
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+
+        return date_format.format(calendar.getTime());
+    }
+
     public String getCurrentYearString()
     {
         Calendar calendar = Calendar.getInstance();
@@ -126,11 +133,6 @@ public class GameHelper {
         return getDayInWeekString(calendar.getTime());
     }
 
-    public int getCurrentWeekResult()
-    {
-        return 0;
-    }
-
     public String getCurrentWeekString()
     {
         Calendar first_january = Calendar.getInstance();
@@ -147,12 +149,15 @@ public class GameHelper {
         int day_from = that_day.get(Calendar.DAY_OF_MONTH);
         String month_from = getMonthName(that_day.get(Calendar.MONTH) + 1);
         result += Integer.toString(day_from) + " " + month_from;
+        String date_from = getDateString(that_day);
+
 
         // date to
         that_day.add(Calendar.DAY_OF_YEAR, 6);
         int day_to = that_day.get(Calendar.DAY_OF_MONTH);
         String month_to = getMonthName(that_day.get(Calendar.MONTH) + 1);
         result += " - " + Integer.toString(day_to) + " " + month_to;
+        String date_to = getDateString(that_day);
 
         return result;
     }

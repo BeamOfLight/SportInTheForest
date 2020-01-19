@@ -180,6 +180,14 @@
                 <action android:name="android.intent.action.PLAYER_EXP" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".WorkoutActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.WORKOUT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

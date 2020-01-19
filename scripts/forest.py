@@ -1342,4 +1342,5 @@ def get_npc_data():
 				level_interval_exp += exp + quest_exp
 				id += 1
 				current_exp_ratio *= exp_ratio
+
 	return npc_data, npc_extra_data

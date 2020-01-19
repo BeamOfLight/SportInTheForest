@@ -24,7 +24,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class TrainingActivity extends CompetitionBaseActivity {
+public class WorkoutActivity extends CompetitionBaseActivity {
     LocationPositionEntity locationPositionEntity;
     CompetitionEngine competitionEngine;
     AlertDialog dialogCompetitionMove;
@@ -37,6 +37,7 @@ public class TrainingActivity extends CompetitionBaseActivity {
         btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.INVISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
+        btTranslation.setVisibility(View.INVISIBLE);
     }
 
     private void setButtonsDuringCompetitions()
@@ -47,6 +48,7 @@ public class TrainingActivity extends CompetitionBaseActivity {
         btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.INVISIBLE);
         btAddResult.setVisibility(View.VISIBLE);
+        btTranslation.setVisibility(View.INVISIBLE);
     }
 
     private void setButtonsAfterCompetitions()
@@ -57,6 +59,7 @@ public class TrainingActivity extends CompetitionBaseActivity {
         btNext.setVisibility(View.INVISIBLE);
         btFinish.setVisibility(View.VISIBLE);
         btAddResult.setVisibility(View.INVISIBLE);
+        btTranslation.setVisibility(View.INVISIBLE);
     }
 
     /** Called when the activity is first created. */
@@ -65,57 +68,12 @@ public class TrainingActivity extends CompetitionBaseActivity {
 
         exitMessage = "Вы уверены, что хотите прекратить тренировку?";
         competitionEngine = new CompetitionEngine(getBaseContext(), dbHelper.getExerciseName(gameHelper.getExerciseId()));
+        locationPositionEntity = new LocationPositionEntity();
 
         initCompetitionTeamLeft();
         initCompetitionTeamRight();
         initAddResultButton();
 
-        btCompetitionRestart.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                LocationPositionEntity nextLocationPosition = null;
-                if (locationPositionEntity.getWins() + 1 < locationPositionEntity.getQuestCnt()) {
-                    nextLocationPosition = dbHelper.getLocationPositionByIds(
-                            locationPositionEntity.getLocationId(),
-                            locationPositionEntity.getLevel() + 1,
-                            locationPositionEntity.getPosition()
-                    );
-                } else {
-                    nextLocationPosition = locationPositionEntity;
-                }
-
-                if (nextLocationPosition != null) {
-                    Intent intent = new Intent(getBaseContext(), TrainingActivity.class);
-                    intent.setAction(Integer.toString(nextLocationPosition.getLocationLevelPositionId()));
-                    startActivity(intent);
-                    finish();
-                }
-            }
-        });
-
-        btNext.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                LocationPositionEntity nextLocationPosition = null;
-                if (locationPositionEntity.getWins() + 1 == locationPositionEntity.getQuestCnt() && locationPositionEntity.getPosition() == 5) {
-                    nextLocationPosition = dbHelper.getLocationPositionByIds(
-                        locationPositionEntity.getLocationId() + 1, 1, 1
-                    );
-                }
-
-                if (nextLocationPosition != null) {
-                    Intent intent = new Intent(getBaseContext(), TrainingActivity.class);
-                    intent.setAction(Integer.toString(nextLocationPosition.getLocationLevelPositionId()));
-                    startActivity(intent);
-                    finish();
-                }
-            }
-        });
-
-
-        btInvite.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                initDialogInviteUser();
-            }
-        });
         btFinish.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
@@ -144,42 +102,6 @@ public class TrainingActivity extends CompetitionBaseActivity {
                 refreshView();
             }
         });
-    }
-
-    private void networkUpdateCompetitionInfo()
-    {
-        try {
-            //networkHelper.getClient().newCall(networkHelper.getGetCompetitionInfo("AAAA3214AVVD")).enqueue(new Callback() {
-            networkHelper.getClient().newCall(networkHelper.getUpdateCompetitionInfoRequest(competitionView, dbHelper.getCurrentPlayerEntity().getName(), inviteCode)).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    //Message msg = new Message();
-                    //msg.obj = e.toString();
-                    //mainHandler.sendMessage(msg);
-                    call.cancel();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String json_string = response.body().string();
-                    try {
-                        NetworkHelper.UpdateCompetitionInfoResponse response_object = (new Gson()).fromJson(json_string, NetworkHelper.UpdateCompetitionInfoResponse.class);
-                        if (response_object.state != "ok") {
-                            //error message
-                        }
-//                        Message msg = new Message();
-//                        msg.obj = response_object.state;
-//                        createCompetitionResponseHandler.sendMessage(msg);
-                    } catch (Exception e) {
-                        Message msg = new Message();
-                        msg.obj = e.toString();
-                        createCompetitionResponseHandler.sendMessage(msg);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     protected void initStartButton()
@@ -318,10 +240,6 @@ public class TrainingActivity extends CompetitionBaseActivity {
                                     competitionView = competitionEngine.getCompetitionView();
                                     refreshView();
 
-                                    if (isInternetMode) {
-                                        networkUpdateCompetitionInfo();
-                                    }
-
                                     if (competitionEngine.finishedCompetition) {
                                         postCompetitionActions();
                                     }
@@ -343,62 +261,6 @@ public class TrainingActivity extends CompetitionBaseActivity {
         btAddResult.setVisibility(View.VISIBLE);
     }
 
-    private void initDialogInviteUser()
-    {
-        LayoutInflater li = LayoutInflater.from(this);
-        View prompts_view = li.inflate(R.layout.prompt_invite_user, null);
-
-        AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
-        alert_dialog_builder.setView(prompts_view);
-
-        // адаптер PreActions
-        int exercise_id = gameHelper.getExerciseId();
-        final List<UserEntity> invite_users = competitionEngine.filterUserList(
-                dbHelper.getUsersWithExercise(exercise_id, gameHelper.isReplayMode()),
-                exercise_id
-        );
-        ArrayAdapter<UserEntity> adapter_invite_user = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, invite_users);
-        adapter_invite_user.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        final Spinner spinner_invite_user = prompts_view.findViewById(R.id.spinnerInviteUser);
-        spinner_invite_user.setAdapter(adapter_invite_user);
-
-        // set dialog message
-        alert_dialog_builder
-                .setCancelable(false)
-                .setPositiveButton(R.string.btn_save_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                if (spinner_invite_user.getSelectedItem() != null) {
-                                    boolean status = competitionEngine.addCharacter(
-                                            CompetitionEngine.LEFT_TEAM_IDX,
-                                            dbHelper.getPlayerEntity(
-                                                    ((UserEntity) spinner_invite_user.getSelectedItem()).id,
-                                                    gameHelper.getExerciseId()
-                                            )
-                                    );
-                                    if (status) {
-                                        competitionView = competitionEngine.getCompetitionView();
-                                        refreshView();
-                                        if (invite_users.size() <= 1) {
-                                            btInvite.setVisibility(View.INVISIBLE);
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                .setNegativeButton(R.string.btn_cancel_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        dialogCompetitionMove = alert_dialog_builder.create();
-        dialogCompetitionMove.show();
-    }
-
     private void initCompetitionTeamLeft()
     {
         competitionEngine.addCharacter(CompetitionEngine.LEFT_TEAM_IDX, dbHelper.getPlayerEntity(gameHelper.getUserId(), gameHelper.getExerciseId()));
@@ -408,13 +270,27 @@ public class TrainingActivity extends CompetitionBaseActivity {
 
     private void initCompetitionTeamRight()
     {
-        locationPositionEntity = dbHelper.getLocationPosition(Integer.parseInt(getIntent().getAction()));
+        ArrayList<NonPlayerCharacterEntity> entities = new ArrayList<>();
 
-        ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPositionLevel(
-                locationPositionEntity.getLocationId(),
-                locationPositionEntity.getPosition(),
-                locationPositionEntity.getLevel()
-        );
+        NonPlayerCharacterEntity npc_entity = new NonPlayerCharacterEntity(getBaseContext());
+        npc_entity.setId(1000000)
+                .setName("Лень")
+                .setInitialFitnessPoints(10000)
+                .setCurrentFitnessPoints(10000)
+                .setInitialActionPoints(0)
+                .setCurrentActionPoints(0)
+                .setMultiplier(1)
+                .setResistance(0)
+                .setBonusChance(0)
+                .setLevel(1)
+                .setSpecialisationId(0)
+                .setBonusMultiplier(1);
+        npc_entity.setExp(10)
+                .setMaxResult(1)
+                .setPosition(0)
+                .setActions("")
+                .setPreActions("");
+        entities.add(npc_entity);
 
         for (NonPlayerCharacterEntity entity: entities) {
             competitionEngine.addCharacter(CompetitionEngine.RIGHT_TEAM_IDX, entity);
@@ -424,6 +300,6 @@ public class TrainingActivity extends CompetitionBaseActivity {
 
     protected void leaveCompetition()
     {
-        competitionEngine.leave(locationPositionEntity.getLocationId(), locationPositionEntity.getPosition(), locationPositionEntity.getLevel());
+        competitionEngine.leave(0, 0, 0);
     }
 }

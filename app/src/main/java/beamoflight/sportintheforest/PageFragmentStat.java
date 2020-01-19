@@ -151,7 +151,7 @@ public class PageFragmentStat extends Fragment {
         tvUserCompetitionDraws.setText(String.format(Locale.ROOT, "%d", draws));
         tvUserCompetitions.setText(String.format(Locale.ROOT, "%d", competitions));
         tvUserCurrentWeek.setText(gameHelper.getCurrentWeekString());
-        tvUserCurrentWeekResult.setText(String.format(Locale.ROOT, "%d", gameHelper.getCurrentWeekResult()));
+        tvUserCurrentWeekResult.setText(String.format(Locale.ROOT, "%d", dbHelper.getCurrentWeekResult()));
         tvUserCurrentMonthResult.setText(String.format(Locale.ROOT, "%d", month_stat.total_cnt));
         tvUserCurrentYearResult.setText(String.format(Locale.ROOT, "%d", year_stat.total_cnt));
 

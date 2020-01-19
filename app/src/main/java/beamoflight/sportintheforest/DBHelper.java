@@ -1669,6 +1669,56 @@ class DBHelper extends DBHelperBaseLayer {
         return stat;
     }
 
+    public int getCurrentWeekResult()
+    {
+        Calendar first_january = Calendar.getInstance();
+        first_january.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        first_january.set(Integer.parseInt(gameHelper.getCurrentYearString()), Calendar.JANUARY, 1, 0, 0, 0);
+
+        Calendar that_day = Calendar.getInstance();
+        that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        that_day.set(Calendar.DAY_OF_WEEK, that_day.getFirstDayOfWeek());
+        that_day.add(Calendar.DATE, first_january.getFirstDayOfWeek());
+
+        String date_from = gameHelper.getDateString(that_day);
+
+        that_day.add(Calendar.DAY_OF_YEAR, 6);
+        String date_to = gameHelper.getDateString(that_day);
+
+        return getUserExerciseTrainingStat(date_from, date_to).total_cnt;
+    }
+
+    UserExerciseTrainingStat getUserExerciseTrainingStat(String from_date, String to_date)
+    {
+        int user_id = gameHelper.getUserId();
+        int exercise_id = gameHelper.getExerciseId();
+        UserExerciseTrainingStat stat = new UserExerciseTrainingStat();
+
+        Cursor cursor = db.query(
+                "user_exercise_trainings",
+                new String[]{"SUM(sum_result) AS total_cnt, MAX(sum_result) AS max_competition_result, MAX(max_result) AS max_result, SUM(number_of_moves) AS total_number_of_moves, COUNT(DISTINCT(date(event_timestamp))) as training_days"},
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) > ? AND date(event_timestamp) <= ?",
+                new String[]{Integer.toString(user_id), Integer.toString(exercise_id), from_date, to_date},
+                "user_id, exercise_id",
+                null,
+                null
+        );
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                stat.total_cnt = cursor.getInt(cursor.getColumnIndex("total_cnt"));
+                stat.max_competition_result = cursor.getInt(cursor.getColumnIndex("max_competition_result"));
+                stat.max_result = cursor.getInt(cursor.getColumnIndex("max_result"));
+                stat.total_number_of_moves = cursor.getInt(cursor.getColumnIndex("total_number_of_moves"));
+                stat.training_days = cursor.getInt(cursor.getColumnIndex("training_days"));
+            }
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat: " + stat.toString());
+            cursor.close();
+        } else
+            Log.d(context.getResources().getString(R.string.log_tag), "DEBUG getUserExerciseTrainingStat: Cursor is null");
+
+        return stat;
+    }
+
     public int getCurrentUserExerciseTrainingMaxCompetitionResult()
     {
         int user_id = gameHelper.getUserId();

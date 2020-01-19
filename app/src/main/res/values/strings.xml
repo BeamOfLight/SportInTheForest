@@ -2,7 +2,7 @@
     <string name="app_name">Спортивный лес</string>
     <string name="app_name_title">Спортивный лес</string>
     <string name="app_version">0.3.15</string>
-    <string name="app_version_revision">6</string>
+    <string name="app_version_revision">7</string>
     <string name="app_internet_api_url">http://sportintheforest.siteme.org/api.php</string>
     <string name="app_internet_api_url_test">http://192.168.1.5/api.php</string>
     <string name="main_level_str">11 ур</string>
@@ -107,6 +107,8 @@
     <string name="fragment_page_stat_max_result">Рекорд подхода:</string>
     <string name="fragment_page_stat_total_number_of_moves">Количество подходов:</string>
     <string name="fragment_page_stat_average_result">Средний результат:</string>
+
+    <string name="fragment_page_trainings_start">Начать борьбу с ленью</string>
 
     <string name="fragment_page_skills_learn_skills">Обучение</string>
 

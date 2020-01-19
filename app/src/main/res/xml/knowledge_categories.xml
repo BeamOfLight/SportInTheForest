@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data>
-    <knowledge_category id="2" name="Общая информация" order_value="10"/>
-    <knowledge_category id="1" name="Характеристики персонажа" order_value="20"/>
+    <knowledge_category id="1" name="Общая информация" order_value="10"/>
+    <knowledge_category id="2" name="Характеристики персонажа" order_value="20"/>
     <knowledge_category id="3" name="Специализация" order_value="30"/>
     <knowledge_category id="4" name="Соревнования" order_value="40"/>
     <knowledge_category id="5" name="Навыки" order_value="50"/>

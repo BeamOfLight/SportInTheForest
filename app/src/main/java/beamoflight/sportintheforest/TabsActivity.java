@@ -19,8 +19,8 @@ public class TabsActivity extends Activity {
 
     // Titles of the individual pages (displayed in tabs)
     private final String[] PAGE_TITLES = new String[] {
-            "Отчёты",
             "Статистика",
+            "Отчёты",
             "Навыки",
             "Достижения",
             "История",
@@ -30,8 +30,8 @@ public class TabsActivity extends Activity {
 
     // The fragments that are used as the individual pages
     private final Fragment[] PAGES = new Fragment[] {
-            new PageFragmentReports(),
             new PageFragmentStat(),
+            new PageFragmentReports(),
             new PageFragmentSkills(),
             new PageFragmentAchievements(),
             new PageFragmentHistory(),

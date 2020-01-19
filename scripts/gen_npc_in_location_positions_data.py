@@ -32,7 +32,6 @@ for location_id in xrange(1, forest.get_locations_count()):
 
 			npc_id += 1
 
-
 for row in main_data:
 	print '    <npc_in_location_position location_level_position_id="{}" npc_id="{}"/>'.format(row['location_level_position_id'], row['npc_id'])
 	
