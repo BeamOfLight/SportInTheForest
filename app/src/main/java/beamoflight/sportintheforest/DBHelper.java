@@ -1671,19 +1671,8 @@ class DBHelper extends DBHelperBaseLayer {
 
     public int getCurrentWeekResult()
     {
-        Calendar first_january = Calendar.getInstance();
-        first_january.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        first_january.set(Integer.parseInt(gameHelper.getCurrentYearString()), Calendar.JANUARY, 1, 0, 0, 0);
-
-        Calendar that_day = Calendar.getInstance();
-        that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        that_day.set(Calendar.DAY_OF_WEEK, that_day.getFirstDayOfWeek());
-        that_day.add(Calendar.DATE, first_january.getFirstDayOfWeek());
-
-        String date_from = gameHelper.getDateString(that_day);
-
-        that_day.add(Calendar.DAY_OF_YEAR, 6);
-        String date_to = gameHelper.getDateString(that_day);
+        String date_from = gameHelper.getDateString(gameHelper.getCurrentWeekFrom());
+        String date_to = gameHelper.getDateString(gameHelper.getCurrentWeekTo());
 
         return getUserExerciseTrainingStat(date_from, date_to).total_cnt;
     }

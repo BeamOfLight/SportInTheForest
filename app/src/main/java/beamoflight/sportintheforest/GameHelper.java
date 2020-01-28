@@ -133,33 +133,44 @@ public class GameHelper {
         return getDayInWeekString(calendar.getTime());
     }
 
-    public String getCurrentWeekString()
+    public Calendar getCurrentWeekFrom()
     {
-        Calendar first_january = Calendar.getInstance();
-        first_january.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        first_january.set(Integer.parseInt(getCurrentYearString()), Calendar.JANUARY, 1, 0, 0, 0);
-        String result = "";
+        Calendar today = Calendar.getInstance();
+        today.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
+        int current_year = today.get(Calendar.YEAR);
 
         Calendar that_day = Calendar.getInstance();
         that_day.setTimeZone( TimeZone.getTimeZone("Europe/Moscow"));
-        that_day.set(Calendar.DAY_OF_WEEK, that_day.getFirstDayOfWeek());
-        that_day.add(Calendar.DATE, first_january.getFirstDayOfWeek());
+        that_day.set(current_year, Calendar.JANUARY, 1, 0, 0, 0);
+        int max_week_count = that_day.getMaximum(Calendar.WEEK_OF_YEAR);
 
-        // date from
-        int day_from = that_day.get(Calendar.DAY_OF_MONTH);
-        String month_from = getMonthName(that_day.get(Calendar.MONTH) + 1);
-        result += Integer.toString(day_from) + " " + month_from;
-        String date_from = getDateString(that_day);
+        for (int week_idx = 0; week_idx < max_week_count; week_idx++) {
+            boolean current_period = that_day.getTime().getTime() <= today.getTime().getTime() && that_day.getTime().getTime() + 7 * 24 * 3600 * 1000 > today.getTime().getTime() && current_year == that_day.get(Calendar.YEAR);
+            if (current_period) {
+                return that_day;
+            }
+            that_day.add(Calendar.DAY_OF_MONTH, 7);
+        }
+        return today;
+    }
 
-
-        // date to
+    public Calendar getCurrentWeekTo()
+    {
+        Calendar that_day = getCurrentWeekFrom();
         that_day.add(Calendar.DAY_OF_YEAR, 6);
-        int day_to = that_day.get(Calendar.DAY_OF_MONTH);
-        String month_to = getMonthName(that_day.get(Calendar.MONTH) + 1);
-        result += " - " + Integer.toString(day_to) + " " + month_to;
-        String date_to = getDateString(that_day);
+        return that_day;
+    }
 
-        return result;
+    public String getReadableDayFormat(Calendar current_date)
+    {
+        int day_from = current_date.get(Calendar.DAY_OF_MONTH);
+        String month_from = getMonthName(current_date.get(Calendar.MONTH) + 1);
+        return Integer.toString(day_from) + " " + month_from;
+    }
+
+    public String getCurrentWeekString()
+    {
+        return getReadableDayFormat(getCurrentWeekFrom()) + " - " + getReadableDayFormat(getCurrentWeekTo());
     }
 
     public String getTodayStringWithHours()
