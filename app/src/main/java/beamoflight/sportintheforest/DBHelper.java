@@ -1686,7 +1686,7 @@ class DBHelper extends DBHelperBaseLayer {
         Cursor cursor = db.query(
                 "user_exercise_trainings",
                 new String[]{"SUM(sum_result) AS total_cnt, MAX(sum_result) AS max_competition_result, MAX(max_result) AS max_result, SUM(number_of_moves) AS total_number_of_moves, COUNT(DISTINCT(date(event_timestamp))) as training_days"},
-                "user_id = ? AND exercise_id = ? AND date(event_timestamp) > ? AND date(event_timestamp) <= ?",
+                "user_id = ? AND exercise_id = ? AND date(event_timestamp) >= ? AND date(event_timestamp) <= ?",
                 new String[]{Integer.toString(user_id), Integer.toString(exercise_id), from_date, to_date},
                 "user_id, exercise_id",
                 null,
