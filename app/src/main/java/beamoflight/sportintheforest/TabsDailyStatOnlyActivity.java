@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -14,17 +13,20 @@ import android.widget.TextView;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Calendar;
 
 public class TabsDailyStatOnlyActivity extends Activity {
 
     // Titles of the individual pages (displayed in tabs)
     private final String[] PAGE_TITLES = new String[] {
             "Статистика",
+            "Отчёты",
             "Данные"
     };
 
     // The fragments that are used as the individual pages
     private final Fragment[] PAGES = new Fragment[] {
+            new PageFragmentStat(),
             new PageFragmentReports(),
             new PageFragmentData()
     };

@@ -24,8 +24,8 @@ public class TabsActivity extends Activity {
             "Навыки",
             "Достижения",
             "История",
-            "Места",
-            "Тренировки"
+            "Места"/*,
+            "Тренировки"*/
     };
 
     // The fragments that are used as the individual pages
@@ -35,8 +35,8 @@ public class TabsActivity extends Activity {
             new PageFragmentSkills(),
             new PageFragmentAchievements(),
             new PageFragmentHistory(),
-            new PageFragmentLocations(),
-            new PageFragmentTrainings()
+            new PageFragmentLocations()/*,
+            new PageFragmentTrainings()*/
     };
 
     // The ViewPager is responsible for sliding pages (fragments) in and out upon user input

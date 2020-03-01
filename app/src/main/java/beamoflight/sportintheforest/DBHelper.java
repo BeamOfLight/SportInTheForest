@@ -468,11 +468,31 @@ class DBHelper extends DBHelperBaseLayer {
                     long received_exp = 0;
                     int current_count = Integer.parseInt(achievements_data.get(m.get("required_parameter_name")));
 
-                    String[] expected_string_counts = m.get("required_parameter_values").split(";");
+                    // Parameters
+                    String[] required_parameter_values = m.get("required_parameter_values").split(";");
+
+                    // Skill points
                     String[] skill_points_values = m.get("skill_points_values").split(";");
+                    if (skill_points_values.length == 1) {
+                        int k = Integer.parseInt(skill_points_values[0]);
+                        skill_points_values = required_parameter_values.clone();
+                        for (int level = 1; level <= required_parameter_values.length; level++) {
+                            skill_points_values[level - 1] = Integer.toString(level * k);
+                        }
+                    }
+
+                    // Exp values
                     String[] exp_values = m.get("exp_values").split(";");
-                    boolean checked = skill_points_values.length != expected_string_counts.length
-                            || exp_values.length != expected_string_counts.length;
+                    if (exp_values.length == 1) {
+                        int k = Integer.parseInt(exp_values[0]);
+                        exp_values = required_parameter_values.clone();
+                        for (int level = 1; level <= required_parameter_values.length; level++) {
+                            exp_values[level - 1] = Integer.toString(level * k);
+                        }
+                    }
+
+                    boolean checked = skill_points_values.length != required_parameter_values.length
+                            || exp_values.length != required_parameter_values.length;
 
                     if (checked) {
                         Toast.makeText(
@@ -483,7 +503,7 @@ class DBHelper extends DBHelperBaseLayer {
                                         m.get("name"),
                                         exp_values.length,
                                         skill_points_values.length,
-                                        expected_string_counts.length
+                                        required_parameter_values.length
                                 ),
                                 Toast.LENGTH_LONG
                         ).show();
@@ -494,9 +514,9 @@ class DBHelper extends DBHelperBaseLayer {
                     int idx = 0;
 
                     boolean hasInfo = false;
-                    for (String expected_string_count : expected_string_counts) {
+                    for (String expected_string_count : required_parameter_values) {
                         int expected_count = Integer.parseInt(expected_string_count);
-                        if (idx < expected_string_counts.length - 1) {
+                        if (idx < required_parameter_values.length - 1) {
                             int skill_points = Integer.parseInt(skill_points_values[idx]);
                             long exp = Long.parseLong(exp_values[idx]);
                             if (current_count >= expected_count) {
@@ -517,7 +537,7 @@ class DBHelper extends DBHelperBaseLayer {
                             }
                         } else {
                             if (current_count >= expected_count) {
-                                achievement_level = expected_string_counts.length;
+                                achievement_level = required_parameter_values.length;
                                 success_achievements_cnt++;
                                 m.put("info", "[ Достигнуто ]");
                             } else if (!hasInfo) {
