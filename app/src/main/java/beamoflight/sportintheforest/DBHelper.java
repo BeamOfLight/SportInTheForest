@@ -479,6 +479,15 @@ class DBHelper extends DBHelperBaseLayer {
                         for (int level = 1; level <= required_parameter_values.length; level++) {
                             skill_points_values[level - 1] = Integer.toString(level * k);
                         }
+                    } else if (skill_points_values.length == 2) {
+                        int k1 = Integer.parseInt(skill_points_values[0]);
+                        float k2 = Float.parseFloat(skill_points_values[1]);
+                        skill_points_values = required_parameter_values.clone();
+                        float ratio = 1;
+                        for (int level = 1; level <= required_parameter_values.length; level++) {
+                            skill_points_values[level - 1] = Integer.toString(Math.round(level * k1 * ratio));
+                            ratio *= k2;
+                        }
                     }
 
                     // Exp values
@@ -488,6 +497,15 @@ class DBHelper extends DBHelperBaseLayer {
                         exp_values = required_parameter_values.clone();
                         for (int level = 1; level <= required_parameter_values.length; level++) {
                             exp_values[level - 1] = Integer.toString(level * k);
+                        }
+                    } else if (exp_values.length == 2) {
+                        int k1 = Integer.parseInt(exp_values[0]);
+                        float k2 = Float.parseFloat(exp_values[1]);
+                        exp_values = required_parameter_values.clone();
+                        float ratio = 1;
+                        for (int level = 1; level <= required_parameter_values.length; level++) {
+                            exp_values[level - 1] = Integer.toString(Math.round(level * k1 * ratio));
+                            ratio *= k2;
                         }
                     }
 

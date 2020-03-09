@@ -32,24 +32,24 @@ skill_points_values[3] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160
 skill_points_values[4] = [1,5,10,25,50,150,500,2000,4000]
 skill_points_values[5] = [5,10,25,50,100,300,1000,5000,10000]
 skill_points_values[6] = [10,20,30,50,75,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,2000,5000,7300,10000,15000,25000,40000,65000,100000]
-skill_points_values[7] = [10]
-skill_points_values[8] = [10]
+skill_points_values[7] = [10, 1]
+skill_points_values[8] = [10, 1]
 skill_points_values[9] = [1]
 skill_points_values[10] = [10]
 skill_points_values[11] = [50]
 
 # exp_values
 for i in xrange(9):
-    exp_values[i] = [2] 
+    exp_values[i] = [2, 1] 
 
 # 100 раз в неделю
-exp_values[9] = [10]
+exp_values[9] = [10, 1.01]
 
 # 300 раз в неделю
-exp_values[10] = [50]
+exp_values[10] = [50, 1.02]
 
 # 700 раз в неделю
-exp_values[11] = [100]
+exp_values[11] = [100, 1.03]
 
 data = []
 achievements = forest_dict.get_achievements()
