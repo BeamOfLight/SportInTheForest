@@ -253,7 +253,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         tv_prompt_exercise_name.setText(request.name);
 
         np_count.setMinValue(0);
-        np_count.setMaxValue(100);
+        np_count.setMaxValue(1000);
         np_count.setValue(gameHelper.getLastSelectionFromPreferences(request.userId, request.exerciseId));
 
         // адаптер PreActions
