@@ -1,10 +1,10 @@
 *.iml
 scripts/*.pyc
 .gradle
-/local.properties
-/.idea
+local.properties
+.idea
 .DS_Store
-/build
-/app/build
-/captures
+build
+app/build
+captures
 .externalNativeBuild
