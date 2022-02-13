@@ -37,7 +37,7 @@ import java.util.Map;
 class DBHelperBaseLayer extends SQLiteOpenHelper {
     protected SQLiteDatabase db;
     protected Context context;
-    protected final static int formatVersion = 7;
+    protected final static int formatVersion = 8;
 
     public DBHelperBaseLayer(Context current) {
         // конструктор суперкласса
@@ -151,9 +151,10 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                 + "exercise_id integer primary key autoincrement,"
                 + "modification_date date,"
                 + "initial_name text,"
-                + "name text" + ");");
+                + "name text,"
+                + "difficulty integer" + ");");
 
-        String base_sql = "INSERT INTO exercises (exercise_id, modification_date, initial_name, name) VALUES";
+        String base_sql = "INSERT INTO exercises (exercise_id, modification_date, initial_name, name, difficulty) VALUES";
         String sql = "";
         int id;
         String name;
@@ -167,7 +168,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                         if (xpp.getName().equals("exercise")) {
                             id = Integer.parseInt(xpp.getAttributeValue(null, "exercise_id"));
                             name = xpp.getAttributeValue(null, "name");
-                            sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\")";
+                            sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\", 0)";
                         }
                         break;
                     default:

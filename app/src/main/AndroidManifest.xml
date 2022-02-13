@@ -10,10 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +24,7 @@
 
         <activity
             android:name=".Main4ReplayActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN4REPLAY" />
@@ -31,6 +33,7 @@
 
         <activity
             android:name=".TabsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.TABS" />
@@ -39,6 +42,7 @@
 
         <activity
             android:name=".TabsDailyStatOnlyActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.TABS_DAILY_STAT_ONLY" />
@@ -47,6 +51,7 @@
 
         <activity
             android:name=".UsersActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.USERS" />
@@ -55,6 +60,7 @@
 
         <activity
             android:name=".KnowledgeCategoriesActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE_CATEGORIES" />
@@ -63,6 +69,7 @@
 
         <activity
             android:name=".KnowledgeActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE" />
@@ -71,6 +78,7 @@
 
         <activity
             android:name=".UserExercisesActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.USER_EXERCISES" />
@@ -79,6 +87,7 @@
 
         <activity
             android:name=".ExercisesActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.EXERCISES" />
@@ -87,6 +96,7 @@
 
         <activity
             android:name=".LocationPositionsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.NPCS" />
@@ -95,6 +105,7 @@
 
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SETTINGS" />
@@ -103,6 +114,7 @@
 
         <activity
             android:name=".ExtraSettingsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.EXTRA_SETTINGS" />
@@ -111,6 +123,7 @@
 
         <activity
             android:name=".ReplayEditorActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.REPLAY_EDITOR" />
@@ -119,6 +132,7 @@
 
         <activity
             android:name=".CompetitionActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION" />
@@ -127,6 +141,7 @@
 
         <activity
             android:name=".CompetitionViewerActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION_VIEWER" />
@@ -135,6 +150,7 @@
 
         <activity
             android:name=".StatMyShadowsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MY_SHADOWS" />
@@ -143,6 +159,7 @@
 
         <activity
             android:name=".StatYearsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_YEARS" />
@@ -151,6 +168,7 @@
 
         <activity
             android:name=".StatMonthsActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MONTHS" />
@@ -159,6 +177,7 @@
 
         <activity
             android:name=".StatWeeksActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_WEEKS" />
@@ -167,6 +186,7 @@
 
         <activity
             android:name=".StatDaysActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_DAYS" />
@@ -175,6 +195,7 @@
 
         <activity
             android:name=".PlayerExpActivity"
+            android:exported="false"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.PLAYER_EXP" />
@@ -183,6 +204,7 @@
 
         <activity
             android:name=".WorkoutActivity"
+            android:exported="false"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.WORKOUT" />
