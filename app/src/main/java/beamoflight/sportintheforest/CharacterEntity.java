@@ -49,6 +49,7 @@ abstract class CharacterEntity {
     protected String results;
     protected int currentActionPoints;
     protected int initialActionPoints;
+    protected int exerciseId;
 
     protected SparseArray<SkillView> activeSkills;
     protected SparseIntArray alreadyUsedActiveSkills;
@@ -87,6 +88,7 @@ abstract class CharacterEntity {
         data.results = getResults();
         data.currentActionPoints = getCurrentActionPoints();
         data.initialActionPoints = getInitialActionPoints();
+        data.exerciseId = getExerciseId();
 
         return data;
     }
@@ -407,5 +409,16 @@ abstract class CharacterEntity {
             }
         }
         return Math.round(regeneration);
+    }
+
+    int getExerciseId()
+    {
+        return exerciseId;
+    }
+
+    public CharacterEntity setExerciseId(int exercise_id_)
+    {
+        exerciseId = exercise_id_;
+        return this;
     }
 }

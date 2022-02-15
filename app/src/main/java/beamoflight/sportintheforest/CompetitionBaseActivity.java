@@ -112,9 +112,12 @@ abstract public class CompetitionBaseActivity extends Activity {
     {
         String str;
         if (inviteCode.equals("")) {
-            str = String.format(Locale.ROOT,"%s", competitionView.exerciseName);
+            str = String.format(Locale.ROOT,"%s", dbHelper.getExerciseName(competitionView.exerciseId));
         } else {
-            str = String.format(Locale.ROOT,"%s [%s]", competitionView.exerciseName, inviteCode);
+            str = String.format(
+                Locale.ROOT,"%s [%s]",
+                dbHelper.getExerciseName(competitionView.exerciseId),
+                inviteCode);
         }
         tvExerciseName.setText(str);
     }
@@ -191,7 +194,7 @@ abstract public class CompetitionBaseActivity extends Activity {
         lvCompetitionTeamRight.setAdapter(teamRightArrayAdapter);
         teamRightArrayAdapter.notifyDataSetChanged();
 
-        //tvExerciseName.setText(competitionView.exerciseName);
+        //tvExerciseName.setText(dbHelper.getExerciseName(competitionView.exerciseId));
     }
 
     private void initDialogShowUserInfo(CharacterView character_view)
@@ -204,6 +207,11 @@ abstract public class CompetitionBaseActivity extends Activity {
 
         TextView tvCharacterName = prompts_view.findViewById(R.id.tvCharacterName);
         tvCharacterName.setText(character_view.getName());
+
+        TextView tvExerciseName = prompts_view.findViewById(R.id.tvExerciseName);
+        tvExerciseName.setText(
+            String.format(Locale.ROOT, "%s", dbHelper.getExerciseName(character_view.getExerciseId()))
+        );
 
         TextView tvCharacterSpecialisation = prompts_view.findViewById(R.id.tvCharacterSpecialisation);
         tvCharacterSpecialisation.setText(gameHelper.getSpecialisationName(character_view.getSpecialisationId()));
@@ -251,6 +259,11 @@ abstract public class CompetitionBaseActivity extends Activity {
                         character_view.getCurrentActionPoints(),
                         character_view.getInitialActionPoints()
                 )
+        );
+
+        TextView tvExerciseDifficulty = prompts_view.findViewById(R.id.tvExerciseDifficulty);
+        tvExerciseDifficulty.setText(
+            String.format(Locale.ROOT, "%d", dbHelper.getExerciseDifficulty(character_view.getExerciseId()))
         );
 
         ListView lvActiveSkills = prompts_view.findViewById(R.id.lvActiveSkills);

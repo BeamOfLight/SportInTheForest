@@ -64,7 +64,7 @@ public class TrainingActivity extends CompetitionBaseActivity {
         super.onCreate(savedInstanceState);
 
         exitMessage = "Вы уверены, что хотите прекратить тренировку?";
-        competitionEngine = new CompetitionEngine(getBaseContext(), dbHelper.getExerciseName(gameHelper.getExerciseId()));
+        competitionEngine = new CompetitionEngine(getBaseContext(), gameHelper.getExerciseId());
 
         initCompetitionTeamLeft();
         initCompetitionTeamRight();
@@ -413,7 +413,8 @@ public class TrainingActivity extends CompetitionBaseActivity {
         ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPositionLevel(
                 locationPositionEntity.getLocationId(),
                 locationPositionEntity.getPosition(),
-                locationPositionEntity.getLevel()
+                locationPositionEntity.getLevel(),
+                gameHelper.getExerciseId()
         );
 
         for (NonPlayerCharacterEntity entity: entities) {

@@ -44,9 +44,9 @@ class CompetitionView {
     @Expose
     List<List<CharacterView>> teamsData;
 
-    @SerializedName("exercise_name")
+    @SerializedName("exercise_id")
     @Expose
-    String exerciseName;
+    int exerciseId;
 
     CompetitionView()
     {
@@ -57,6 +57,6 @@ class CompetitionView {
         teamsData = new ArrayList<>();
         teamsData.add(new ArrayList<CharacterView>());
         teamsData.add(new ArrayList<CharacterView>());
-        exerciseName = "";
+        exerciseId = 0;
     }
 }

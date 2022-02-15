@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,10 +32,12 @@ public class NetworkHelper {
     }
 
     private OkHttpClient client;
+    private DBHelper dbHelper;
 
     public NetworkHelper(Context current) {
         client = new OkHttpClient();
         //context = current;
+        dbHelper = new DBHelper( current );
         gameHelper = new GameHelper(current);
         apiUrl = current.getResources().getString(R.string.app_internet_api_url);
         //apiUrl = current.getResources().getString(R.string.app_internet_api_url_test);
@@ -80,7 +83,12 @@ public class NetworkHelper {
                 .addFormDataPart("competition_state", new Gson().toJson(competition_view))
                 .addFormDataPart("competition_state_hash", "123")
                 .addFormDataPart("player_name", player_name)
-                .addFormDataPart("exercise_name", competition_view.exerciseName)
+                .addFormDataPart("exercise_name", dbHelper.getExerciseName(competition_view.exerciseId))
+                .addFormDataPart(
+                        "exercise_difficulty",
+                        String.format(
+                                Locale.ROOT, "%s",
+                                dbHelper.getExerciseDifficulty(competition_view.exerciseId)))
                 .addFormDataPart("token", gameHelper.getDeviceIMEI())
                 .build();
 
@@ -95,7 +103,12 @@ public class NetworkHelper {
                 .addFormDataPart("competition_state_hash", "123")
                 .addFormDataPart("player_name", player_name)
                 .addFormDataPart("invite_code", invite_code)
-                .addFormDataPart("exercise_name", competition_view.exerciseName)
+                .addFormDataPart("exercise_name", dbHelper.getExerciseName(competition_view.exerciseId))
+                .addFormDataPart(
+                    "exercise_difficulty",
+                        String.format(
+                                Locale.ROOT, "%s",
+                                dbHelper.getExerciseDifficulty(competition_view.exerciseId)))
                 .addFormDataPart("token", gameHelper.getDeviceIMEI())
                 .build();
 

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class ExercisesActivity extends ReplayActivity {
 
         dbHelper = new DBHelper( this );
         gameHelper = new GameHelper(this.getBaseContext());
+
 
         ((TextView) findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.exercises_title));
 
@@ -82,15 +84,15 @@ public class ExercisesActivity extends ReplayActivity {
     {
         exercisesData = dbHelper.getExercisesData();
         lvExercises.invalidateViews();
-        SimpleAdapter usersAdapter = new SimpleAdapter(
+        SimpleAdapter exercisesAdapter = new SimpleAdapter(
                 this,
                 exercisesData,
                 android.R.layout.simple_list_item_2,
-                new String[] {"name", "info", "exercise_id"},
+                new String[] {"name", "info", "exercise_id", "difficulty"},
                 new int[] {android.R.id.text1, android.R.id.text2}
         );
 
-        lvExercises.setAdapter(usersAdapter);
+        lvExercises.setAdapter(exercisesAdapter);
     }
 
     private void showNewUserExerciseList()
@@ -111,14 +113,23 @@ public class ExercisesActivity extends ReplayActivity {
         AlertDialog.Builder alert_dialog_builder = new AlertDialog.Builder(this);
         alert_dialog_builder.setView(prompts_view);
 
+        final NumberPicker np_difficulty = (NumberPicker) prompts_view.findViewById(R.id.npDifficulty);
+        np_difficulty.setMinValue(1);
+        np_difficulty.setMaxValue(100);
+
         final EditText et_input_exercise_name = prompts_view.findViewById(R.id.editTextDialogExerciseInput);
 
         final int exercise_id = current_exercise_id;
+        int difficulty;
         if (current_exercise_id != -1) {
             et_input_exercise_name.setText(dbHelper.getExerciseName(current_exercise_id));
+            difficulty = dbHelper.getExerciseDifficulty(current_exercise_id);
         } else {
             et_input_exercise_name.setText("");
+            difficulty = 1;
         }
+
+        np_difficulty.setValue(difficulty);
 
         // set dialog message
         alert_dialog_builder
@@ -130,10 +141,10 @@ public class ExercisesActivity extends ReplayActivity {
                             String exercise_name = et_input_exercise_name.getText().toString();
                             if (exercise_name.trim().length() == 0) {
                                 Toast.makeText(getBaseContext(), R.string.msg_exercise_need_name, Toast.LENGTH_SHORT).show();
-                            } else if (dbHelper.checkExerciseExist(exercise_name)) {
+                            } else if (dbHelper.checkExerciseExist(exercise_name, current_exercise_id)) {
                                 Toast.makeText(getBaseContext(), R.string.msg_exercise_name_already_exists, Toast.LENGTH_SHORT).show();
                             } else if (exercise_id == -1) {
-                                long result = dbHelper.addExercise(exercise_name);
+                                long result = dbHelper.addExercise(exercise_name, np_difficulty.getValue());
                                 if (result > 0) {
                                     showExercisesList();
                                     Toast.makeText(getBaseContext(), R.string.msg_exercise_add_success, Toast.LENGTH_SHORT).show();
@@ -141,7 +152,7 @@ public class ExercisesActivity extends ReplayActivity {
                                     Toast.makeText(getBaseContext(), R.string.msg_exercise_add_error, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                long result = dbHelper.updateExercise(exercise_id, exercise_name);
+                                long result = dbHelper.updateExercise(exercise_id, exercise_name, np_difficulty.getValue());
                                 if (result > 0) {
                                     showExercisesList();
                                     Toast.makeText(getBaseContext(), R.string.msg_exercise_edit_success, Toast.LENGTH_SHORT).show();

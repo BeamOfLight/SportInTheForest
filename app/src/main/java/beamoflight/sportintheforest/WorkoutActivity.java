@@ -67,7 +67,7 @@ public class WorkoutActivity extends CompetitionBaseActivity {
         super.onCreate(savedInstanceState);
 
         exitMessage = "Вы уверены, что хотите прекратить тренировку?";
-        competitionEngine = new CompetitionEngine(getBaseContext(), dbHelper.getExerciseName(gameHelper.getExerciseId()));
+        competitionEngine = new CompetitionEngine(getBaseContext(), gameHelper.getExerciseId());
         locationPositionEntity = new LocationPositionEntity();
 
         initCompetitionTeamLeft();

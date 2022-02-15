@@ -147,13 +147,13 @@ class DBHelper extends DBHelperBaseLayer {
         return users_entities;
     }
 
-    public boolean checkExerciseExist(String exercise_name) {
+    public boolean checkExerciseExist(String exercise_name, int exercise_id) {
         boolean status = false;
         Cursor cursor = db.query(
                 "exercises",
                 new String[]{"exercise_id", "name"},
-                "name = ?",
-                new String[]{exercise_name},
+                "name = ? and exercise_id != ?",
+                new String[]{exercise_name, String.format(Locale.ROOT, "%s", exercise_id)},
                 null,
                 null,
                 null
@@ -177,7 +177,7 @@ class DBHelper extends DBHelperBaseLayer {
 
         Cursor cursor = db.query(
                 "exercises",
-                new String[]{"exercise_id", "name"},
+                new String[]{"exercise_id", "name", "difficulty"},
                 "exercise_id NOT IN (SELECT exercise_id FROM user_exercises WHERE user_id = ?)",
                 new String[]{Integer.toString(user_id)},
                 "exercise_id",
@@ -190,7 +190,8 @@ class DBHelper extends DBHelperBaseLayer {
                 do {
                     ExerciseEntity exercise= new ExerciseEntity(
                             cursor.getInt(cursor.getColumnIndex("exercise_id")),
-                            cursor.getString(cursor.getColumnIndex("name"))
+                            cursor.getString(cursor.getColumnIndex("name")),
+                            cursor.getInt(cursor.getColumnIndex("difficulty"))
                     );
                     exercises.add(exercise);
                 } while (cursor.moveToNext());
@@ -207,7 +208,7 @@ class DBHelper extends DBHelperBaseLayer {
         Map<String, String> m;
         Cursor cursor = db.query(
                 "exercises",
-                new String[]{"exercise_id", "name", "initial_name", "modification_date"},
+                new String[]{"exercise_id", "name", "difficulty", "initial_name", "modification_date"},
                 null,
                 null,
                 "exercise_id",
@@ -222,6 +223,7 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("exercise_id", cursor.getString(cursor.getColumnIndex("exercise_id")));
                     m.put("initial_name", cursor.getString(cursor.getColumnIndex("initial_name")));
                     m.put("modification_date", cursor.getString(cursor.getColumnIndex("modification_date")));
+                    m.put("difficulty", cursor.getString(cursor.getColumnIndex("difficulty")));
                     m.put("name",
                             String.format(
                                     Locale.ROOT,
@@ -232,7 +234,8 @@ class DBHelper extends DBHelperBaseLayer {
                     m.put("info",
                             String.format(
                                     Locale.ROOT,
-                                    "Исходное название: %s | Последнее изменение: %s",
+                                    "Сложность упражнения: %s | Исходное название: %s | Последнее изменение: %s",
+                                    m.get("difficulty"),
                                     m.get("initial_name"),
                                     m.get("modification_date")
                             )
@@ -315,22 +318,26 @@ class DBHelper extends DBHelperBaseLayer {
         return users_data;
     }
 
-    public long addExercise(String exercise_name)
+    public long addExercise(String exercise_name, int difficulty)
     {
         ContentValues values = new ContentValues();
         values.put("name", exercise_name);
         values.put("initial_name", exercise_name);
         values.put("modification_date", gameHelper.getTodayString());
+        values.put("difficulty", difficulty);
 
         return db.insert("exercises", null, values);
     }
 
-    public long updateExercise(int exercise_id, String exercise_name)
+    public long updateExercise(int exercise_id, String exercise_name, int difficulty)
     {
         ContentValues values = new ContentValues();
         values.put("name", exercise_name);
         values.put("modification_date", gameHelper.getTodayString());
-        return db.update("exercises", values, "exercise_id = ?", new String[]{Integer.toString(exercise_id)});
+        values.put("difficulty", difficulty);
+        return db.update(
+            "exercises", values, "exercise_id = ?",
+            new String[]{Integer.toString(exercise_id)});
     }
 
     public String getExerciseName(int exercise_id)
@@ -356,6 +363,31 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return exercise_name;
+    }
+
+    public int getExerciseDifficulty(int exercise_id)
+    {
+        int exercise_difficulty = -1;
+        Cursor cursor = db.query(
+                "exercises",
+                new String[]{"difficulty"},
+                "exercise_id = ?",
+                new String[]{Integer.toString(exercise_id)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    exercise_difficulty = cursor.getInt(cursor.getColumnIndex("difficulty"));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return exercise_difficulty;
     }
 
     // ===============UserExercise
@@ -683,7 +715,8 @@ class DBHelper extends DBHelperBaseLayer {
     }
 
     // ===================  non_player_characters
-    public ArrayList<NonPlayerCharacterEntity> getNonPlayerCharactersByLocationPositionLevel(int location_id, int position, int level)
+    public ArrayList<NonPlayerCharacterEntity> getNonPlayerCharactersByLocationPositionLevel(
+            int location_id, int position, int level, int exercise_id)
     {
         ArrayList<NonPlayerCharacterEntity> entities = new ArrayList<>();
         Cursor cursor = db.query(
@@ -715,7 +748,8 @@ class DBHelper extends DBHelperBaseLayer {
                             .setBonusChance(cursor.getFloat(cursor.getColumnIndex("bonus_chance")))
                             .setLevel(cursor.getInt(cursor.getColumnIndex("level")))
                             .setSpecialisationId(0)
-                            .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")));
+                            .setBonusMultiplier(cursor.getFloat(cursor.getColumnIndex("bonus_multiplier")))
+                            .setExerciseId(exercise_id);
                     npc_entity.setExp(cursor.getInt(cursor.getColumnIndex("exp")))
                             .setMaxResult(max_result)
                             .setLocationId(cursor.getInt(cursor.getColumnIndex("location_id")))
