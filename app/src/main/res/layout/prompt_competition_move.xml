@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/tvPromptExerciseName"
+            android:id="@+id/tvPromptUserName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -20,8 +20,18 @@
             android:maxLines="2"
             android:textAlignment="center"
             android:gravity="center"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="2sp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
+        <TextView
+            android:id="@+id/tvPromptExerciseName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:maxLines="1"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:layout_marginBottom="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,10 +58,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
             </LinearLayout>
-
-
-            </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

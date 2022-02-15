@@ -101,7 +101,7 @@ public class CompetitionViewerActivity extends CompetitionBaseActivity {
         viewHandler = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 refreshView();
-                tvExerciseName.setText(competitionView.exerciseName);
+                tvExerciseName.setText(dbHelper.getExerciseName(competitionView.exerciseId));
             }
         };
 

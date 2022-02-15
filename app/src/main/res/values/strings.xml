@@ -45,6 +45,7 @@
     <string name="prompt_add_training_pre_action">Усиление</string>
     <string name="prompt_add_training_action">Действие</string>
     <string name="prompt_add_training_target">Цель</string>
+    <string name="prompt_exercise_difficulty">Сложность</string>
     <string name="msg_location_not_found">Место не найдено</string>
     <string name="msg_user_need_name">У пользователя должно быть имя</string>
     <string name="msg_user_name_already_exists">Пользователь с таким именем уже существует</string>
@@ -125,6 +126,7 @@
     <string name="txt_main_user_exp">Очки опыта:</string>
     <string name="txt_main_user_percents">Прогресс:</string>
     <string name="txt_main_non_player_max_result">Результат:</string>
+    <string name="txt_main_exercise_difficulty">Сложность упражнения:</string>
     <string name="skill_remove_success">Навык был успешно удалён</string>
     <string name="skill_remove_error">Не могу удалить навык</string>
     <string name="group_remove_success">Группа была успешно удалена</string>

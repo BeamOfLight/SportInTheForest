@@ -29,7 +29,7 @@ class CompetitionEngine {
     boolean finishedCompetition;
     private int mainPlayerTeamIdx;
     private int mainPlayerIdx;
-    private String exerciseName;
+    private int exerciseId;
 
     class MoveRequest {
         String name;
@@ -49,7 +49,7 @@ class CompetitionEngine {
         view.teamsData = new ArrayList<>();
         view.teamsData.add(getCharacters(LEFT_TEAM_IDX));
         view.teamsData.add(getCharacters(RIGHT_TEAM_IDX));
-        view.exerciseName = getExerciseName();
+        view.exerciseId = exerciseId;
 
         return view;
     }
@@ -59,7 +59,7 @@ class CompetitionEngine {
         locationPosition = location_position;
     }
 
-    CompetitionEngine(Context current, String exerciseName) {
+    CompetitionEngine(Context current, int exercise_id) {
         logData = new ArrayList<>();
         teamsData = new ArrayList<>();
         teamsData.add(new ArrayList<CharacterEntity>());
@@ -67,7 +67,7 @@ class CompetitionEngine {
         gameHelper = new GameHelper(current);
         dbHelper = new DBHelper(current);
         finishedCompetition = true;
-        this.exerciseName = exerciseName;
+        exerciseId = exercise_id;
     }
 
     void start() {
@@ -1045,10 +1045,5 @@ class CompetitionEngine {
         }
 
         return skill_views;
-    }
-
-    private String getExerciseName()
-    {
-        return exerciseName;
     }
 }

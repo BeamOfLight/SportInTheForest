@@ -82,6 +82,10 @@ public class CharacterView {
     @Expose
     protected int initialActionPoints;
 
+    @SerializedName("exercise_id")
+    @Expose
+    protected int exerciseId;
+
     public String toString()
     {
         return name;
@@ -120,4 +124,5 @@ public class CharacterView {
     public String getResults() { return results; }
     public int getCurrentActionPoints() { return currentActionPoints; }
     public int getInitialActionPoints() { return initialActionPoints; }
+    public int getExerciseId() { return exerciseId; }
 }

@@ -35,8 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:clickable="true"
-            android:focusable="true"
             app:backgroundTint="?attr/colorButtonNormal"
+            app:fabSize="normal"
             app:srcCompat="@android:drawable/ic_input_add" />
 
     </LinearLayout>

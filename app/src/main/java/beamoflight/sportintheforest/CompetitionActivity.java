@@ -76,7 +76,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         super.onCreate(savedInstanceState);
 
         exitMessage = "Вы уверены, что хотите сдаться?";
-        competitionEngine = new CompetitionEngine(getBaseContext(), dbHelper.getExerciseName(gameHelper.getExerciseId()));
+        competitionEngine = new CompetitionEngine(getBaseContext(), gameHelper.getExerciseId());
 
         initCompetitionTeamLeft();
         initCompetitionTeamRight();
@@ -248,9 +248,12 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         alert_dialog_builder.setView(prompts_view);
 
         final NumberPicker np_count = (NumberPicker) prompts_view.findViewById(R.id.npCount);
+        final TextView tv_prompt_user_name = (TextView) prompts_view.findViewById(R.id.tvPromptUserName);
         final TextView tv_prompt_exercise_name = (TextView) prompts_view.findViewById(R.id.tvPromptExerciseName);
+
         //tv_prompt_exercise_name.setText(dbHelper.getExerciseName(gameHelper.getExerciseId()));
-        tv_prompt_exercise_name.setText(request.name);
+        tv_prompt_user_name.setText(request.name);
+        tv_prompt_exercise_name.setText(dbHelper.getExerciseName(request.exerciseId));
 
         np_count.setMinValue(0);
         np_count.setMaxValue(1000);
@@ -425,7 +428,8 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         ArrayList<NonPlayerCharacterEntity> entities = dbHelper.getNonPlayerCharactersByLocationPositionLevel(
                 locationPositionEntity.getLocationId(),
                 locationPositionEntity.getPosition(),
-                locationPositionEntity.getLevel()
+                locationPositionEntity.getLevel(),
+                gameHelper.getExerciseId()
         );
 
         for (NonPlayerCharacterEntity entity: entities) {
