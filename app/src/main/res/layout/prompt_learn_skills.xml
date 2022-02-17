@@ -50,6 +50,5 @@
         android:id="@+id/lvSkills"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@color/fragmentListViewColor"
-        />
+        android:background="@color/fragmentListViewColor" />
 </LinearLayout>

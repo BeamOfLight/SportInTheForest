@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UserExercisesActivity extends ReplayActivity {
-    List<Map<String, String>> exercisesData;
+    List<Map<String, String>> userExercisesData;
     ListView lvExercises, lvNewUserExercise;
     AlertDialog dialogAddUserExercise;
 
@@ -90,7 +90,7 @@ public class UserExercisesActivity extends ReplayActivity {
                                     dbHelper.addUserExercise(gameHelper.getUserId(), exerciseId, type);
                                     dbHelper.openLocationForUserExercise(gameHelper.getUserId(), exerciseId, 1);
 
-                                    showExercisesList();
+                                    showUserExercisesList();
                                 }
                             }
                         })
@@ -114,7 +114,7 @@ public class UserExercisesActivity extends ReplayActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 if (!gameHelper.isReplayMode()) {
-                    int exercise_id = Integer.parseInt(exercisesData.get(position).get("exercise_id"));
+                    int exercise_id = Integer.parseInt(userExercisesData.get(position).get("exercise_id"));
                     gameHelper.saveExerciseId2Preferences(exercise_id);
 
                     Intent intent = null;
@@ -132,23 +132,24 @@ public class UserExercisesActivity extends ReplayActivity {
             }
         });
 
-        showExercisesList();
+        showUserExercisesList();
         showNewUserExerciseList();
     }
 
-    private void showExercisesList()
+    private void showUserExercisesList()
     {
-        exercisesData = dbHelper.getUserExercisesData();
+        userExercisesData = dbHelper.getUserExercisesData(-1);
+        //final ArrayList<Map<String, String>> userExercisesData = dbHelper.getUserExercisesData(-1);
         lvExercises.invalidateViews();
-        SimpleAdapter exercisesAdapter = new SimpleAdapter(
+        SimpleAdapter userExercisesAdapter = new SimpleAdapter(
                 this,
-                exercisesData,
+                userExercisesData,
                 android.R.layout.simple_list_item_2,
                 new String[] {"name", "info", "exercise_id"},
                 new int[] {android.R.id.text1, android.R.id.text2}
         );
 
-        lvExercises.setAdapter(exercisesAdapter);
+        lvExercises.setAdapter(userExercisesAdapter);
     }
 
     private void showNewUserExerciseList()

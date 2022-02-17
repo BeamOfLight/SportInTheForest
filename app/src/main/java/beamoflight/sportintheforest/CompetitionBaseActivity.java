@@ -184,13 +184,13 @@ abstract public class CompetitionBaseActivity extends Activity {
     {
         showCompetitionLogListView();
 
-        CharacterViewArrayAdapter teamLeftArrayAdapter;
-        teamLeftArrayAdapter = new CharacterViewArrayAdapter(getBaseContext(), competitionView.getTeamsData().get(CompetitionEngine.LEFT_TEAM_IDX));
+        CharacterViewArrayAdapter teamLeftArrayAdapter = new CharacterViewArrayAdapter(
+                getBaseContext(), competitionView.getTeamsData().get(CompetitionEngine.LEFT_TEAM_IDX));
         lvCompetitionTeamLeft.setAdapter(teamLeftArrayAdapter);
         teamLeftArrayAdapter.notifyDataSetChanged();
 
-        CharacterViewArrayAdapter teamRightArrayAdapter;
-        teamRightArrayAdapter = new CharacterViewArrayAdapter(getBaseContext(), competitionView.getTeamsData().get(CompetitionEngine.RIGHT_TEAM_IDX));
+        CharacterViewArrayAdapter teamRightArrayAdapter = new CharacterViewArrayAdapter(
+                getBaseContext(), competitionView.getTeamsData().get(CompetitionEngine.RIGHT_TEAM_IDX));
         lvCompetitionTeamRight.setAdapter(teamRightArrayAdapter);
         teamRightArrayAdapter.notifyDataSetChanged();
 
