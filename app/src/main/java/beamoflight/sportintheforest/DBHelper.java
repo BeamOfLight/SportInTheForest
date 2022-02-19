@@ -1,5 +1,6 @@
 package beamoflight.sportintheforest;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -109,6 +110,42 @@ class DBHelper extends DBHelperBaseLayer {
         }
 
         return users_data;
+    }
+
+    public ArrayList<UserEntity> getUsersList(boolean is_replay_mode)
+    {
+        ArrayList<UserEntity> users_entities = new ArrayList<>();
+        Cursor cursor = db.query(
+                "users AS u",
+                new String[]{"u.user_id", "u.name", "u.creation_date", "u.modification_date"},
+                "u.for_replay = ?",
+                new String[]{is_replay_mode ? "1" : "0"},
+                null,
+                null,
+                "u.name ASC"
+        );
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    UserEntity user_entity = new UserEntity();
+                    user_entity.id = cursor.getInt(cursor.getColumnIndex("user_id"));
+                    user_entity.name = cursor.getString(cursor.getColumnIndex("name"));
+                    user_entity.creationDate = cursor.getString(cursor.getColumnIndex("creation_date"));
+                    user_entity.modificationDate = cursor.getString(cursor.getColumnIndex("modification_date"));
+                    user_entity.info = String.format(
+                            Locale.ROOT,
+                            "Создан: %s | Изменён: %s",
+                            user_entity.creationDate,
+                            user_entity.modificationDate
+                    );
+                    users_entities.add(user_entity);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+        return users_entities;
     }
 
     public ArrayList<UserEntity> getUsersWithExercise(int exercise_id, boolean is_replay_mode)
@@ -250,14 +287,18 @@ class DBHelper extends DBHelperBaseLayer {
         return users_data;
     }
 
-    public ArrayList<Map<String, String>> getUserExercisesData()
+    public ArrayList<Map<String, String>> getUserExercisesData(int user_id)
     {
         ArrayList<Map<String, String>> users_data = new ArrayList<>();
         Map<String, String> m;
-        int user_id = gameHelper.getUserId();
+
+        if (user_id == -1) {
+            user_id = gameHelper.getUserId();    
+        }
+
         Cursor cursor = db.query(
                 "exercises AS e INNER JOIN user_exercises AS ue ON e.exercise_id = ue.exercise_id AND ue.user_id = " + Integer.toString(user_id),
-                new String[]{"e.exercise_id", "e.name", "ue.type"},
+                new String[]{"e.exercise_id", "e.name", "ue.type", "ue.user_id"},
                 null,
                 null,
                 "e.exercise_id",
@@ -271,6 +312,7 @@ class DBHelper extends DBHelperBaseLayer {
                     int type = cursor.getInt(cursor.getColumnIndex("type"));
                     m = new HashMap<>();
                     m.put("exercise_id", cursor.getString(cursor.getColumnIndex("exercise_id")));
+                    m.put("user_id", cursor.getString(cursor.getColumnIndex("user_id")));
                     m.put("type", Integer.toString(type));
                     m.put("name",
                             String.format(

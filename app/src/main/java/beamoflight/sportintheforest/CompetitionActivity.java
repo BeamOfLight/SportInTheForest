@@ -10,15 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -28,6 +33,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
     LocationPositionEntity locationPositionEntity;
     CompetitionEngine competitionEngine;
     AlertDialog dialogCompetitionMove;
+    ArrayList<Map<String, String>> userExercisesData;
 
     protected void setButtonsBeforeCompetitions()
     {
@@ -360,6 +366,8 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
     private void initDialogInviteUser()
     {
+        //ArrayList<Map<String, String>> userExercisesData = dbHelper.getUserExercisesData(userEntity.id);
+
         LayoutInflater li = LayoutInflater.from(this);
         View prompts_view = li.inflate(R.layout.prompt_invite_user, null);
 
@@ -367,41 +375,70 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         alert_dialog_builder.setView(prompts_view);
 
         // адаптер PreActions
-        int exercise_id = gameHelper.getExerciseId();
-        final List<UserEntity> invite_users = competitionEngine.filterUserList(
-                dbHelper.getUsersWithExercise(exercise_id, gameHelper.isReplayMode()),
-                exercise_id
-        );
+        final List<UserEntity> invite_users = dbHelper.getUsersList(gameHelper.isReplayMode());
         ArrayAdapter<UserEntity> adapter_invite_user = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, invite_users);
         adapter_invite_user.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        ListView lvInviteUserExercise = prompts_view.findViewById(R.id.lvInviteUserExercise);
+        lvInviteUserExercise.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                if (!gameHelper.isReplayMode()) {
+                    //Toast.makeText(getBaseContext(),"position: " + String.format(Locale.ROOT,"%d", position), Toast.LENGTH_LONG).show();
+                    int exercise_id = Integer.parseInt(userExercisesData.get(position).get("exercise_id"));
+                    int user_id = Integer.parseInt(userExercisesData.get(position).get("user_id"));
+                    //Toast.makeText(getBaseContext(),"exercise_id: " + String.format(Locale.ROOT,"%d", exercise_id), Toast.LENGTH_LONG).show();
+
+                    //invite_users
+                    if (dbHelper.getExerciseDifficulty(exercise_id) > 0) {
+                        boolean status = competitionEngine.addCharacter(
+                                CompetitionEngine.LEFT_TEAM_IDX, dbHelper.getPlayerEntity(user_id, exercise_id));
+                        if (status) {
+                            competitionView = competitionEngine.getCompetitionView();
+                            refreshView();
+                            if (invite_users.size() <= 1) {
+                                btInvite.setVisibility(View.INVISIBLE);
+                            }
+                            dialogCompetitionMove.hide();
+                        }
+                    } else {
+                        Toast.makeText(getBaseContext(),"Укажите сложность выбранного упражнения в его настройках. ", Toast.LENGTH_LONG).show();
+                    }
+                 }
+            }
+        });
+
         final Spinner spinner_invite_user = prompts_view.findViewById(R.id.spinnerInviteUser);
         spinner_invite_user.setAdapter(adapter_invite_user);
+        spinner_invite_user.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                UserEntity userEntity = (UserEntity) parent.getItemAtPosition(position);
+                //final ArrayList<Map<String, String>>
+                userExercisesData = dbHelper.getUserExercisesData(userEntity.id);
+
+                lvInviteUserExercise.invalidateViews();
+                SimpleAdapter userExercisesAdapter = new SimpleAdapter(
+                        view.getContext(),
+                        userExercisesData,
+                        android.R.layout.simple_list_item_2,
+                        new String[] {"name", "info", "exercise_id"},
+                        new int[] {android.R.id.text1, android.R.id.text2}
+                );
+
+                lvInviteUserExercise.setAdapter(userExercisesAdapter);
+
+            } // to close the onItemSelected
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
 
         // set dialog message
         alert_dialog_builder
                 .setCancelable(false)
-                .setPositiveButton(R.string.btn_save_text,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                if (spinner_invite_user.getSelectedItem() != null) {
-                                    boolean status = competitionEngine.addCharacter(
-                                            CompetitionEngine.LEFT_TEAM_IDX,
-                                            dbHelper.getPlayerEntity(
-                                                    ((UserEntity) spinner_invite_user.getSelectedItem()).id,
-                                                    gameHelper.getExerciseId()
-                                            )
-                                    );
-                                    if (status) {
-                                        competitionView = competitionEngine.getCompetitionView();
-                                        refreshView();
-                                        if (invite_users.size() <= 1) {
-                                            btInvite.setVisibility(View.INVISIBLE);
-                                        }
-                                    }
-                                }
-                            }
-                        })
                 .setNegativeButton(R.string.btn_cancel_text,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {

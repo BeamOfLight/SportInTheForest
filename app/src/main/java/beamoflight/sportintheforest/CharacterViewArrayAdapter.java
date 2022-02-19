@@ -35,6 +35,9 @@ public class CharacterViewArrayAdapter extends ArrayAdapter<CharacterView> {
         TextView tvPlayerName = rowView.findViewById(R.id.tvPlayerName);
         tvPlayerName.setText(String.format(Locale.ROOT, "%s", values.get(position).getName()));
 
+        TextView tvPlayerExercise = rowView.findViewById(R.id.tvPlayerExercise);
+        tvPlayerExercise.setText(String.format(Locale.ROOT, "%s", values.get(position).getExerciseName()));
+
         TextView tvPlayerFPInfo = rowView.findViewById(R.id.tvPlayerFPInfo);
         tvPlayerFPInfo.setText(
                 String.format(

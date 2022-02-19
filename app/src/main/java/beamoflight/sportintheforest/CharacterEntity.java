@@ -89,6 +89,7 @@ abstract class CharacterEntity {
         data.currentActionPoints = getCurrentActionPoints();
         data.initialActionPoints = getInitialActionPoints();
         data.exerciseId = getExerciseId();
+        data.exerciseName = dbHelper.getExerciseName(getExerciseId());
 
         return data;
     }

@@ -15,7 +15,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -25,7 +25,7 @@
         <activity
             android:name=".Main4ReplayActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN4REPLAY" />
             </intent-filter>
@@ -34,7 +34,7 @@
         <activity
             android:name=".TabsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.TABS" />
             </intent-filter>
@@ -43,7 +43,7 @@
         <activity
             android:name=".TabsDailyStatOnlyActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.TABS_DAILY_STAT_ONLY" />
             </intent-filter>
@@ -52,7 +52,7 @@
         <activity
             android:name=".UsersActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.USERS" />
             </intent-filter>
@@ -61,7 +61,7 @@
         <activity
             android:name=".KnowledgeCategoriesActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE_CATEGORIES" />
             </intent-filter>
@@ -70,7 +70,7 @@
         <activity
             android:name=".KnowledgeActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.KNOWLEDGE" />
             </intent-filter>
@@ -79,7 +79,7 @@
         <activity
             android:name=".UserExercisesActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.USER_EXERCISES" />
             </intent-filter>
@@ -88,7 +88,7 @@
         <activity
             android:name=".ExercisesActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.EXERCISES" />
             </intent-filter>
@@ -97,7 +97,7 @@
         <activity
             android:name=".LocationPositionsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.NPCS" />
             </intent-filter>
@@ -106,7 +106,7 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.SETTINGS" />
             </intent-filter>
@@ -115,7 +115,7 @@
         <activity
             android:name=".ExtraSettingsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.EXTRA_SETTINGS" />
             </intent-filter>
@@ -124,7 +124,7 @@
         <activity
             android:name=".ReplayEditorActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.REPLAY_EDITOR" />
             </intent-filter>
@@ -133,7 +133,7 @@
         <activity
             android:name=".CompetitionActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION" />
             </intent-filter>
@@ -142,7 +142,7 @@
         <activity
             android:name=".CompetitionViewerActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.COMPETITION_VIEWER" />
             </intent-filter>
@@ -151,7 +151,7 @@
         <activity
             android:name=".StatMyShadowsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MY_SHADOWS" />
             </intent-filter>
@@ -160,7 +160,7 @@
         <activity
             android:name=".StatYearsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_YEARS" />
             </intent-filter>
@@ -169,7 +169,7 @@
         <activity
             android:name=".StatMonthsActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_MONTHS" />
             </intent-filter>
@@ -178,7 +178,7 @@
         <activity
             android:name=".StatWeeksActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_WEEKS" />
             </intent-filter>
@@ -187,7 +187,7 @@
         <activity
             android:name=".StatDaysActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.STAT_DAYS" />
             </intent-filter>
@@ -205,7 +205,7 @@
         <activity
             android:name=".WorkoutActivity"
             android:exported="false"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.WORKOUT" />
             </intent-filter>

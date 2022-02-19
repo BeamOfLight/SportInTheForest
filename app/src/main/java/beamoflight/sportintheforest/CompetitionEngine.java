@@ -154,9 +154,7 @@ class CompetitionEngine {
     {
         List<UserEntity> dst_users = new ArrayList<>();
         for (UserEntity src_user : src_users) {
-            if (checkExerciseUserIsNew(src_user.id, exercise_id)) {
-                dst_users.add(src_user);
-            }
+            dst_users.add(src_user);
         }
 
         return dst_users;
@@ -276,7 +274,8 @@ class CompetitionEngine {
 
     private void calculateMove4Target(CharacterEntity current_character, CharacterEntity target_character, float splash_multiplier) {
         float bonus_rate = getBonusRate(current_character.getBonusChance(), current_character.getBonusMultiplier());
-        float final_rate = splash_multiplier * current_character.getMultiplier() * bonus_rate;
+        float difficulty_rate = (float) dbHelper.getExerciseDifficulty(current_character.getExerciseId()) / dbHelper.getExerciseDifficulty(exerciseId);
+        float final_rate = splash_multiplier * current_character.getMultiplier() * bonus_rate * difficulty_rate;
         float final_result = current_character.getResult() * final_rate;
         int int_final_result = Math.round(final_result);
 
@@ -285,15 +284,18 @@ class CompetitionEngine {
 
         logMessage += String.format(
                 Locale.ROOT,
-                " %s => %s Результат %d x %.2f %s= %d %s (сопр. %d%%) ФО изменены на %d до %d.",
+                " %s:%s => %s:%s Результат %d x %.2f %s= %d %s (сопр. %d%%, коэф. сложности %.2f) ФО изменены на %d до %d.",
                 current_character.getName(),
+                dbHelper.getExerciseName(current_character.getExerciseId()),
                 target_character.getName(),
+                dbHelper.getExerciseName(target_character.getExerciseId()),
                 current_character.getResult(),
                 final_rate,
                 bonus_rate > 1 ? "(бонус!) " : "",
                 int_final_result,
                 gameHelper.getCorrectPointWordRU(int_final_result),
                 (int) (gameHelper.getResistanceInPercents(target_character.getResistance())),
+                difficulty_rate,
                 targetFPDiff,
                 target_character.getCurrentFitnessPoints()
         );
