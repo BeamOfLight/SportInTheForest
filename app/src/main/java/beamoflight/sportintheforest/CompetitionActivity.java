@@ -364,10 +364,20 @@ public class CompetitionActivity extends CompetitionBaseActivity {
         btAddResult.setVisibility(View.VISIBLE);
     }
 
+    private int getDefaultUserPosition(List<UserEntity> users)
+    {
+        int position = 0;
+        for (UserEntity user: users) {
+            if (user.id == gameHelper.getUserId()) {
+                break;
+            }
+            position++;
+        }
+        return position;
+    }
+
     private void initDialogInviteUser()
     {
-        //ArrayList<Map<String, String>> userExercisesData = dbHelper.getUserExercisesData(userEntity.id);
-
         LayoutInflater li = LayoutInflater.from(this);
         View prompts_view = li.inflate(R.layout.prompt_invite_user, null);
 
@@ -384,10 +394,8 @@ public class CompetitionActivity extends CompetitionBaseActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 if (!gameHelper.isReplayMode()) {
-                    //Toast.makeText(getBaseContext(),"position: " + String.format(Locale.ROOT,"%d", position), Toast.LENGTH_LONG).show();
                     int exercise_id = Integer.parseInt(userExercisesData.get(position).get("exercise_id"));
                     int user_id = Integer.parseInt(userExercisesData.get(position).get("user_id"));
-                    //Toast.makeText(getBaseContext(),"exercise_id: " + String.format(Locale.ROOT,"%d", exercise_id), Toast.LENGTH_LONG).show();
 
                     //invite_users
                     if (dbHelper.getExerciseDifficulty(exercise_id) > 0) {
@@ -400,9 +408,17 @@ public class CompetitionActivity extends CompetitionBaseActivity {
                                 btInvite.setVisibility(View.INVISIBLE);
                             }
                             dialogCompetitionMove.hide();
+                        } else {
+                            Toast.makeText(
+                                    getBaseContext(),"Игрок с таким упражнением уже есть.",
+                                    Toast.LENGTH_LONG
+                            ).show();
                         }
                     } else {
-                        Toast.makeText(getBaseContext(),"Укажите сложность выбранного упражнения в его настройках. ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                getBaseContext(),"Укажите сложность выбранного упражнения в его настройках.",
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
                  }
             }
@@ -410,6 +426,7 @@ public class CompetitionActivity extends CompetitionBaseActivity {
 
         final Spinner spinner_invite_user = prompts_view.findViewById(R.id.spinnerInviteUser);
         spinner_invite_user.setAdapter(adapter_invite_user);
+        spinner_invite_user.setSelection(getDefaultUserPosition(invite_users));
         spinner_invite_user.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
