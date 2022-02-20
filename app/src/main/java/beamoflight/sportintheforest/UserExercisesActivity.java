@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,16 +118,23 @@ public class UserExercisesActivity extends ReplayActivity {
                     int exercise_id = Integer.parseInt(userExercisesData.get(position).get("exercise_id"));
                     gameHelper.saveExerciseId2Preferences(exercise_id);
 
-                    Intent intent = null;
                     Map<String, String> data = dbHelper.getCurrentUserExerciseData();
                     if (data != null) {
                         int user_exercise_type = Integer.parseInt(data.get("type"));
                         if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_RPG) {
-                            intent = new Intent(UserExercisesActivity.this, TabsActivity.class);
+                            if (dbHelper.getExerciseDifficulty(exercise_id) > 0) {
+                                startActivity(
+                                        new Intent(UserExercisesActivity.this, TabsActivity.class));
+                            } else {
+                                Toast.makeText(
+                                        getBaseContext(),"Укажите сложность выбранного упражнения в его настройках. ",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            }
                         } else if (user_exercise_type == dbHelper.USER_EXERCISE_TYPE_DAILY_STAT_ONLY) {
-                            intent = new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class);
+                            startActivity(
+                                    new Intent(UserExercisesActivity.this, TabsDailyStatOnlyActivity.class));
                         }
-                        startActivity(intent);
                     }
                 }
             }
