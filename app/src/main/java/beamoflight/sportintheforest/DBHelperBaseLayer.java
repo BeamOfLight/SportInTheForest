@@ -1030,7 +1030,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         } else {
             m.put("user_exercises", new String[]{"user_id", "exercise_id", "wins", "competitions", "draws", "specialisation"});
         }
-        m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name"});
+        m.put("exercises", new String[] {"exercise_id", "modification_date", "initial_name", "name", "difficulty"});
 
         m.put("user_exercise_skills", new String[] {"skill_id", "user_id", "exercise_id"});
         if (format_version >= 4) {
