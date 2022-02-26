@@ -158,6 +158,7 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
         String sql = "";
         int id;
         String name;
+        int difficulty;
 
         try {
             XmlPullParser xpp = context.getResources().getXml(R.xml.exercises);
@@ -168,7 +169,8 @@ class DBHelperBaseLayer extends SQLiteOpenHelper {
                         if (xpp.getName().equals("exercise")) {
                             id = Integer.parseInt(xpp.getAttributeValue(null, "exercise_id"));
                             name = xpp.getAttributeValue(null, "name");
-                            sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\", 0)";
+                            difficulty = Integer.parseInt(xpp.getAttributeValue(null, "difficulty"));
+                            sql += ", (" + id + ", date('now'), \"" + name +"\", \"" + name +"\", " + difficulty + ")";
                         }
                         break;
                     default:

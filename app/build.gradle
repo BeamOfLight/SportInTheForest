@@ -23,8 +23,8 @@ android {
         applicationId "beamoflight.sportintheforest"
         minSdkVersion 24
         targetSdkVersion 32
-        versionCode 4
-        versionName "0.3.16.4"
+        versionCode 5
+        versionName "0.3.16.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
