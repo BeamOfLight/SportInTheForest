@@ -30,6 +30,7 @@ class CompetitionEngine {
     private int mainPlayerTeamIdx;
     private int mainPlayerIdx;
     private int exerciseId;
+    private boolean severalExercisesMode;
 
     class MoveRequest {
         String name;
@@ -68,6 +69,7 @@ class CompetitionEngine {
         dbHelper = new DBHelper(current);
         finishedCompetition = true;
         exerciseId = exercise_id;
+        severalExercisesMode = false;
     }
 
     void start() {
@@ -193,6 +195,7 @@ class CompetitionEngine {
         if (teamsData.get(team_idx).size() < MAX_CHARACTERS_COUNT_PER_TEAM) {
             character_entity.setTeamIdx(team_idx).setIdxInTeam(teamsData.get(team_idx).size());
             teamsData.get(team_idx).add(character_entity);
+            severalExercisesMode = severalExercisesMode || (character_entity.getExerciseId() != exerciseId);
             status = true;
         }
 
@@ -284,14 +287,20 @@ class CompetitionEngine {
 
         logMessage += String.format(
                 Locale.ROOT,
-                " %s:%s => %s:%s Результат %d x %.2f x %.2f %s= %d %s (сопр. %d%%) ФО изменены на %d до %d.",
-                current_character.getName(),
-                dbHelper.getExerciseName(current_character.getExerciseId()),
-                target_character.getName(),
-                dbHelper.getExerciseName(target_character.getExerciseId()),
+                " %s => %s Результат %d x %.2f",
+                getCharacterName(current_character),
+                getCharacterName(target_character),
                 current_character.getResult(),
-                final_rate,
-                difficulty_rate,
+                final_rate
+        );
+
+        if (severalExercisesMode && difficulty_rate != 1.00) {
+            logMessage += String.format(Locale.ROOT," x %.2f", difficulty_rate);
+        }
+
+        logMessage += String.format(
+                Locale.ROOT,
+                " %s= %d %s (сопр. %d%%) ФО изменены на %d до %d.",
                 bonus_rate > 1 ? "(бонус!) " : "",
                 int_final_result,
                 gameHelper.getCorrectPointWordRU(int_final_result),
@@ -533,12 +542,22 @@ class CompetitionEngine {
         }
     }
 
+    private String getCharacterName(CharacterEntity character)
+    {
+        String character_name = character.getName();
+        if (severalExercisesMode) {
+            character_name += ":" + dbHelper.getExerciseName(character.getExerciseId());
+        }
+
+        return character_name;
+    }
+
     private void addSkillUseLogMessage(CharacterEntity character, String message)
     {
         logMessage += String.format(
                 Locale.ROOT,
                 "%s использовал(а) \"%s\". ",
-                character.getName(),
+                getCharacterName(character),
                 message
         );
     }
@@ -584,7 +603,7 @@ class CompetitionEngine {
                         logMessage += String.format(
                                 Locale.ROOT,
                                 " %s: %s %d ФО.",
-                                character.getName(),
+                                getCharacterName(character),
                                 regeneration > 0 ? "восстановлено" : "уменьшено",
                                 Math.abs(regeneration)
                         );
